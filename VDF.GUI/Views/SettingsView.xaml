@@ -140,10 +140,43 @@
       <Setter Property="Opacity" Value="{DynamicResource VdfTextFaintOpacity}" />
     </Style>
 
+    <!-- The mockup's switch: a 42x24 pill with an 18px round knob. The two theme
+         tracks differ in lightness so the state reads at a glance (the mockup calls
+         this out). PART_SwitchKnob is a Canvas whose width IS the knob travel - the
+         control sets Canvas.Left on PART_MovingKnobs to that width - so it is sized
+         to the distance the knob actually moves (42 - 18 - 2*3). -->
     <Style Selector="ToggleSwitch.plain">
       <Setter Property="OnContent" Value="" />
       <Setter Property="OffContent" Value="" />
       <Setter Property="MinWidth" Value="0" />
+      <Setter Property="KnobTransitions">
+        <Transitions>
+          <DoubleTransition Property="Canvas.Left" Duration="0:0:0.2" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+            <Grid Grid.Column="0" Width="42" Height="24" VerticalAlignment="Center">
+              <Border x:Name="VdfSwitchTrack"
+                      Width="42" Height="24" CornerRadius="12"
+                      Background="{DynamicResource VdfSwitchTrackOffBrush}" />
+              <Canvas x:Name="PART_SwitchKnob"
+                      Width="18" Height="24" Margin="3,0,0,0"
+                      HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Grid x:Name="PART_MovingKnobs" Width="18" Height="24">
+                  <Ellipse Width="18" Height="18"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Fill="{DynamicResource VdfSwitchKnobBrush}" />
+                </Grid>
+              </Canvas>
+            </Grid>
+          </Grid>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ToggleSwitch.plain:checked /template/ Border#VdfSwitchTrack">
+      <Setter Property="Background" Value="{DynamicResource VdfSwitchTrackOnBrush}" />
     </Style>
     <Style Selector="NumericUpDown.stepper">
       <Setter Property="Width" Value="150" />

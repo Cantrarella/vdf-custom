@@ -59,6 +59,12 @@
                          (accent-softer). Rows sit on a white card, so the hover reads
                          against the card, not the page. -->
                     <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#F3F9FF" />
+                    <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
+                         deep accent, knob white. The two track colours have to differ in
+                         lightness, or the state cannot be read at a glance. -->
+                    <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#C9D6E3" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
+                    <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
                          are 3.3 to 4.4:1, so the light theme dims less. -->
@@ -117,6 +123,12 @@
                     <!-- Settings row under the pointer: the mockup's accent-softer over
                          the dark card. -->
                     <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#1E2C3C" />
+                    <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
+                         deep accent, knob white. The two track colours have to differ in
+                         lightness, or the state cannot be read at a glance. -->
+                    <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
+                    <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#E9F4FF" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>
@@ -158,6 +170,12 @@
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#9E1B1B" />
                     <!-- Row hover at the enhanced level: a filled step one can see. -->
                     <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#123048" />
+                    <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
+                         deep accent, knob white. The two track colours have to differ in
+                         lightness, or the state cannot be read at a glance. -->
+                    <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#2E6E9E" />
+                    <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
@@ -224,6 +242,12 @@
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#9E1B1B" />
                     <!-- Row hover at the enhanced level: a filled step one can see. -->
                     <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#D6E9FA" />
+                    <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
+                         deep accent, knob white. The two track colours have to differ in
+                         lightness, or the state cannot be read at a glance. -->
+                    <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#4A4F5A" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#14507A" />
+                    <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
