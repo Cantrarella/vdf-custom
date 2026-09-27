@@ -56,12 +56,9 @@ namespace VDF.GUI.Views {
 		public SettingsView() {
 			AvaloniaXamlLoader.Load(this);
 
-			var includes = this.FindControl<ListBox>("ListboxIncludelist")!;
-			includes.AddHandler(DragDrop.DropEvent, (_, e) => DropFolders(e, SettingsFile.Instance.Includes));
-			includes.AddHandler(DragDrop.DragOverEvent, OnDragOver);
-			var blacklists = this.FindControl<ListBox>("ListboxBlacklist")!;
-			blacklists.AddHandler(DragDrop.DropEvent, (_, e) => DropFolders(e, SettingsFile.Instance.Blacklists));
-			blacklists.AddHandler(DragDrop.DragOverEvent, OnDragOver);
+			// The folder lists this used to wire up for drag & drop moved out with the
+			// Directories section (mockup has no such section). Adding folders lives on
+			// the scan page, which owns the list the scanner actually reads.
 
 			DataContextChanged += (_, __) => HookViewModel();
 			Loaded += (_, __) => {
@@ -121,11 +118,14 @@ namespace VDF.GUI.Views {
 			collapsedExtraRows.Add(this.FindControl<SettingRow>("RowDurationMin")!);
 			collapsedExtraRows.Add(this.FindControl<SettingRow>("RowDurationMax")!);
 
-			foreach (var panel in this.FindControl<StackPanel>("SectionsHost")!.Children.OfType<StackPanel>()) {
-				if (panel.Tag is not string id) continue;
+			foreach (var child in this.FindControl<StackPanel>("SectionsHost")!.Children) {
+				// A section is a card (Border.setcard) holding the panel that carries the
+				// tag and the rows. Hiding the outermost element hides the card with it.
+				StackPanel? panel = child as StackPanel ?? (child as Border)?.Child as StackPanel;
+				if (panel?.Tag is not string id) continue;
 				var caption = panel.Children.OfType<TextBlock>().FirstOrDefault(t => t.Classes.Contains("sectioncaption"));
 				string label = navItems.FirstOrDefault(n => (string?)n.Tag == id)?.Content as string ?? id;
-				sections.Add(new SectionInfo(panel, caption, id, label));
+				sections.Add(new SectionInfo(child, caption, id, label));
 				// The section itself is found by its nav label only; rows and tagged
 				// blocks carry their own text.
 				searchSections.Add(new SettingsSearchSection(id, label));

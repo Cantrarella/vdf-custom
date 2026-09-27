@@ -55,6 +55,10 @@
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#0F3A55" />
                     <!-- Solid red behind white text (Delete checked): the theme's #EE4343 is 3.8:1. -->
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#D32F2F" />
+                    <!-- Settings row under the pointer: the mockup's .row:hover
+                         (accent-softer). Rows sit on a white card, so the hover reads
+                         against the card, not the page. -->
+                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#F3F9FF" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
                          are 3.3 to 4.4:1, so the light theme dims less. -->
@@ -110,6 +114,9 @@
                     <!-- The accent is pale, so the text on it goes dark. -->
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#0B1F2E" />
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#D32F2F" />
+                    <!-- Settings row under the pointer: the mockup's accent-softer over
+                         the dark card. -->
+                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#1E2C3C" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>
@@ -149,6 +156,8 @@
                     <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#CDE9FF" />
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#9E1B1B" />
+                    <!-- Row hover at the enhanced level: a filled step one can see. -->
+                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#123048" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
@@ -213,6 +222,8 @@
                     <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#0B3D5C" />
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#9E1B1B" />
+                    <!-- Row hover at the enhanced level: a filled step one can see. -->
+                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#D6E9FA" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
@@ -260,8 +271,8 @@
 
     <Application.Styles>
         <FluentTheme />
-        <!-- Teal-green accent (redesign locked decision 12): a custom accent ramp
-             generated from the mockup color replaces ActiPro's default blue. -->
+        <!-- Blue accent (redesign locked decision 12): a custom accent ramp generated
+             from the mockup color replaces ActiPro's default. -->
         <actipro:ModernTheme>
             <actipro:ModernTheme.Definition>
                 <generation:ThemeDefinition AccentColorRampName="VdfAccent">

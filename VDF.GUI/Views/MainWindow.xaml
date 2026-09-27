@@ -518,8 +518,7 @@
                                 <!-- 扫描目录 -->
                                 <Button
                                     Classes="railitem"
-                                    Command="{Binding ShowSettingsSectionCommand}"
-                                    CommandParameter="Directories"
+                                    Command="{Binding ShowRailScannerCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Folders]}">
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Path
