@@ -11,7 +11,9 @@
     x:DataType="vm:MainWindowVM">
 
   <UserControl.Resources>
-    <mvvm:BoolToValueConverter x:Key="DisabledOpacityConverter" TrueValue="0.55" FalseValue="1.0" />
+    <!-- 0.42 is the mockup's .dir-row.off, not a round number: it has to leave the
+         path readable so a switched-off folder can still be found and turned back on. -->
+    <mvvm:BoolToValueConverter x:Key="DisabledOpacityConverter" TrueValue="0.42" FalseValue="1.0" />
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -21,21 +23,33 @@
       <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
       <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="CornerRadius" Value="20" />
+      <Setter Property="Padding" Value="20,15" />
     </Style>
     <!-- Mockup .dir-row: one include folder. Rows are separated by hairlines and the
          whole row dims while the folder is switched off. -->
     <Style Selector="Border.dirrow">
       <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
       <Setter Property="BorderThickness" Value="0,0,0,1" />
-      <Setter Property="Padding" Value="16,11" />
+      <Setter Property="Padding" Value="20,12" />
     </Style>
+    <!-- Mockup .dir-ico: 34x34, radius 10, accent-soft on accent-ink. -->
     <Style Selector="Border.drivechip">
       <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+      <Setter Property="CornerRadius" Value="10" />
     </Style>
     <Style Selector="Border.drivechip TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    </Style>
+    <!-- Mockup .btn-sm: 6px 11px, 12.5px, radius 9. .soft is the folder card's own
+         "添加目录" (mockup .btn-soft). -->
+    <Style Selector="Button.dirbtn">
+      <Setter Property="Padding" Value="11,6" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="CornerRadius" Value="9" />
+    </Style>
+    <Style Selector="Button.dirbtn.soft">
+      <Setter Property="Background" Value="{actipro:ThemeResource Container2BackgroundBrush}" />
     </Style>
     <Style Selector="Border.offchip">
       <Setter Property="Background" Value="{DynamicResource VdfMutedSoftBrush}" />
@@ -103,20 +117,26 @@
               VerticalAlignment="Center"
               Click="OnAdvancedSettingsClick"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AdvancedSettings]}" />
+          <!-- Mockup .btn-primary: the soft accent surface with the dark accent ink on
+               top, and the mockup's stroked triangle. The filled dark button it replaces
+               inverted the mockup's contrast. -->
           <Button
               x:Name="ScanButton"
-              Classes="solid"
-              FontSize="14"
-              FontWeight="SemiBold"
-              Padding="22,9"
+              FontSize="13.5"
+              FontWeight="620"
+              Padding="16,9"
+              CornerRadius="11"
               VerticalAlignment="Center"
-              Background="{actipro:ThemeResource ControlBackgroundBrushSolidAccent}"
+              Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
               Foreground="{DynamicResource VdfOnAccentBrush}"
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}"
               Command="{Binding StartScanCommand}"
               CommandParameter="FullScan">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <TextBlock Text="▶" FontSize="12" VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="7">
+              <Path Width="15" Height="15" Stretch="Uniform"
+                    Stroke="{DynamicResource VdfOnAccentBrush}" StrokeThickness="2.2"
+                    StrokeLineCap="Round" StrokeJoin="Round"
+                    Data="M 6 4 L 19 12 L 6 20 Z" />
               <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}" />
             </StackPanel>
           </Button>
@@ -139,7 +159,7 @@
               <DockPanel LastChildFill="True">
                 <Button
                     DockPanel.Dock="Right"
-                    FontSize="12.5"
+                    Classes="dirbtn soft"
                     VerticalAlignment="Center"
                     Command="{Binding AddIncludesToListCommand}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddDir]}" />
@@ -161,51 +181,52 @@
                   <Border Classes="dirrow" IsVisible="{Binding !IsExcluded}"
                           Opacity="{Binding IsDisabled, Converter={StaticResource DisabledOpacityConverter}}">
                     <DockPanel LastChildFill="True">
-                      <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="7"
+                      <Border DockPanel.Dock="Left" Width="34" Height="34"
                               Classes="drivechip">
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
                                    FontWeight="Bold" FontSize="12" Text="{Binding DriveLabel}" />
                       </Border>
-                      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6"
-                                  VerticalAlignment="Center" Margin="8,0,0,0">
+                      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8"
+                                  VerticalAlignment="Center" Margin="12,0,0,0">
                         <Button
-                            FontSize="12"
-                            Padding="8,4"
+                            Classes="dirbtn"
                             IsVisible="{Binding ShowCountNow}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).CountFolderNowCommand}"
                             CommandParameter="{Binding}"
                             Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.CountNow]}" />
                         <Button
-                            FontSize="12"
-                            Padding="8,4"
+                            Classes="dirbtn"
                             IsVisible="{Binding !IsDisabled}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleSetupFolderCommand}"
                             CommandParameter="{Binding}"
                             Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Disable]}" />
                         <Button
-                            FontSize="12"
-                            Padding="8,4"
+                            Classes="dirbtn"
                             IsVisible="{Binding IsDisabled}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleSetupFolderCommand}"
                             CommandParameter="{Binding}"
                             Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Enable]}" />
                         <Button
-                            FontSize="12"
-                            Padding="8,4"
+                            Classes="dirbtn"
                             Foreground="{DynamicResource VdfDangerBrush}"
+                            BorderBrush="{DynamicResource VdfDangerBrush}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RemoveSetupFolderCommand}"
                             CommandParameter="{Binding}"
                             ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Setup.RemoveFolder]}"
                             Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Remove]}" />
                       </StackPanel>
-                      <StackPanel Margin="10,0,6,0" VerticalAlignment="Center" Spacing="1">
-                        <TextBlock FontSize="13.5" FontWeight="SemiBold"
+                      <StackPanel Margin="12,0,0,0" VerticalAlignment="Center" Spacing="1">
+                        <!-- Monospace, as in the mockup: paths are compared character by
+                             character, and a proportional face hides where two of them
+                             stop matching. -->
+                        <TextBlock FontSize="13" FontWeight="550"
+                                   FontFamily="Consolas, 'Cascadia Mono', 'Courier New', monospace"
                                    TextTrimming="CharacterEllipsis"
                                    Text="{Binding Path}" ToolTip.Tip="{Binding Path}" />
                         <StackPanel Orientation="Horizontal" Spacing="6">
                           <ProgressBar Width="40" Height="4" IsIndeterminate="True"
                                        IsVisible="{Binding IsCounting}" VerticalAlignment="Center" />
-                          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextSecondaryOpacity}" Text="{Binding MetaText}" />
+                          <TextBlock FontSize="11.5" Opacity="{DynamicResource VdfTextMutedOpacity}" Text="{Binding MetaText}" />
                           <Border Classes="offchip" VerticalAlignment="Center" IsVisible="{Binding IsDisabled}">
                             <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.DisabledChip]}" />
                           </Border>
@@ -313,25 +334,25 @@
             </views:SettingRow>
 
             <!-- mockup .slider-box -->
-            <StackPanel Margin="16,14,16,10" Spacing="8">
-              <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <TextBlock FontSize="20" FontWeight="Bold"
+            <StackPanel Margin="20,18,20,10" Spacing="4">
+              <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock FontSize="24" FontWeight="Bold" LetterSpacing="-0.6"
                            Foreground="{DynamicResource VdfAccentTextBrush}"
                            Text="{Binding SimilarityThreshold, StringFormat=\{0:0.#\}}" />
                 <TextBlock FontSize="13" VerticalAlignment="Center"
                            Opacity="{DynamicResource VdfTextDim70Opacity}"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Threshold]}" />
               </StackPanel>
-              <Slider Minimum="70" Maximum="100" TickFrequency="0.5" IsSnapToTickEnabled="True"
-                      Value="{Binding SimilarityThreshold}" />
+              <Slider Classes="mock" Margin="0,16,0,10" Minimum="70" Maximum="100" TickFrequency="0.5"
+                      IsSnapToTickEnabled="True" Value="{Binding SimilarityThreshold}" />
               <Grid ColumnDefinitions="*,*,*">
-                <TextBlock Grid.Column="0" FontSize="11.5" HorizontalAlignment="Left"
+                <TextBlock Grid.Column="0" FontSize="11" HorizontalAlignment="Left"
                            Opacity="{DynamicResource VdfTextFaintOpacity}"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Scale.Loose]}" />
-                <TextBlock Grid.Column="1" FontSize="11.5" HorizontalAlignment="Center"
+                <TextBlock Grid.Column="1" FontSize="11" HorizontalAlignment="Center"
                            Opacity="{DynamicResource VdfTextFaintOpacity}"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Scale.Standard]}" />
-                <TextBlock Grid.Column="2" FontSize="11.5" HorizontalAlignment="Right"
+                <TextBlock Grid.Column="2" FontSize="11" HorizontalAlignment="Right"
                            Opacity="{DynamicResource VdfTextFaintOpacity}"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Scale.Strict]}" />
               </Grid>

@@ -65,6 +65,16 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#C9D6E3" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
+                    <!-- Slider (mockup .slider-track/.slider-fill/.slider-knob): the rest of
+                         the track is the sunken surface, the filled part fades from a
+                         near-white accent to the accent-active tone, and the knob is a
+                         white disc ringed in that same accent-active tone. -->
+                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#EEF6FD" />
+                    <LinearGradientBrush x:Key="VdfSliderFillBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#DBEFFF" Offset="0" />
+                        <GradientStop Color="#A8D3F7" Offset="1" />
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#A8D3F7" />
                     <!-- Verdict band on the results page (mockup .verdict): the one surface
                          that states what the scan found, so it sits a step above the page in
                          every theme instead of blending into it. -->
@@ -134,6 +144,13 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#E9F4FF" />
+                    <!-- Slider: same roles as the light theme, on the dark sunken tone. -->
+                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#101A25" />
+                    <LinearGradientBrush x:Key="VdfSliderFillBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#DBEFFF" Offset="0" />
+                        <GradientStop Color="#B6DCF7" Offset="1" />
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#B6DCF7" />
                     <!-- Verdict band on the results page (mockup .verdict): the one surface
                          that states what the scan found, so it sits a step above the page in
                          every theme instead of blending into it. -->
@@ -186,6 +203,14 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#2E6E9E" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
+                    <!-- Slider: the contrast themes want a hard step between the filled
+                         part and the rest, so the gradient starts deeper and ends solid. -->
+                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#C8CDD4" />
+                    <LinearGradientBrush x:Key="VdfSliderFillBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#9CC9E9" Offset="0" />
+                        <GradientStop Color="#2E6E9E" Offset="1" />
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#2E6E9E" />
                     <!-- Verdict band on the results page (mockup .verdict): the one surface
                          that states what the scan found, so it sits a step above the page in
                          every theme instead of blending into it. -->
@@ -263,6 +288,13 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#4A4F5A" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#14507A" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
+                    <!-- Slider: same hard step, dark variant. -->
+                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#3C4C60" />
+                    <LinearGradientBrush x:Key="VdfSliderFillBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+                        <GradientStop Color="#7FB5DC" Offset="0" />
+                        <GradientStop Color="#6FB1E8" Offset="1" />
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#6FB1E8" />
                     <!-- Verdict band on the results page (mockup .verdict): the one surface
                          that states what the scan found, so it sits a step above the page in
                          every theme instead of blending into it. -->

@@ -13,15 +13,17 @@
     <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
     <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="10" />
+    <!-- The mockup's .card radius (the r-lg token), not the theme's smaller default:
+         the cards are the page's main shapes and read as sheets at this size. -->
+    <Setter Property="CornerRadius" Value="20" />
     <Setter Property="Padding" Value="0,6" />
     <Setter Property="Margin" Value="0,0,0,14" />
   </Style>
 
   <!-- Card header: title + optional description on the left, an action on the right
-       (mockup .card-head). Rows inside the card already carry their own padding. -->
+       (mockup .card-head: 17px 20px). Rows inside the card carry their own padding. -->
   <Style Selector="Border.cardhead">
-    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="Padding" Value="20,17" />
     <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
   </Style>
@@ -45,11 +47,11 @@
                full width (mockup .row + .row:hover). -->
           <Border Name="RowSurface"
                   Margin="4,0"
-                  Padding="16,13"
+                  Padding="20,15"
                   Background="Transparent"
                   CornerRadius="8">
             <Grid ColumnDefinitions="*,Auto">
-              <StackPanel Grid.Column="0" Margin="0,0,18,0" Spacing="2" VerticalAlignment="Center">
+              <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="2" VerticalAlignment="Center">
                 <TextBlock FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
                            Text="{TemplateBinding Title}" />
                 <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" MaxWidth="470"
@@ -124,5 +126,58 @@
   <Style Selector="NumericUpDown.stepper">
     <Setter Property="Width" Value="150" />
     <Setter Property="HorizontalAlignment" Value="Right" />
+  </Style>
+
+  <!-- The mockup's slider (page 1, 匹配强度): a 6px sunken track, the filled part a
+       soft accent gradient that ends at the knob, and a 20px white knob ringed in
+       the accent-active tone. The theme's default slider is a dark grey line with
+       a small dark dot, which is the single loudest detail miss on the page.
+       Track fills DecreaseButton on the left of the knob and IncreaseButton on
+       the right, so the gradient border is the fill and the flat border behind
+       it is the rest of the track. -->
+  <Style Selector="Slider.mock">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel VerticalAlignment="Center">
+          <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
+                  Background="{DynamicResource VdfSliderTrackBrush}" />
+          <Track x:Name="PART_Track"
+                 Minimum="{TemplateBinding Minimum}"
+                 Maximum="{TemplateBinding Maximum}"
+                 Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+            <Track.DecreaseButton>
+              <RepeatButton Focusable="False" IsTabStop="False">
+                <RepeatButton.Template>
+                  <ControlTemplate>
+                    <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
+                            Background="{DynamicResource VdfSliderFillBrush}" />
+                  </ControlTemplate>
+                </RepeatButton.Template>
+              </RepeatButton>
+            </Track.DecreaseButton>
+            <Track.IncreaseButton>
+              <RepeatButton Focusable="False" IsTabStop="False">
+                <RepeatButton.Template>
+                  <ControlTemplate>
+                    <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
+                            Background="Transparent" />
+                  </ControlTemplate>
+                </RepeatButton.Template>
+              </RepeatButton>
+            </Track.IncreaseButton>
+            <Thumb Width="20" Height="20" Focusable="False">
+              <Thumb.Template>
+                <ControlTemplate>
+                  <Ellipse Fill="{DynamicResource VdfSwitchKnobBrush}"
+                           Stroke="{DynamicResource VdfSliderKnobBorderBrush}"
+                           StrokeThickness="2" />
+                </ControlTemplate>
+              </Thumb.Template>
+            </Thumb>
+          </Track>
+        </Panel>
+      </ControlTemplate>
+    </Setter>
   </Style>
 </Styles>
