@@ -194,6 +194,7 @@ namespace VDF.GUI.ViewModels {
 				header.Title = string.Format(request.Formats.GroupTitle, header.GroupNumber);
 				header.Summary = BuildSummary(header, request.Formats);
 				flat.Add(header);
+				int groupStart = flat.Count;
 				foreach (var row in header.Rows) {
 					row.AccessibleName = ResultsAccessibleText.DescribeItem(row.Item.ItemInfo, row.IsBest,
 						isTombstone(row.Item), isOffline(row.Item), request.SpeechWords, System.Globalization.CultureInfo.CurrentCulture);
@@ -204,6 +205,16 @@ namespace VDF.GUI.ViewModels {
 							flat.Add(new ResultsDetailsRow(row, request.SpeechWords));
 					}
 				}
+				// Whichever entry landed last for this group closes its card in the view
+				// (bottom border + bottom corners). Collapsed groups close on the header.
+				if (flat.Count > groupStart) {
+					if (flat[^1] is ResultsItemRow lastItem)
+						lastItem.IsGroupEnd = true;
+					else if (flat[^1] is ResultsDetailsRow lastDetails)
+						lastDetails.IsGroupEnd = true;
+				}
+				else
+					header.IsGroupEnd = true;
 			}
 
 			return new ResultsBuildResult { Rows = flat, Groups = headers, HasPartialClips = hasPartialClips };

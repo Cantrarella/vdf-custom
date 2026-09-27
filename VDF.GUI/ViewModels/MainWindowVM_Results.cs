@@ -131,6 +131,49 @@ namespace VDF.GUI.ViewModels {
 			SubtitlesLine = App.Lang["Results.Details.SubtitlesLine"],
 		};
 
+		// ---- Toolbar state the mockup's results page needs ------------------------
+
+		/// <summary>Advanced filter strip under the toolbar: off until asked for.</summary>
+		bool _ResultsAdvancedFiltersOpen;
+		public bool ResultsAdvancedFiltersOpen {
+			get => _ResultsAdvancedFiltersOpen;
+			set => this.RaiseAndSetIfChanged(ref _ResultsAdvancedFiltersOpen, value);
+		}
+
+		/// <summary>Groups under the current results; the mockup shows it next to "all".</summary>
+		public int ResultsAllGroupCount => TotalDuplicateGroups;
+		/// <summary>Groups worth a second look — the same figure as the verdict band's badge.</summary>
+		public int ResultsReviewGroupCount => GroupsNeedingReview;
+		/// <summary>The rest: confirmed byte-identical, no AI vote needed.</summary>
+		public int ResultsConfidentGroupCount => Math.Max(0, TotalDuplicateGroups - GroupsNeedingReview);
+
+		/// <summary>
+		/// Sort by name, for the mockup's single sort button whose menu lists every option.
+		/// Unknown names are ignored rather than resetting the order.
+		/// </summary>
+		public ReactiveCommand<string, Unit> SortResultsByCommand => ReactiveCommand.Create<string>(name => {
+			// "Toggle" is the menu's last entry: it flips the direction without touching
+			// the order, which the single-button mockup control has no room to carry.
+			if (string.Equals(name, "Toggle", StringComparison.Ordinal)) {
+				SettingsFile.Instance.ResultsSortDescending = !SettingsFile.Instance.ResultsSortDescending;
+				this.RaisePropertyChanged(nameof(ResultsSortDescending));
+				RebuildResultsList();
+				return;
+			}
+			if (!Enum.TryParse<ResultsSortMode>(name, out var mode)) return;
+			if (mode == SettingsFile.Instance.ResultsSortMode) {
+				// Pressing the mode that is already active flips the direction: the mockup
+				// has one control for both and no room for a second one.
+				SettingsFile.Instance.ResultsSortDescending = !SettingsFile.Instance.ResultsSortDescending;
+				this.RaisePropertyChanged(nameof(ResultsSortDescending));
+			}
+			else {
+				SettingsFile.Instance.ResultsSortMode = mode;
+				this.RaisePropertyChanged(nameof(SelectedResultsSort));
+			}
+			RebuildResultsList();
+		});
+
 		/// <summary>Rebuilds the flattened list from the current duplicates, filter and sort.</summary>
 		internal void RebuildResultsList() {
 			ResultsScrollAnchor.Capture? anchor = ResultsAnchorProvider?.Invoke();
@@ -139,6 +182,7 @@ namespace VDF.GUI.ViewModels {
 			int focusedIndex = focusedRow == null ? -1 : ResultsRows.IndexOf(focusedRow);
 			RebuildGroupsWithOneFileLeft();
 			RebuildGroupsWithAiMatch();
+			RebuildFacetGroups();
 			ApplySizePreferenceIfChanged();
 			var result = ResultsListBuilder.Build(new ResultsBuildRequest {
 				Items = Duplicates.ToList(),

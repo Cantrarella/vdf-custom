@@ -37,6 +37,7 @@ namespace VDF.GUI.ViewModels {
 				this.RaisePropertyChanged(nameof(IsShellSettingsVisible));
 				this.RaisePropertyChanged(nameof(IsShellLogVisible));
 				RaiseShellNavChanged();
+				RaiseTopbarChanged();
 				// The settings page owns the same theme choice; returning to the rail has
 				// to show whatever it changed while we were away.
 				RaiseThemeChanged();
@@ -81,7 +82,9 @@ namespace VDF.GUI.ViewModels {
 		}
 
 		public bool ShowRailLabels => !IsRailCollapsed;
-		public GridLength RailColumnWidth => new(IsRailCollapsed ? 62 : 216);
+		/// <summary>The mockup's two rail widths: 248px expanded, 74px collapsed
+		/// (.app / .app.rail-min).</summary>
+		public GridLength RailColumnWidth => new(IsRailCollapsed ? 74 : 248);
 		public string RailToggleTooltip => App.Lang[IsRailCollapsed ? "Rail.Expand" : "Rail.Collapse"];
 		public ReactiveCommand<Unit, Unit> ToggleRailCommand => ReactiveCommand.Create(() => {
 			IsRailCollapsed = !IsRailCollapsed;
@@ -123,7 +126,10 @@ namespace VDF.GUI.ViewModels {
 		/// already showing clears the value first, so the change is raised every time.</summary>
 		public string? RequestedSettingsSection {
 			get => _RequestedSettingsSection;
-			set => this.RaiseAndSetIfChanged(ref _RequestedSettingsSection, value);
+			set {
+				this.RaiseAndSetIfChanged(ref _RequestedSettingsSection, value);
+				RaiseTopbarChanged(); // the topbar names the section that was asked for
+			}
 		}
 
 		public ReactiveCommand<string, Unit> ShowSettingsSectionCommand => ReactiveCommand.Create<string>(section => {
@@ -152,6 +158,46 @@ namespace VDF.GUI.ViewModels {
 			this.RaisePropertyChanged(nameof(IsLightTheme));
 			this.RaisePropertyChanged(nameof(IsDarkTheme));
 			this.RaisePropertyChanged(nameof(SelectedThemeModeOption));
+		}
+
+		// ---------- topbar (mockup .topbar) ----------
+
+		/// <summary>The mockup's page header: a 20px title with a quieter line under it
+		/// saying what this screen is for. It follows the shell view — and, inside the
+		/// scanner, the scan state — so the header never disagrees with what is shown.
+		/// The settings page renames itself per section, as the mockup's setMeta does.</summary>
+		public string TopbarTitle => ActiveShellView switch {
+			ShellView.Settings => App.Lang[$"Topbar.Settings.{SettingsSectionKey}"],
+			ShellView.Log => App.Lang["Topbar.Log"],
+			_ => IsScanningState ? App.Lang["Topbar.Scanning"]
+				: IsReviewState ? App.Lang["Topbar.Results"]
+				: App.Lang["Topbar.Setup"],
+		};
+
+		public string TopbarSub => ActiveShellView switch {
+			ShellView.Settings => App.Lang[$"Topbar.Settings.{SettingsSectionKey}.Sub"],
+			ShellView.Log => App.Lang["Topbar.Log.Sub"],
+			_ => IsScanningState ? App.Lang["Topbar.Scanning.Sub"]
+				: IsReviewState ? App.Lang["Topbar.Results.Sub"]
+				: App.Lang["Topbar.Setup.Sub"],
+		};
+
+		/// <summary>Which settings section the topbar names. With no request pending it
+		/// falls back to the page's own title — the section the settings view opens on.</summary>
+		string SettingsSectionKey => RequestedSettingsSection switch {
+			"Scanning" => "Scanning",
+			"Matching" => "Matching",
+			"PartialClips" => "PartialClips",
+			"Files" => "Files",
+			"Database" => "Database",
+			"Processing" => "Processing",
+			"Appearance" => "Appearance",
+			_ => "Root",
+		};
+
+		void RaiseTopbarChanged() {
+			this.RaisePropertyChanged(nameof(TopbarTitle));
+			this.RaisePropertyChanged(nameof(TopbarSub));
 		}
 	}
 }

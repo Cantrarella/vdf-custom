@@ -16,6 +16,7 @@
 
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using Avalonia.Collections;
 using ReactiveUI;
 using VDF.GUI.Data;
@@ -184,6 +185,78 @@ namespace VDF.GUI.ViewModels {
 			}
 		}
 
+		/// <summary>
+		/// Number of groups written off with "not a match": those are gone from the results
+		/// but kept in the blacklist, where the user can bring them back. The mockup's
+		/// "ignored" facet points there instead of filtering a list they were removed from.
+		/// </summary>
+		public int BlacklistedGroupCount => GroupBlacklist.Count;
+
+		// ---- Results facets (mockup .filters) -------------------------------------
+		// The mockup narrows its toolbar down to four counts: everything, the groups worth
+		// a look before deleting, the groups that need none, and the ignored ones. VDF has
+		// always answered the same question with a row of independent chips; those moved to
+		// the advanced strip, and these four became a mutually exclusive facet so the numbers
+		// can be shown next to each label.
+		ResultsFilterFacet _ResultsFacet = ResultsFilterFacet.All;
+		public ResultsFilterFacet ResultsFacet {
+			get => _ResultsFacet;
+			set {
+				if (value == _ResultsFacet) return;
+				this.RaiseAndSetIfChanged(ref _ResultsFacet, value);
+				this.RaisePropertyChanged(nameof(IsFacetAll));
+				this.RaisePropertyChanged(nameof(IsFacetReview));
+				this.RaisePropertyChanged(nameof(IsFacetConfident));
+				RebuildFacetGroups();
+				RefreshResultsView();
+			}
+		}
+
+		/// <summary>Setting it through a command keeps the view from inventing enum values.</summary>
+		public ReactiveCommand<string, Unit> SetResultsFacetCommand => ReactiveCommand.Create<string>(name => {
+			ResultsFacet = name switch {
+				"Review" => ResultsFilterFacet.Review,
+				"Confident" => ResultsFilterFacet.Confident,
+				_ => ResultsFilterFacet.All,
+			};
+		});
+
+		/// <summary>Facet flags for the buttons' active states.</summary>
+		public bool IsFacetAll => ResultsFacet == ResultsFilterFacet.All;
+		public bool IsFacetReview => ResultsFacet == ResultsFilterFacet.Review;
+		public bool IsFacetConfident => ResultsFacet == ResultsFilterFacet.Confident;
+
+		HashSet<Guid> _facetGroups = new();
+
+		/// <summary>
+		/// Recomputed on every list rebuild: deleting files can push a group across the
+		/// 100 % line, and an AI-only pair becomes a normal one once it is confirmed.
+		/// </summary>
+		void RebuildFacetGroups() {
+			_facetGroups = ResultsFacet switch {
+				ResultsFilterFacet.Review => GroupNeedsReview(Duplicates),
+				ResultsFilterFacet.Confident => GroupIsConfident(Duplicates),
+				_ => new HashSet<Guid>(),
+			};
+		}
+
+		/// <summary>
+		/// Groups a second look is worth: nothing in them reaches the byte-identical 100 %
+		/// line, or the AI embedding pass had to suggest the pair. Same two rules
+		/// <c>RefreshGroupStats</c> counts for the verdict band, so the badge and the facet
+		/// number can never disagree.
+		/// </summary>
+		internal static HashSet<Guid> GroupNeedsReview(IEnumerable<DuplicateItemVM> items) =>
+			items.GroupBy(d => d.ItemInfo.GroupId)
+				.Where(g => g.Max(d => d.ItemInfo.Similarity) < 100f || g.Any(d => d.ItemInfo.IsAiMatched))
+				.Select(g => g.Key)
+				.ToHashSet();
+
+		internal static HashSet<Guid> GroupIsConfident(IEnumerable<DuplicateItemVM> items) {
+			var review = GroupNeedsReview(items);
+			return items.Select(d => d.ItemInfo.GroupId).Where(id => !review.Contains(id)).ToHashSet();
+		}
+
 		/// <summary>The results filter; the view exposes it as always-active toolbar chips.</summary>
 		internal bool DuplicatesFilterCore(DuplicateItemVM data) {
 			bool ok = true;
@@ -207,8 +280,20 @@ namespace VDF.GUI.ViewModels {
 			if (ok && FilterOnlyGroupsWithAiMatches)
 				ok = _groupsWithAiMatch.Contains(data.ItemInfo.GroupId);
 
+			if (ok && ResultsFacet != ResultsFilterFacet.All)
+				ok = _facetGroups.Contains(data.ItemInfo.GroupId);
+
 			data.IsVisibleInFilter = ok;
 			return ok;
 		}
+	}
+
+	/// <summary>The mockup's results facets: one of the four is always active.</summary>
+	public enum ResultsFilterFacet {
+		All,
+		/// <summary>Below 100 % similarity, or AI-matched: look before deleting.</summary>
+		Review,
+		/// <summary>Every group the confidence check passed without help.</summary>
+		Confident,
 	}
 }

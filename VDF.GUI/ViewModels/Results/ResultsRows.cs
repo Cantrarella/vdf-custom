@@ -55,6 +55,12 @@ namespace VDF.GUI.ViewModels {
 		/// </summary>
 		public bool HasAiMatches { get; init; }
 
+		/// <summary>
+		/// This header is the group's last entry in the flattened list because the group is
+		/// collapsed, so it also closes the group card at the bottom.
+		/// </summary>
+		public bool IsGroupEnd { get; internal set; }
+
 		/// <summary>Localized "Group N" title, set by the builder from the active formats.</summary>
 		public string Title { get; internal set; } = string.Empty;
 		/// <summary>Localized "3 files · 1.9 GB · save up to 1.2 GB" line, set by the builder.</summary>
@@ -105,6 +111,13 @@ namespace VDF.GUI.ViewModels {
 		public bool SameBitRate { get; internal set; }
 		public bool SameAudioBitRate { get; internal set; }
 
+		/// <summary>
+		/// This row is the last entry of its group in the flattened list (a member row or
+		/// the details panel after it), so the view closes the group card here: bottom
+		/// border and the card's bottom corner radius.
+		/// </summary>
+		public bool IsGroupEnd { get; internal set; }
+
 		public bool DurationHi => !SameDuration && Item.ItemInfo.IsBestDuration;
 		public bool DurationLo => !SameDuration && !Item.ItemInfo.IsBestDuration;
 		public bool FrameSizeHi => !SameFrameSize && Item.ItemInfo.IsBestFrameSize;
@@ -150,6 +163,8 @@ namespace VDF.GUI.ViewModels {
 		public bool HasSubtitles => SubtitlesText.Length > 0;
 		public string AccessibleName => ResultsAccessibleText.DescribeDetails(this);
 		public bool IsImage => Item.ItemInfo.IsImage;
+		/// <summary>Closing edge of the group card when this panel ends the group.</summary>
+		public bool IsGroupEnd { get; internal set; }
 	}
 
 	/// <summary>

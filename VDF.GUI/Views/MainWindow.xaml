@@ -47,11 +47,45 @@
         <mvvm:ShowSkeletonConverter x:Key="ShowSkeletonConverter" />
     </Window.Resources>
     <Window.Styles>
-        <!-- Avalonia 12 draws managed caption buttons when the client area is extended
-             (ExtendClientAreaChromeHints/PreferSystemChrome no longer exists). Its button
-             set includes a full-screen toggle Windows chrome never had. Hiding it via
-             Button#PART_FullScreenButton works but leaves the remaining buttons offset
-             from the window edge, which looks worse — so the button stays for now. -->
+        <!-- ===== Window caption buttons (the window's own top-right corner) =====
+             Avalonia 12 draws managed caption buttons when the client area is extended
+             (ExtendClientAreaChromeHints/PreferSystemChrome no longer exists), and its set
+             carries a full-screen toggle Windows chrome never had. Left alone they read as
+             grey slabs over the page, so they are redrawn as the theme's own quiet 45x31
+             plates: transparent, dimmed ink, soft accent under the pointer, red on close.
+             The full-screen button is collapsed to nothing, which is what keeps the other
+             three flush with the window edge.
+             NOTE: styling these through ":pointerover /template/" selectors breaks the
+             window's own template attach (the window never shows), so the hover states
+             ride on the button's own properties instead. -->
+        <Style Selector="Button#PART_MinimizeButton, Button#PART_RestoreButton, Button#PART_CloseButton">
+            <Setter Property="Width" Value="45" />
+            <Setter Property="Height" Value="31" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Opacity" Value="{DynamicResource VdfTextSecondaryOpacity}" />
+        </Style>
+        <Style Selector="Button#PART_MinimizeButton:pointerover, Button#PART_RestoreButton:pointerover">
+            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Button#PART_CloseButton:pointerover">
+            <Setter Property="Background" Value="{DynamicResource VdfDangerSolidBrush}" />
+            <!-- White on red in every theme: the on-accent ink is dark in the dark theme,
+                 right for a light accent tile and unreadable on red. -->
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Button#PART_FullScreenButton">
+            <Setter Property="IsVisible" Value="False" />
+            <Setter Property="Width" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
         <Style Selector="Button.hyperlink">
             <Setter Property="Template">
                 <ControlTemplate>
@@ -67,94 +101,137 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
-        <!-- titlebar nav links (mockup .navlink: quiet text, accent-soft pill on hover) -->
+        <!-- ===== Topbar (mockup .topbar) =====
+             Title 20px/660 with a 12.5px muted line under it; the actions sit at the
+             right edge of the same strip. -->
+        <Style Selector="TextBlock.toptitle">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="660" />
+            <Setter Property="LetterSpacing" Value="-0.2" />
+        </Style>
+        <Style Selector="TextBlock.topsub">
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Margin" Value="0,1,0,0" />
+            <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
+        </Style>
+        <!-- Topbar actions (mockup .btn-ghost.btn-sm): the outlined small button. Plain
+             text links used to float over the page here; the mockup gives secondary
+             commands a border so they do not read as part of the title. -->
         <Style Selector="Button.navlink">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="10,3" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Padding" Value="11,6" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="FontWeight" Value="550" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
         </Style>
         <Style Selector="Button.navlink:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
         </Style>
         <Style Selector="Button.navlink:pointerover">
-            <Setter Property="Opacity" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfVerdictBorderBrush}" />
         </Style>
         <!-- ===== Sidebar rail (mockup .rail): brand block on top, nav items below.
              The window moves from a single scanner pane to "rail + content", which is
              the shell the user signed off on in the HTML mockup. ===== -->
+        <!-- Mockup .nav-item: 9px 12px, radius 11, 13.5px, 10px between icon and label.
+             The 1px transparent border is what the active state lights up as the
+             mockup's inset ring; without it the item would shift by a pixel when
+             it becomes the current one. -->
         <Style Selector="Button.railitem">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="11,9" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="Padding" Value="12,9" />
             <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="FontWeight" Value="500" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
         </Style>
         <Style Selector="Button.railitem:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
         </Style>
         <Style Selector="Button.railitem:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
-        <!-- The item of the view currently shown: soft accent pill plus full-strength text. -->
+        <!-- The item of the view currently shown: the mockup's accent-soft fill, the
+             inset ring in the accent at 70%, and the accent ink for the label. -->
         <Style Selector="Button.railitem.active /template/ ContentPresenter">
             <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
         </Style>
         <Style Selector="Button.railitem.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfVerdictBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+            <Setter Property="FontWeight" Value="600" />
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style Selector="Button.railitem Path">
             <Setter Property="Stroke" Value="{DynamicResource VdfAccentTextBrush}" />
+            <Setter Property="Opacity" Value="0.85" />
         </Style>
+        <!-- Mockup .nav-label: 11px, 600, wide tracking, and the section's own 10px
+             gap above it (mockup .nav-group). -->
         <Style Selector="TextBlock.railgroup">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Margin" Value="12,14,0,6" />
+            <Setter Property="LetterSpacing" Value="0.9" />
+            <Setter Property="Margin" Value="12,10,0,6" />
             <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
         </Style>
-        <!-- Brand block: the whole block is the collapse toggle (mockup .brand). -->
+        <!-- Brand block: the whole block is the collapse toggle (mockup .brand),
+             padding 6px 10px 18px with an 11px gap to the wordmark. -->
         <Style Selector="Button.railbrand">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="6" />
+            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="Padding" Value="10,6,10,18" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
         <Style Selector="Button.railbrand:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
         </Style>
-        <!-- Settings children: indented, one size down (mockup .nav-sub-item). -->
+        <!-- Settings children: indented, one size down (mockup .nav-sub-item). The 22px
+             left padding is where the mockup's ::before dot sits; the 14px gap after it
+             lands the label on the mockup's 40px. -->
         <Style Selector="Button.railsub">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="26,6" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Padding" Value="22,7,10,7" />
             <Setter Property="FontSize" Value="12.5" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
         </Style>
         <Style Selector="Button.railsub:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
         </Style>
         <Style Selector="Button.railsub:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
-        <!-- Theme segment (mockup .seg): the chosen half carries the accent pill. -->
+        <!-- Mockup .nav-sub-item::before: the 4px dot that marks these as children of
+             "设置" rather than top-level entries. -->
+        <Style Selector="Border.railsubdot">
+            <Setter Property="Width" Value="4" />
+            <Setter Property="Height" Value="4" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Background" Value="{actipro:ThemeResource Container3BorderBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <!-- Theme segment (mockup .seg): a sunken track holding two halves, and the
+             chosen half is the raised card — not an accent pill, which is what the
+             mockup's .seg button.on shows. -->
         <Style Selector="Button.railseg">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="0,6" />
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="0,7" />
+            <Setter Property="FontSize" Value="12.5" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
         </Style>
@@ -162,14 +239,14 @@
             <Setter Property="Stroke" Value="{DynamicResource VdfAccentTextBrush}" />
         </Style>
         <Style Selector="Button.railseg.on /template/ ContentPresenter">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
         </Style>
         <Style Selector="Button.railseg.on">
             <Setter Property="Opacity" Value="1" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style Selector="Button.railseg:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
         </Style>
         <Style Selector="Button.railseg:pointerover">
             <Setter Property="Opacity" Value="1" />
@@ -210,131 +287,16 @@
                 HorizontalAlignment="Center"
                 IsHitTestVisible="false"
                 Text="{Binding #MainWindow.Title}" />
-            <!-- Titlebar nav links (mockup .navlink): right-aligned before the caption
-                 buttons; contextual per shell view. The strip only holds the buttons, so
-                 the rest of the titlebar stays a drag region. -->
-            <StackPanel
-                x:Name="TitlebarNav"
-                Height="30"
-                Margin="0,0,190,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Orientation="Horizontal"
-                Spacing="2">
-                <!-- "New scan" returns to the Setup screen (discarding the shown results)
-                     instead of immediately rescanning with the current settings. -->
-                <Button
-                    Classes="navlink"
-                    Command="{Binding NewScanCommand}"
-                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Shell.NewScan]}"
-                    IsVisible="{Binding ShowNavNewScan}" />
-                <Button
-                    Classes="navlink"
-                    Command="{Binding ShowShellViewCommand}"
-                    CommandParameter="Main"
-                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Shell.BackToResults]}"
-                    IsVisible="{Binding ShowNavBackToResults}" />
-                <!-- Log / Settings moved into the sidebar rail: keeping them here as well
-                     duplicated the navigation. "New scan" and "Back to results" stay —
-                     they are workflow links, not top-level navigation. -->
-                <!-- ⋯ overflow (stage 7): home of everything stateless — database
-                     maintenance, blacklist, About — plus a contextual scan-results
-                     section in the Review state. Replaces the legacy menu bar. -->
-                <Button
-                    Classes="navlink"
-                    FontWeight="Bold"
-                    Content="⋯"
-                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Shell.MoreMenu]}"
-                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Shell.MoreMenu]}">
-                    <Button.Flyout>
-                        <MenuFlyout Placement="BottomEdgeAlignedRight">
-                            <!-- Scan results (Review only) -->
-                            <MenuItem
-                                Command="{Binding StartScanCommand}"
-                                CommandParameter="CompareOnly"
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Command.Rescan]}"
-                                ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tooltip.Rescan]}"
-                                IsEnabled="{Binding IsReadyToCompare}"
-                                IsVisible="{Binding IsReviewState}" />
-                            <MenuItem
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults]}"
-                                IsVisible="{Binding !!Duplicates.Count}">
-                                <MenuItem
-                                    Command="{Binding ExportScanResultsCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.Json]}" />
-                                <MenuItem
-                                    Command="{Binding ExportScanResultsPrettyCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.JsonPretty]}" />
-                                <MenuItem
-                                    Command="{Binding ExportScanResultsToFileCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.WithThumbnails]}" />
-                                <MenuItem
-                                    Command="{Binding ExportScanResultsToCsvCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.Csv]}" />
-                            </MenuItem>
-                            <MenuItem
-                                Command="{Binding ImportScanResultsFromFileCommand}"
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ImportScanResults]}"
-                                IsEnabled="{Binding !IsScanning}" />
-                            <Separator />
-                            <!-- Database maintenance: disabled while a scan runs (same rule the
-                                 old menu enforced by hiding the submenu) -->
-                            <MenuItem
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.Database]}"
-                                IsEnabled="{Binding !IsScanning}">
-                                <MenuItem
-                                    Command="{Binding CleanDatabaseCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.Cleanup]}"
-                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tooltip.CleanDatabase]}" />
-                                <MenuItem
-                                    Command="{Binding PruneGhostEntriesCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.PruneGhostEntries]}"
-                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tooltip.PruneGhostEntries]}" />
-                                <MenuItem
-                                    Command="{Binding EditDataBaseCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.EditEllipsis]}" />
-                                <MenuItem
-                                    Command="{Binding RelocateDatabaseFilesCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.RelocateFiles]}" />
-                                <Separator />
-                                <MenuItem
-                                    Command="{Binding ExportDataBaseToJsonCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.ExportJson]}" />
-                                <MenuItem
-                                    Command="{Binding ExportDataBaseToJsonPrettyCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.ExportJsonPretty]}" />
-                                <MenuItem
-                                    Command="{Binding ImportDataBaseFromJsonCommand}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.ImportJson]}" />
-                                <Separator />
-                                <MenuItem
-                                    Command="{Binding ClearDatabaseCommand}"
-                                    Foreground="{DynamicResource VdfDangerBrush}"
-                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.Clear]}" />
-                            </MenuItem>
-                            <MenuItem
-                                Command="{Binding OpenBlacklistManagerCommand}"
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ManageBlacklist]}" />
-                            <Separator />
-                            <MenuItem
-                                Command="{Binding AboutCommand}"
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.About]}" />
-                            <MenuItem
-                                Command="{Binding OpenOwnFolderCommand}"
-                                Header="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.OpenFolder]}"
-                                IsVisible="{Binding IsDebug}" />
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-            </StackPanel>
             <Grid
                 x:Name="MainContentGrid"
                 Margin="2,30,2,2"
                 ColumnDefinitions="Auto,*">
                 <!-- ============ 侧边栏 (mockup .rail) ============ -->
+                <!-- Mockup .rail: 248px wide (74px collapsed), padding 18px 12px 14px. -->
                 <Border
                     Grid.Column="0"
                     Width="{Binding RailColumnWidth}"
+                    Padding="12,18,12,14"
                     Background="{actipro:ThemeResource Container1BackgroundBrush}"
                     BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
                     BorderThickness="0,0,1,0">
@@ -345,17 +307,20 @@
                             Classes="railbrand"
                             Command="{Binding ToggleRailCommand}"
                             DockPanel.Dock="Top"
-                            Margin="8,10,8,4"
                             ToolTip.Tip="{Binding RailToggleTooltip}">
-                            <StackPanel Orientation="Horizontal" Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="11">
+                                <!-- Mockup .brand-mark: 38x38, radius 12, the accent
+                                     gradient with its white inner ring. -->
                                 <Border
-                                    Width="34"
-                                    Height="34"
-                                    CornerRadius="10"
-                                    Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}">
+                                    Width="38"
+                                    Height="38"
+                                    CornerRadius="12"
+                                    BorderBrush="White"
+                                    BorderThickness="1"
+                                    Background="{DynamicResource VdfBrandMarkBrush}">
                                     <Path
-                                        Width="17"
-                                        Height="17"
+                                        Width="20"
+                                        Height="20"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         Data="M6 3h7a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z M8 21h10a3 3 0 0 0 3-3V8"
@@ -369,13 +334,13 @@
                                     VerticalAlignment="Center"
                                     IsVisible="{Binding ShowRailLabels}">
                                     <TextBlock
-                                        FontSize="13.5"
-                                        FontWeight="SemiBold"
+                                        FontSize="15"
+                                        FontWeight="650"
                                         Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Brand]}"
                                         TextWrapping="NoWrap" />
                                     <TextBlock
                                         Margin="0,1,0,0"
-                                        FontSize="11"
+                                        FontSize="11.5"
                                         Opacity="{DynamicResource VdfTextMutedOpacity}"
                                         Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.BrandSub]}"
                                         TextWrapping="NoWrap" />
@@ -383,65 +348,73 @@
                             </StackPanel>
                         </Button>
 
-                        <!-- 底部：浅色 / 深色（mockup .seg） -->
+                        <!-- Mockup .rail-foot: the theme segment at the bottom of the
+                             rail, on the mockup's sunken track (margin 10px 4px 4px,
+                             padding 3px, radius 11). -->
                         <Border
                             DockPanel.Dock="Bottom"
-                            Margin="8,6,8,10"
-                            Padding="0,8,0,0"
+                            Margin="0,6,0,0"
+                            Padding="0,12,0,0"
                             BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
                             BorderThickness="0,1,0,0">
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
-                                <Button
-                                    Grid.Column="0"
-                                    Classes="railseg"
-                                    Classes.on="{Binding IsLightTheme}"
-                                    Command="{Binding SetThemeModeCommand}"
-                                    CommandParameter="Light"
-                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Light]}">
-                                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
-                                        <Path
-                                            Width="14"
-                                            Height="14"
-                                            VerticalAlignment="Center"
-                                            Data="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
-                                            Fill="Transparent"
-                                            StrokeLineCap="Round"
-                                            StrokeThickness="1.7" />
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            IsVisible="{Binding ShowRailLabels}"
-                                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Light]}" />
-                                    </StackPanel>
-                                </Button>
-                                <Button
-                                    Grid.Column="1"
-                                    Classes="railseg"
-                                    Classes.on="{Binding IsDarkTheme}"
-                                    Command="{Binding SetThemeModeCommand}"
-                                    CommandParameter="Dark"
-                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Dark]}">
-                                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
-                                        <Path
-                                            Width="14"
-                                            Height="14"
-                                            VerticalAlignment="Center"
-                                            Data="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"
-                                            Fill="Transparent"
-                                            StrokeLineCap="Round"
-                                            StrokeJoin="Round"
-                                            StrokeThickness="1.7" />
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            IsVisible="{Binding ShowRailLabels}"
-                                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Dark]}" />
-                                    </StackPanel>
-                                </Button>
-                            </Grid>
+                            <Border
+                                Margin="4,10,4,4"
+                                Padding="3"
+                                Background="{actipro:ThemeResource Container2BackgroundBrush}"
+                                CornerRadius="11">
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="3">
+                                    <Button
+                                        Grid.Column="0"
+                                        Classes="railseg"
+                                        Classes.on="{Binding IsLightTheme}"
+                                        Command="{Binding SetThemeModeCommand}"
+                                        CommandParameter="Light"
+                                        ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Light]}">
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                                            <Path
+                                                Width="14"
+                                                Height="14"
+                                                VerticalAlignment="Center"
+                                                Data="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+                                                Fill="Transparent"
+                                                StrokeLineCap="Round"
+                                                StrokeThickness="1.7" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding ShowRailLabels}"
+                                                Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Light]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button
+                                        Grid.Column="1"
+                                        Classes="railseg"
+                                        Classes.on="{Binding IsDarkTheme}"
+                                        Command="{Binding SetThemeModeCommand}"
+                                        CommandParameter="Dark"
+                                        ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Dark]}">
+                                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+                                            <Path
+                                                Width="14"
+                                                Height="14"
+                                                VerticalAlignment="Center"
+                                                Data="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"
+                                                Fill="Transparent"
+                                                StrokeLineCap="Round"
+                                                StrokeJoin="Round"
+                                                StrokeThickness="1.7" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding ShowRailLabels}"
+                                                Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Dark]}" />
+                                            </StackPanel>
+                                        </Button>
+                                </Grid>
+                            </Border>
                         </Border>
 
                         <!-- 导航项（mockup .nav-group）：分组标题 + 条目；折叠后只留图标 -->
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <StackPanel Margin="8,0,8,10" Spacing="2">
+                            <StackPanel Margin="0" Spacing="0">
 
                                 <TextBlock
                                     Classes="railgroup"
@@ -492,14 +465,14 @@
                                             MinWidth="22"
                                             Padding="7,1"
                                             VerticalAlignment="Center"
-                                            Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
+                                            Background="{DynamicResource VdfAccentSolidBrush}"
                                             CornerRadius="99"
                                             IsVisible="{Binding !!Duplicates.Count}">
                                             <TextBlock
                                                 HorizontalAlignment="Center"
                                                 FontSize="11"
                                                 FontWeight="SemiBold"
-                                                Foreground="{DynamicResource VdfAccentTextBrush}"
+                                                Foreground="{DynamicResource VdfOnAccentSolidBrush}"
                                                 Text="{Binding Duplicates.Count}" />
                                         </Border>
                                         <TextBlock
@@ -597,44 +570,187 @@
 
                                 <!-- 设置子项：与设置页左栏分区一一对应 -->
                                 <StackPanel IsVisible="{Binding ShowRailSettingsChildren}" Spacing="1">
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Scanning" Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Matching" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.Matching]}" />
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="PartialClips" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.PartialClips]}" />
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Files" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}" />
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Database" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}" />
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Processing" Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Processing]}" />
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Appearance" Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Appearance]}" />
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Scanning">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Matching">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.Matching]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="PartialClips">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.PartialClips]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Files">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Database">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Processing">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Processing]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Appearance">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Appearance]}" />
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
 
-                                <!-- 日志 -->
-                                <Button
-                                    Classes="railitem"
-                                    Classes.active="{Binding IsShellLogVisible}"
-                                    Command="{Binding ShowShellViewCommand}"
-                                    CommandParameter="Log"
-                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Log]}">
-                                    <StackPanel Orientation="Horizontal" Spacing="10">
-                                        <Path
-                                            Width="17"
-                                            Height="17"
-                                            VerticalAlignment="Center"
-                                            Data="M6 3h8l5 5v13H6zM14 3v5h5"
-                                            Fill="Transparent"
-                                            StrokeLineCap="Round"
-                                            StrokeJoin="Round"
-                                            StrokeThickness="1.7" />
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            IsVisible="{Binding ShowRailLabels}"
-                                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Log]}" />
-                                    </StackPanel>
-                                </Button>
                             </StackPanel>
                         </ScrollViewer>
                     </DockPanel>
                 </Border>
 
-                <Grid Grid.Column="1" IsVisible="{Binding IsShellMainVisible}">
+                                <!-- ===== 主区（mockup .main）：顶栏 + 页面 ===== -->
+                <Grid Grid.Column="1" RowDefinitions="Auto,*">
+                    <!-- Mockup .topbar: 86px tall, padding 20px 32px 14px, the title and
+                         its sub-line on the left and the actions at the right edge. -->
+                    <Border Grid.Row="0" Height="86" Padding="32,20,32,14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Classes="toptitle" Text="{Binding TopbarTitle}" />
+                                <TextBlock Classes="topsub" Text="{Binding TopbarSub}" />
+                            </StackPanel>
+                            <StackPanel
+                                x:Name="TitlebarNav"
+                                Grid.Column="1"
+                                Margin="14,0,0,0"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="9">
+<Button
+                    Classes="navlink"
+                    Command="{Binding NewScanCommand}"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Shell.NewScan]}"
+                    IsVisible="{Binding ShowNavNewScan}" />
+                <Button
+                    Classes="navlink"
+                    Command="{Binding ShowShellViewCommand}"
+                    CommandParameter="Main"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Shell.BackToResults]}"
+                    IsVisible="{Binding ShowNavBackToResults}" />
+                <!-- Log / Settings moved into the sidebar rail: keeping them here as well
+                     duplicated the navigation. "New scan" and "Back to results" stay —
+                     they are workflow links, not top-level navigation. -->
+                <!-- ⋯ overflow (stage 7): home of everything stateless — database
+                     maintenance, blacklist, About — plus a contextual scan-results
+                     section in the Review state. Replaces the legacy menu bar. -->
+                <Button
+                    Classes="navlink"
+                    FontWeight="Bold"
+                    Content="⋯"
+                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Shell.MoreMenu]}"
+                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Shell.MoreMenu]}">
+                    <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <!-- Scan results (Review only) -->
+                            <MenuItem
+                                Command="{Binding StartScanCommand}"
+                                CommandParameter="CompareOnly"
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Command.Rescan]}"
+                                ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tooltip.Rescan]}"
+                                IsEnabled="{Binding IsReadyToCompare}"
+                                IsVisible="{Binding IsReviewState}" />
+                            <MenuItem
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults]}"
+                                IsVisible="{Binding !!Duplicates.Count}">
+                                <MenuItem
+                                    Command="{Binding ExportScanResultsCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.Json]}" />
+                                <MenuItem
+                                    Command="{Binding ExportScanResultsPrettyCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.JsonPretty]}" />
+                                <MenuItem
+                                    Command="{Binding ExportScanResultsToFileCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.WithThumbnails]}" />
+                                <MenuItem
+                                    Command="{Binding ExportScanResultsToCsvCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ExportScanResults.Csv]}" />
+                            </MenuItem>
+                            <MenuItem
+                                Command="{Binding ImportScanResultsFromFileCommand}"
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ImportScanResults]}"
+                                IsEnabled="{Binding !IsScanning}" />
+                            <Separator />
+                            <!-- Database maintenance: disabled while a scan runs (same rule the
+                                 old menu enforced by hiding the submenu) -->
+                            <MenuItem
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.Database]}"
+                                IsEnabled="{Binding !IsScanning}">
+                                <MenuItem
+                                    Command="{Binding CleanDatabaseCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.Cleanup]}"
+                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tooltip.CleanDatabase]}" />
+                                <MenuItem
+                                    Command="{Binding PruneGhostEntriesCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.PruneGhostEntries]}"
+                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tooltip.PruneGhostEntries]}" />
+                                <MenuItem
+                                    Command="{Binding EditDataBaseCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.EditEllipsis]}" />
+                                <MenuItem
+                                    Command="{Binding RelocateDatabaseFilesCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.RelocateFiles]}" />
+                                <Separator />
+                                <MenuItem
+                                    Command="{Binding ExportDataBaseToJsonCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.ExportJson]}" />
+                                <MenuItem
+                                    Command="{Binding ExportDataBaseToJsonPrettyCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.ExportJsonPretty]}" />
+                                <MenuItem
+                                    Command="{Binding ImportDataBaseFromJsonCommand}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.ImportJson]}" />
+                                <Separator />
+                                <MenuItem
+                                    Command="{Binding ClearDatabaseCommand}"
+                                    Foreground="{DynamicResource VdfDangerBrush}"
+                                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Database.Clear]}" />
+                            </MenuItem>
+                            <MenuItem
+                                Command="{Binding OpenBlacklistManagerCommand}"
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.ManageBlacklist]}" />
+                            <!-- Log left the rail: the mockup's rail is scan + manage +
+                                 settings, so the log lives with the other stateless
+                                 entries here. -->
+                            <MenuItem
+                                Command="{Binding ShowShellViewCommand}"
+                                CommandParameter="Log"
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Log]}" />
+                            <Separator />
+                            <MenuItem
+                                Command="{Binding AboutCommand}"
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Menu.About]}" />
+                            <MenuItem
+                                Command="{Binding OpenOwnFolderCommand}"
+                                Header="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.OpenFolder]}"
+                                IsVisible="{Binding IsDebug}" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Grid Grid.Row="1">
+                        <Grid IsVisible="{Binding IsShellMainVisible}">
                         <Grid>
                             <!-- Disabled while the busy curtain covers it: the curtain alone only
                                  stops the mouse, Tab walked straight into the views below and
@@ -709,9 +825,11 @@
                             </Grid>
                         </Grid>
                 </Grid>
-                <views:SettingsView Grid.Column="1" IsVisible="{Binding IsShellSettingsVisible}" />
-                <views:LogView Grid.Column="1" IsVisible="{Binding IsShellLogVisible}" />
+                <views:SettingsView Grid.Row="1" IsVisible="{Binding IsShellSettingsVisible}" />
+                <views:LogView Grid.Row="1" IsVisible="{Binding IsShellLogVisible}" />
+                </Grid>
             </Grid>
+        </Grid>
         </Grid>
     </Border>
     </ctl:AnnouncerHost>
