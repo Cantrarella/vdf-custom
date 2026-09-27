@@ -713,6 +713,7 @@
 	"Setup.CountNow": "立即统计",
 	"Setup.CountFailed": "无法读取此文件夹",
 	"Setup.Scan": "扫描",
+	"Setup.TopHint": "选择要比对的文件夹，然后开始扫描",
 	"Setup.AdvancedSettings": "高级设置",
 	"Setup.LocationsFootnote": "{0} 个位置 · 数量在索引时逐步填充 — 扫描从不等待统计。",
 	"Setup.DatabaseInfo": "数据库：已知 {0} 个文件",

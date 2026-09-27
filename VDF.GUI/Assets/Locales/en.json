@@ -713,6 +713,7 @@
 	"Setup.CountNow": "count now",
 	"Setup.CountFailed": "could not read this folder",
 	"Setup.Scan": "Scan",
+	"Setup.TopHint": "Pick the folders to compare, then start the scan",
 	"Setup.AdvancedSettings": "Advanced settings",
 	"Setup.LocationsFootnote": "{0} locations · counts fill in as folders are indexed — scanning never waits for them.",
 	"Setup.DatabaseInfo": "Database: {0} files known",
