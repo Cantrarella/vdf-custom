@@ -96,6 +96,17 @@
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
                     </LinearGradientBrush>
+                    <!-- The page the cards sit on (the mockup's page-bg token) and the
+                         card surface itself (its surface token). They used to be the same
+                         white, so a card was readable only by its outline, which read as a
+                         frame around the group rather than as a panel. -->
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#F4FAFF" />
+                    <SolidColorBrush x:Key="VdfCardBrush" Color="#FFFFFF" />
+                    <!-- The hairline along a card's edge: the mockup's own line token (#E4EDF5),
+                         which is about 8% darker than the page and reads as an edge rather than
+                         as a frame. (The frame the results page used to show was the list
+                         control's own outline: #CCCED3, more than three times this strong.) -->
+                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E4EDF5" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
                          are 3.3 to 4.4:1, so the light theme dims less. -->
@@ -185,6 +196,9 @@
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
                     </LinearGradientBrush>
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#0D1621" />
+                    <SolidColorBrush x:Key="VdfCardBrush" Color="#16212E" />
+                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#293542" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>
@@ -292,6 +306,11 @@
                     <SolidColorBrush x:Key="{actipro:ThemeResourceKey PopupBorderBrush}" Color="#B4B8C0" />
                     <SolidColorBrush x:Key="{actipro:ThemeResourceKey ToolTipBorderBrush}" Color="#B4B8C0" />
                     <SolidColorBrush x:Key="{actipro:ThemeResourceKey ProgressBarBorderBrush}" Color="#B4B8C0" />
+                    <!-- High contrast reads shapes, not depth: card and page share the
+                         theme's surface and the card is told apart by its outline. -->
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#000000" />
+                    <SolidColorBrush x:Key="VdfCardBrush" Color="#000000" />
+                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#B4B8C0" />
                 </ResourceDictionary>
                 <!-- High contrast on light, the counterpart of the above. -->
                 <ResourceDictionary x:Key="{x:Static utils:VdfThemes.HighContrastLight}">
@@ -383,6 +402,9 @@
                     <SolidColorBrush x:Key="{actipro:ThemeResourceKey PopupBorderBrush}" Color="#4A4F5A" />
                     <SolidColorBrush x:Key="{actipro:ThemeResourceKey ToolTipBorderBrush}" Color="#4A4F5A" />
                     <SolidColorBrush x:Key="{actipro:ThemeResourceKey ProgressBarBorderBrush}" Color="#4A4F5A" />
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="VdfCardBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#4A4F5A" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>

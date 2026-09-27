@@ -195,34 +195,6 @@
         <Style Selector="Button.railbrand:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
         </Style>
-        <!-- Settings children: indented, one size down (mockup .nav-sub-item). The 22px
-             left padding is where the mockup's ::before dot sits; the 14px gap after it
-             lands the label on the mockup's 40px. -->
-        <Style Selector="Button.railsub">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="9" />
-            <Setter Property="Padding" Value="22,7,10,7" />
-            <Setter Property="FontSize" Value="12.5" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
-        </Style>
-        <Style Selector="Button.railsub:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
-        </Style>
-        <Style Selector="Button.railsub:pointerover">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
-        <!-- Mockup .nav-sub-item::before: the 4px dot that marks these as children of
-             "设置" rather than top-level entries. -->
-        <Style Selector="Border.railsubdot">
-            <Setter Property="Width" Value="4" />
-            <Setter Property="Height" Value="4" />
-            <Setter Property="CornerRadius" Value="2" />
-            <Setter Property="Background" Value="{actipro:ThemeResource Container3BorderBrush}" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
         <!-- Theme segment (mockup .seg): a sunken track holding two halves, and the
              chosen half is the raised card — not an accent pill, which is what the
              mockup's .seg button.on shows. -->
@@ -250,14 +222,6 @@
         </Style>
         <Style Selector="Button.railseg:pointerover">
             <Setter Property="Opacity" Value="1" />
-        </Style>
-        <!-- The caret of the expandable "Settings" entry turns to point down while open. -->
-        <Style Selector="Button.railitem Path.caret">
-            <Setter Property="RenderTransformOrigin" Value="50%,50%" />
-            <Setter Property="RenderTransform" Value="rotate(0deg)" />
-        </Style>
-        <Style Selector="Button.railitem.expanded Path.caret">
-            <Setter Property="RenderTransform" Value="rotate(90deg)" />
         </Style>
     </Window.Styles>
     <!-- Wraps everything, so that it is an ancestor of whatever has keyboard focus: the one
@@ -292,7 +256,7 @@
                 Margin="2,30,2,2"
                 ColumnDefinitions="Auto,*">
                 <!-- ============ 侧边栏 (mockup .rail) ============ -->
-                <!-- Mockup .rail: 248px wide (74px collapsed), padding 18px 12px 14px. -->
+                <!-- Sidebar rail: 216px wide (74px collapsed), padding 18px 12px 14px. -->
                 <Border
                     Grid.Column="0"
                     Width="{Binding RailColumnWidth}"
@@ -531,16 +495,16 @@
                                     </StackPanel>
                                 </Button>
 
-                                <!-- 设置：点开列出分区（mockup .nav-parent） -->
+                                <!-- 设置：直接进设置页。分区由页面自己那栏切换——那是本程序原
+                                     有的设置导航，十一个分区、键盘可达；侧栏再放一份七项
+                                     的重复列表，既盖不全又和页内那栏打架。 -->
                                 <Button
                                     Classes="railitem"
-                                    Classes.expanded="{Binding IsRailSettingsExpanded}"
-                                    Command="{Binding ToggleRailSettingsCommand}"
-                                    HorizontalContentAlignment="Stretch"
+                                    Classes.active="{Binding IsShellSettingsVisible}"
+                                    Command="{Binding ShowRailSettingsCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Settings]}">
-                                    <DockPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Path
-                                            DockPanel.Dock="Left"
                                             Width="17"
                                             Height="17"
                                             VerticalAlignment="Center"
@@ -548,71 +512,12 @@
                                             Fill="Transparent"
                                             StrokeLineCap="Round"
                                             StrokeThickness="1.7" />
-                                        <Path
-                                            Classes="caret"
-                                            DockPanel.Dock="Right"
-                                            Width="13"
-                                            Height="13"
-                                            VerticalAlignment="Center"
-                                            Data="M9 6l6 6-6 6"
-                                            Fill="Transparent"
-                                            IsVisible="{Binding ShowRailLabels}"
-                                            StrokeLineCap="Round"
-                                            StrokeJoin="Round"
-                                            StrokeThickness="2.4" />
                                         <TextBlock
-                                            Margin="10,0,0,0"
                                             VerticalAlignment="Center"
                                             IsVisible="{Binding ShowRailLabels}"
                                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Settings]}" />
-                                    </DockPanel>
+                                    </StackPanel>
                                 </Button>
-
-                                <!-- 设置子项：与设置页左栏分区一一对应 -->
-                                <StackPanel IsVisible="{Binding ShowRailSettingsChildren}" Spacing="1">
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Scanning">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Matching">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.Matching]}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="PartialClips">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.PartialClips]}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Files">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Database">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Processing">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Processing]}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="railsub" Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Appearance">
-                                        <StackPanel Orientation="Horizontal" Spacing="14">
-                                            <Border Classes="railsubdot" />
-                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Appearance]}" />
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
 
                             </StackPanel>
                         </ScrollViewer>
@@ -620,7 +525,10 @@
                 </Border>
 
                                 <!-- ===== 主区（mockup .main）：顶栏 + 页面 ===== -->
-                <Grid Grid.Column="1" RowDefinitions="Auto,*">
+                <!-- The page sits on the mockup's page-bg token so the cards on top of it
+                     read as cards; the rail keeps its own lighter surface at the side. -->
+                <Grid Grid.Column="1" RowDefinitions="Auto,*"
+                      Background="{DynamicResource VdfPageBrush}">
                     <!-- Mockup .topbar: 86px tall, padding 20px 32px 14px, the title and
                          its sub-line on the left and the actions at the right edge. -->
                     <Border Grid.Row="0" Height="86" Padding="32,20,32,14">

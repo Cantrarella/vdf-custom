@@ -218,13 +218,6 @@ namespace VDF.GUI.Data {
 			get;
 			set => this.RaiseAndSetIfChanged(ref field, value);
 		} = true;
-		// Mockup "比对范围 / 视频文件". The core only ever had an image switch, so a
-		// scan of pictures alone was impossible without emptying the folder list.
-		[JsonPropertyName("IncludeVideos")]
-		public bool IncludeVideos {
-			get;
-			set => this.RaiseAndSetIfChanged(ref field, value);
-		} = true;
 		/// <summary>Setup screen: an include folder switched off but kept in the list.</summary>
 		[JsonPropertyName("DisabledIncludes")]
 		public ObservableCollection<string> DisabledIncludes {

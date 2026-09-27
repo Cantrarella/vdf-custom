@@ -49,7 +49,7 @@ namespace VDF.GUI.Views {
 		bool durationMoreExpanded;
 		bool indexBuilt;
 		string selectedSectionId = "Scanning";
-		// A section the rail asked for before the index existed to select it from.
+		// A section that was asked for from outside before the index existed to select it from.
 		string? pendingSectionRequest;
 		MainWindowVM? vm;
 
@@ -82,15 +82,19 @@ namespace VDF.GUI.Views {
 		void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
 			if (e.PropertyName == nameof(MainWindowVM.SettingsSearchQuery))
 				UpdateVisibility();
-			// The sidebar rail names the section it wants instead of picking the list entry.
-			else if (e.PropertyName == nameof(MainWindowVM.RequestedSettingsSection))
-				ShowRequestedSection(vm?.RequestedSettingsSection);
+			// A section asked for from outside ("open the settings on Appearance"): pick
+			// the matching entry of the left nav. The page's own picks report through the
+			// same property, which is why ShowRequestedSection ignores what is already on
+			// screen instead of selecting it again.
+			else if (e.PropertyName == nameof(MainWindowVM.SettingsSection))
+				ShowRequestedSection(vm?.SettingsSection);
 		}
 
-		/// <summary>Selects the section the rail asked for; a request that arrives before
+		/// <summary>Selects the section that was asked for; a request that arrives before
 		/// the index exists waits for Loaded, which is what builds it.</summary>
 		void ShowRequestedSection(string? sectionId) {
 			if (string.IsNullOrWhiteSpace(sectionId)) return;
+			if (sectionId == selectedSectionId) return;
 			if (!indexBuilt) {
 				pendingSectionRequest = sectionId;
 				return;
@@ -190,6 +194,11 @@ namespace VDF.GUI.Views {
 			this.FindControl<TextBlock>("HeaderTitle")!.Text = searching
 				? App.Lang["Settings.SearchResults"]
 				: sections.FirstOrDefault(s => s.Id == selectedSectionId)?.Label;
+
+			// The topbar titles the page, so the page reports which section it is on. A
+			// search spans every section, so during one there is no single section to name.
+			if (vm != null)
+				vm.SettingsSection = searching ? null : selectedSectionId;
 
 			// A search spans all sections, so none is the selected one while it runs.
 			syncingNavSelection = true;

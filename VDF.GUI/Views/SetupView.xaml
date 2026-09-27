@@ -270,13 +270,6 @@
             </Border>
 
             <views:SettingRow
-                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Video.Title]}"
-                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Video.Desc]}">
-              <ToggleSwitch Classes="plain" VerticalAlignment="Center"
-                            IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=IncludeVideos}" />
-            </views:SettingRow>
-
-            <views:SettingRow
                 Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Image.Title]}"
                 Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Image.Desc]}">
               <ToggleSwitch Classes="plain" VerticalAlignment="Center"

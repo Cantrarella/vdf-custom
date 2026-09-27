@@ -279,6 +279,25 @@ namespace VDF.GUI.Views {
 			return false;
 		}
 
+		// The preview is the row's open target, as in the mockup: the button that used to
+		// sit next to it only repeated what clicking the picture does. A double tap reads
+		// as two presses here, so the second one of a pair is dropped — the double-tap
+		// handler below is what a pair means.
+		DateTime previewLastPress = DateTime.MinValue;
+
+		void OnPreviewPointerPressed(object? sender, PointerPressedEventArgs e) {
+			if (sender is not Control control) return;
+			if (control.DataContext is not ResultsItemRow row) return;
+			if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
+			e.Handled = true;
+			var now = DateTime.UtcNow;
+			bool secondOfPair = now - previewLastPress < TimeSpan.FromMilliseconds(300);
+			previewLastPress = now;
+			if (secondOfPair) return;
+			if (ViewModel?.OpenRowItemCommand is { } open)
+				open.Execute(row.Item).Subscribe();
+		}
+
 		void OnThumbnailDoubleTapped(object? sender, TappedEventArgs e) {
 			ViewModel?.ThumbnailDoubleClickCommand.Execute().Subscribe();
 			e.Handled = true;

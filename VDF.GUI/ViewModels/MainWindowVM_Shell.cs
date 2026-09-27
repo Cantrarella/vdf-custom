@@ -76,39 +76,17 @@ namespace VDF.GUI.ViewModels {
 				this.RaiseAndSetIfChanged(ref _IsRailCollapsed, value);
 				this.RaisePropertyChanged(nameof(RailColumnWidth));
 				this.RaisePropertyChanged(nameof(ShowRailLabels));
-				this.RaisePropertyChanged(nameof(ShowRailSettingsChildren));
 				this.RaisePropertyChanged(nameof(RailToggleTooltip));
 			}
 		}
 
 		public bool ShowRailLabels => !IsRailCollapsed;
-		/// <summary>The mockup's two rail widths: 248px expanded, 74px collapsed
-		/// (.app / .app.rail-min).</summary>
-		public GridLength RailColumnWidth => new(IsRailCollapsed ? 74 : 248);
+		/// <summary>The rail's two widths: 216px expanded, 74px collapsed — the width
+		/// the rail had before the mockup restyle, kept at the user's request.</summary>
+		public GridLength RailColumnWidth => new(IsRailCollapsed ? 74 : 216);
 		public string RailToggleTooltip => App.Lang[IsRailCollapsed ? "Rail.Expand" : "Rail.Collapse"];
 		public ReactiveCommand<Unit, Unit> ToggleRailCommand => ReactiveCommand.Create(() => {
 			IsRailCollapsed = !IsRailCollapsed;
-		});
-
-		// ---------- rail: settings children ----------
-
-		bool _IsRailSettingsExpanded;
-		public bool IsRailSettingsExpanded {
-			get => _IsRailSettingsExpanded;
-			set {
-				this.RaiseAndSetIfChanged(ref _IsRailSettingsExpanded, value);
-				this.RaisePropertyChanged(nameof(ShowRailSettingsChildren));
-			}
-		}
-
-		public bool ShowRailSettingsChildren => IsRailSettingsExpanded && !IsRailCollapsed;
-
-		/// <summary>Opens the section list and lands on the settings view; picking the
-		/// entry again folds the list away instead.</summary>
-		public ReactiveCommand<Unit, Unit> ToggleRailSettingsCommand => ReactiveCommand.Create(() => {
-			IsRailSettingsExpanded = !IsRailSettingsExpanded;
-			if (IsRailSettingsExpanded)
-				ActiveShellView = ShellView.Settings;
 		});
 
 		// ---------- rail: navigation ----------
@@ -120,24 +98,25 @@ namespace VDF.GUI.ViewModels {
 			ActiveShellView = ShellView.Main;
 		});
 
-		string? _RequestedSettingsSection;
-		/// <summary>The section the rail asked the settings view to show. The view listens
-		/// and picks the matching entry of its own left nav. Re-picking the entry that is
-		/// already showing clears the value first, so the change is raised every time.</summary>
-		public string? RequestedSettingsSection {
-			get => _RequestedSettingsSection;
+		/// <summary>Lands on the settings page. The page carries the section list itself -
+		/// it is the app's original settings nav, eleven sections wide and reachable from
+		/// the keyboard - so the rail opens the page instead of repeating a shorter copy of
+		/// that list beside it.</summary>
+		public ReactiveCommand<Unit, Unit> ShowRailSettingsCommand => ReactiveCommand.Create(() => {
+			ActiveShellView = ShellView.Settings;
+		});
+
+		string? _SettingsSection;
+		/// <summary>The settings section on screen. The page is the writer: it is the one
+		/// that knows which entry its nav has selected, and a search spanning every section
+		/// clears this instead. The topbar reads it so the header names what is showing.</summary>
+		public string? SettingsSection {
+			get => _SettingsSection;
 			set {
-				this.RaiseAndSetIfChanged(ref _RequestedSettingsSection, value);
-				RaiseTopbarChanged(); // the topbar names the section that was asked for
+				this.RaiseAndSetIfChanged(ref _SettingsSection, value);
+				RaiseTopbarChanged(); // the topbar names the section that is showing
 			}
 		}
-
-		public ReactiveCommand<string, Unit> ShowSettingsSectionCommand => ReactiveCommand.Create<string>(section => {
-			ActiveShellView = ShellView.Settings;
-			if (RequestedSettingsSection == section)
-				RequestedSettingsSection = null;
-			RequestedSettingsSection = section;
-		});
 
 		// ---------- rail: theme segment (mockup .seg) ----------
 
@@ -182,9 +161,9 @@ namespace VDF.GUI.ViewModels {
 				: App.Lang["Topbar.Setup.Sub"],
 		};
 
-		/// <summary>Which settings section the topbar names. With no request pending it
-		/// falls back to the page's own title — the section the settings view opens on.</summary>
-		string SettingsSectionKey => RequestedSettingsSection switch {
+		/// <summary>Which settings section the topbar names. During a search no single
+		/// section is showing, so it falls back to the page's own generic title.</summary>
+		string SettingsSectionKey => SettingsSection switch {
 			"Scanning" => "Scanning",
 			"Matching" => "Matching",
 			"PartialClips" => "PartialClips",

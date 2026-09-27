@@ -77,6 +77,15 @@
       <Setter Property="Background" Value="{DynamicResource VdfWarnSoftBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfWarnBorderBrush}" />
     </Style>
+    <!-- The list draws no frame of its own: the group cards are the only panels on this
+         page. The theme's ListBox brings a hard 1px outline (#B7BAC1 in the light theme),
+         and it landed one pixel outside every card's own hairline - so each card read as
+         double-framed, and the outline was stronger than anything the mockup has. -->
+    <Style Selector="ListBox.results">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
     <Style Selector="ListBox.results ListBoxItem">
       <Setter Property="Padding" Value="0" />
       <Setter Property="MinHeight" Value="0" />
@@ -314,33 +323,42 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <!-- mockup .card.group: the flattened list has no card container of its own, so the
-         card is drawn by its rows. The header owns the top edge and corners, each row
-         carries the side borders, and the row flagged IsGroupEnd closes the bottom. -->
-    <Style Selector="Border.groupcard">
-      <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
-      <Setter Property="BorderThickness" Value="1,1,1,0" />
-      <Setter Property="CornerRadius" Value="16,16,0,0" />
+         card is drawn by consecutive list rows: the header, every member, the AI strip
+         and the details panel. Each wears the card's own surface; a transparent body over
+         a same-coloured page was what made a group read as a stray outline instead of a
+         panel. The card's panel look therefore comes from its own surface and hairline on
+         the page background, and not from the mockup's card shadow: a row lives inside a
+         virtualising list, which composites each item into its own bounds, so anything a
+         row casts outside itself is cut off. Measured, not assumed - an opaque shadow on
+         the closing row renders zero pixels in the gap under the card, and clearing
+         ClipToBounds on the row itself does not change that (the clip is in the theme's
+         row template). Re-adding a shadow here is wasted work. -->
+    <Style Selector="Border.cardseg">
+      <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+      <Setter Property="BorderThickness" Value="1,0,1,0" />
+    </Style>
+    <!-- The header: the card's top edge and its rounded shoulders -->
+    <Style Selector="Border.cardtop">
+      <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="20,20,0,0" />
       <Setter Property="Padding" Value="18,14" />
     </Style>
-    <Style Selector="Border.grouprow">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
-      <Setter Property="BorderThickness" Value="1,0,1,0" />
+    <!-- Whoever ends the group closes the card, and a collapsed group is nothing but its
+         header, which the builder flags the same way -->
+    <Style Selector="Border.cardseg.rowend">
+      <Setter Property="BorderThickness" Value="1,0,1,1" />
+      <Setter Property="CornerRadius" Value="0,0,20,20" />
+    </Style>
+    <Style Selector="Border.cardtop.rowend">
+      <Setter Property="CornerRadius" Value="20" />
     </Style>
     <!-- mockup .file.marked: checked means marked for deletion. The prototype tints
          those rows blue and keeps red for the "will be deleted" label. -->
     <Style Selector="Border.grouprow.checked">
       <Setter Property="Background" Value="{DynamicResource VdfSelBrush}" />
-    </Style>
-    <!-- A collapsed group ends on its own header, which the builder flags the same way -->
-    <Style Selector="Border.groupcard.rowend">
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="16" />
-    </Style>
-    <Style Selector="Border.grouprow.rowend">
-      <Setter Property="BorderThickness" Value="1,0,1,1" />
-      <Setter Property="CornerRadius" Value="0,0,16,16" />
     </Style>
     <!-- mockup .file:hover / .file.marked:hover -->
     <Style Selector="Border.grouprow:pointerover">
@@ -822,7 +840,7 @@
                  side edges, and whoever ends the group closes the bottom. Head and callout
                  both belong to this one row, so they stack. -->
             <StackPanel>
-              <Border Classes="groupcard" Classes.rowend="{Binding IsGroupEnd}" Margin="0,14,0,0">
+              <Border Classes="cardtop" Classes.rowend="{Binding IsGroupEnd}" Margin="0,14,0,0">
                 <Border.ContextMenu>
               <ContextMenu>
                 <MenuItem
@@ -923,8 +941,12 @@
               </Border>
               <!-- mockup .callout: an AI-found group is a suggestion, not a verdict. The
                    classic hash check could not confirm the pair, so say so before the user
-                   checks files off - a wrongly deleted original is not recoverable. -->
-              <Border Classes="callout" IsVisible="{Binding HasAiMatches}">
+                   checks files off - a wrongly deleted original is not recoverable. The
+                   strip lives inside the group card, so its row keeps the card surface
+                   behind the amber panel instead of punching a hole in it. -->
+              <Panel IsVisible="{Binding HasAiMatches}">
+                <Border Classes="cardseg" />
+                <Border Classes="callout">
                 <DockPanel LastChildFill="True">
                   <TextBlock
                       DockPanel.Dock="Left"
@@ -947,7 +969,8 @@
                         Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.AiCallout.Body]}" />
                   </StackPanel>
                 </DockPanel>
-              </Border>
+                </Border>
+              </Panel>
             </StackPanel>
             <Border Classes="selframe" />
           </Panel>
@@ -960,10 +983,10 @@
                  side edges; IsGroupEnd closes it, which the builder flags on the last
                  entry of every group. -->
             <Border
-                Classes="grouprow"
+                Classes="cardseg grouprow"
                 Classes.checked="{Binding Item.Checked}"
                 Classes.rowend="{Binding IsGroupEnd}"
-                Padding="12,11"
+                Padding="18,11"
                 PointerPressed="OnResultRowPointerPressed"
                 DoubleTapped="OnResultRowDoubleTapped">
               <Border.ContextMenu>
@@ -1050,13 +1073,26 @@
                     </MultiBinding>
                   </AutomationProperties.Name>
                 </CheckBox>
-                <!-- preview filmstrip - Tag=Preview: keeps its own double-tap, so the
-                     row's empty-space handler must not claim clicks inside it. -->
+                <!-- preview filmstrip - Tag=Preview: keeps its own click (opens the file)
+                     and its own double-tap, so the row's empty-space handler must not
+                     claim clicks inside it. The column hugs the frames instead of
+                     reserving the whole preview width, which left the leftover blank
+                     sitting between the picture and the file name. -->
                 <Grid DockPanel.Dock="Left"
                       Tag="Preview"
                       Margin="0,0,13,0"
-                      Width="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsPreviewWidth}"
+                      PointerPressed="OnPreviewPointerPressed"
                       IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowThumbnailColumn}">
+                  <Grid.Width>
+                    <MultiBinding Converter="{StaticResource ResultsRowSizingConverter}" ConverterParameter="width">
+                      <Binding Source="{x:Static Settings:SettingsFile.Instance}" Path="ResultsPreviewWidth" />
+                      <Binding Source="{x:Static Settings:SettingsFile.Instance}" Path="ResultsCompactRows" />
+                      <Binding Path="Item.Thumbnail" />
+                      <Binding Path="Item.ThumbnailFrameCount" />
+                      <Binding Path="Item.ThumbnailGridColumns" />
+                      <Binding Path="Item.ThumbnailPrediction" />
+                    </MultiBinding>
+                  </Grid.Width>
                   <Border
                       Classes="skeleton-shimmer"
                       Margin="0,2,0,2"
@@ -1086,12 +1122,43 @@
                       DoubleTapped="OnThumbnailDoubleTapped"
                       ToolTip.Tip="{Binding Item.ItemInfo.Path}" />
                 </Grid>
-                <!-- mockup .file-acts. Always visible, like the prototype: the column
-                     layout had to hide them on hover because the name and six metadata
-                     columns were fighting for the same pixels, and none of those have
-                     to share this row anymore. -->
+                <!-- mockup .file-acts. Revealed on row hover: they are what you do to the
+                     row you are pointing at, and keeping them out of the layout leaves
+                     the file name and its badges their full width. Keyed off the
+                     ListBoxItem, whose bounds never change, so showing them cannot
+                     flicker under the pointer. Opening the file needs no button — the
+                     preview is the target, as in the mockup — so the row carries the two
+                     icon actions the header has no equivalent of. -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4"
+                            Margin="10,0,0,0" VerticalAlignment="Center"
+                            IsVisible="{Binding $parent[ListBoxItem].IsPointerOver}">
+                  <Button
+                      Classes="fileact"
+                      Padding="8,3"
+                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Reveal]}"
+                      ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.OpenInFolder]}"
+                      Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RevealRowItemCommand}"
+                      CommandParameter="{Binding Item}">
+                    <PathIcon Width="14" Height="14"
+                              Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                  </Button>
+                  <!-- Tier-2 metadata: toggles the details panel under this row. Same
+                       shape as the reveal button above — one icon language for the row. -->
+                  <Button
+                      Classes="fileact"
+                      Padding="8,3"
+                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.DetailsTip]}"
+                      ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.DetailsTip]}"
+                      Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleItemDetailsCommand}"
+                      CommandParameter="{Binding Item}">
+                    <PathIcon Width="14" Height="14"
+                              Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                  </Button>
+                </StackPanel>
+                <!-- The similarity chip is a value, not an action: it stays put whether or
+                     not the pointer is on the row, so the numbers never jump. -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6"
-                            Margin="10,0,0,0" VerticalAlignment="Center">
+                            Margin="6,0,0,0" VerticalAlignment="Center">
                   <Border
                       Classes="simchip"
                       Classes.mid="{Binding Item.ItemInfo.Similarity, Converter={StaticResource SimilarityTierConverter}, ConverterParameter=mid}"
@@ -1105,25 +1172,6 @@
                         FontWeight="Bold"
                         Text="{Binding Item.ItemInfo.Similarity, Converter={StaticResource SimilarityToFormattedConverter}}" />
                   </Border>
-                  <Button
-                      Classes="fileact"
-                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Open]}"
-                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Open]}"
-                      Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).OpenRowItemCommand}"
-                      CommandParameter="{Binding Item}" />
-                  <Button
-                      Classes="fileact"
-                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Reveal]}"
-                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Reveal]}"
-                      ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.OpenInFolder]}"
-                      Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RevealRowItemCommand}"
-                      CommandParameter="{Binding Item}" />
-                  <!-- Tier-2 metadata: toggles the details panel under this row -->
-                  <Button Classes="fileact" Content="&#9432;"
-                          AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.DetailsTip]}"
-                          ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.DetailsTip]}"
-                          Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleItemDetailsCommand}"
-                          CommandParameter="{Binding Item}" />
                 </StackPanel>
                 <!-- mockup .file-info: name and badges on top, the facts underneath -->
                 <StackPanel Margin="0" VerticalAlignment="Center" Spacing="3">
@@ -1368,10 +1416,15 @@
 
         <!-- ~~~~ Details panel (Tier 2 metadata, expanded via ⓘ) ~~~~ -->
         <DataTemplate DataType="vm:ResultsDetailsRow">
-          <Border Classes="detailsrow" Margin="36,2,16,6" Padding="14,8" CornerRadius="8"
-                  Background="{actipro:ThemeResource Container2BackgroundBrush}"
-                  BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
-                  BorderThickness="1">
+          <!-- The panel opens inside the group card: it keeps the card surface behind
+               itself, and when it is the group's last row (the builder flags it the same
+               way it flags a member) it is the piece that closes the card. -->
+          <Panel>
+            <Border Classes="cardseg" Classes.rowend="{Binding IsGroupEnd}" />
+            <Border Classes="detailsrow" Margin="36,2,16,6" Padding="14,8" CornerRadius="8"
+                    Background="{actipro:ThemeResource Container2BackgroundBrush}"
+                    BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                    BorderThickness="1">
             <DockPanel LastChildFill="True">
               <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="16,0,0,0">
                 <Button Classes="group-action" FontSize="11.5"
@@ -1409,6 +1462,7 @@
               </WrapPanel>
             </DockPanel>
           </Border>
+          </Panel>
         </DataTemplate>
       </ListBox.DataTemplates>
     </ListBox>

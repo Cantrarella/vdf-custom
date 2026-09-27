@@ -57,6 +57,28 @@ namespace VDF.GUI.Utils {
 		}
 
 		/// <summary>
+		/// Width the Preview column has to reserve for the frames it is about to draw.
+		/// Frames are never upscaled (#787), so a composite narrower than the column —
+		/// any image, since thumbnails are capped at ThumbnailMaxWidth — used to sit at
+		/// the left of a full-width cell with the leftover blank reading as a hole
+		/// between the picture and the file name. The cell hugs the frames instead; the
+		/// setting stays the ceiling, so a wide composite still fills the column and the
+		/// row height it produced is unchanged.
+		/// </summary>
+		internal static double ImageWidth(double previewWidth, bool compact, double thumbWidth = 0, double thumbHeight = 0, int frameCount = 0, int gridColumns = 0) {
+			double column = Math.Max(previewWidth - PreviewGutter, 16);
+			if (thumbWidth <= 0 || thumbHeight <= 0)
+				return column;
+			if (frameCount > 1 && gridColumns >= 1) {
+				int compositeRows = ThumbnailGridLayout.Rows(frameCount, gridColumns);
+				var layout = WrappedPreviewLayout.Compute(
+					column, compact, thumbWidth / gridColumns, thumbHeight / compositeRows, frameCount);
+				return Math.Max(16, layout.TotalWidth);
+			}
+			return Math.Min(column, thumbWidth);
+		}
+
+		/// <summary>
 		/// Row height: the preview plus breathing room, but never below what the two
 		/// text lines (file name + path) need. Without the preview column the text
 		/// baseline alone decides.

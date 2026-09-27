@@ -129,8 +129,10 @@ namespace VDF.GUI.Mvvm {
 	/// ThumbnailSizePrediction (Item.ThumbnailPrediction). While the bitmap is not
 	/// loaded yet the prediction stands in for it, so the row reserves its final height
 	/// immediately and the list stops shifting when thumbnails land (#862). Parameter
-	/// "row" yields the row height, anything else the thumbnail height. Logic lives in
-	/// ResultsRowSizing.
+	/// "row" yields the row height, "width" the width the Preview column needs for the
+	/// frames it is about to draw (the cell hugs them rather than reserving the whole
+	/// setting width — frames are never upscaled, #787), anything else the thumbnail
+	/// height. Logic lives in ResultsRowSizing.
 	/// </summary>
 	public sealed class ResultsRowSizingConverter : IMultiValueConverter {
 		public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture) {
@@ -168,9 +170,12 @@ namespace VDF.GUI.Mvvm {
 				frameCount = prediction.FrameCount;
 				gridColumns = prediction.GridColumns;
 			}
-			return string.Equals(parameter as string, "row", StringComparison.OrdinalIgnoreCase)
-				? Utils.ResultsRowSizing.RowHeight(width, compact, previewVisible, thumbWidth, thumbHeight, frameCount, gridColumns)
-				: Utils.ResultsRowSizing.ImageHeight(width, compact, thumbWidth, thumbHeight, frameCount, gridColumns);
+			string? mode = parameter as string;
+			if (string.Equals(mode, "row", StringComparison.OrdinalIgnoreCase))
+				return Utils.ResultsRowSizing.RowHeight(width, compact, previewVisible, thumbWidth, thumbHeight, frameCount, gridColumns);
+			if (string.Equals(mode, "width", StringComparison.OrdinalIgnoreCase))
+				return Utils.ResultsRowSizing.ImageWidth(width, compact, thumbWidth, thumbHeight, frameCount, gridColumns);
+			return Utils.ResultsRowSizing.ImageHeight(width, compact, thumbWidth, thumbHeight, frameCount, gridColumns);
 		}
 	}
 
