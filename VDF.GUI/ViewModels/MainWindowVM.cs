@@ -886,6 +886,11 @@ namespace VDF.GUI.ViewModels {
 			TotalDuplicateGroups = groupCount;
 			GroupsNeedingReview = needsReview;
 			PotentialSavings = savings.BytesToString();
+			// The toolbar facets show the same figures as this bar; they are computed
+			// properties, so they need a nudge here or they keep their binding-time zero.
+			this.RaisePropertyChanged(nameof(ResultsAllGroupCount));
+			this.RaisePropertyChanged(nameof(ResultsReviewGroupCount));
+			this.RaisePropertyChanged(nameof(ResultsConfidentGroupCount));
 		}
 
 		DuplicateItemVM? GetSelectedDuplicateItem() =>
