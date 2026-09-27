@@ -32,6 +32,7 @@ namespace VDF.GUI {
 		public string CurrentLanguage {
 			get;
 			set {
+				value = NormalizeLanguageCode(value);
 				if (EqualityComparer<string>.Default.Equals(field, value))
 					return;
 				this.RaiseAndSetIfChanged(ref field, value);
@@ -39,7 +40,25 @@ namespace VDF.GUI {
 			}
 		} = "en";
 
+		/// <summary>
+		/// Maps a culture code onto a locale file we actually ship. Windows reports the
+		/// UI culture as a bare two-letter tag ("zh"), while the locale files carry a
+		/// script subtag ("zh-Hans") - a Chinese system used to probe for "zh.json",
+		/// miss it, and silently fall back to English. Simplified and Traditional both
+		/// land on zh-Hans because that is the only Chinese locale in Assets/Locales.
+		/// </summary>
+		public static string NormalizeLanguageCode(string? langCode) {
+			if (string.IsNullOrWhiteSpace(langCode))
+				return "en";
+			var code = langCode.Trim();
+			if (code.Equals("zh", StringComparison.OrdinalIgnoreCase)
+				|| code.StartsWith("zh-", StringComparison.OrdinalIgnoreCase))
+				return "zh-Hans";
+			return code;
+		}
+
 		public void LoadLanguage(string langCode) {
+			langCode = NormalizeLanguageCode(langCode);
 			try {
 				var uri = new Uri($"avares://VDF.GUI/Assets/Locales/{langCode}.json");
 				using var stream = AssetLoader.Open(uri);

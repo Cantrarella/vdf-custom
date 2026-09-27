@@ -19,17 +19,18 @@ using ActiproSoftware.UI.Avalonia.Themes.Generation;
 
 namespace VDF.GUI.Utils {
 	/// <summary>
-	/// The default ActiPro color palette plus VDF's teal-green accent ramp (redesign
-	/// locked decision 12). The ramp is generated from the mockup accent #34B39C as
-	/// midtone, so the dark theme lands on the mockup's #34B39C-ish accent and the
-	/// light theme on its darker counterpart.
+	/// The default ActiPro color palette plus VDF's accent ramp. The ramp is generated
+	/// from a midtone, so the dark theme lands on the lighter accent and the light theme
+	/// on its darker counterpart. The midtone is the mockup's #4A97CD: it sits between
+	/// the mockup's pale accent surface (#CDE9FF, used for large fills) and its darker
+	/// accent ink (#17587F, used for text on accent), which keeps both ramps readable.
 	/// </summary>
 	public sealed class VdfColorPaletteFactory : DefaultColorPaletteFactory {
-		public const string AccentRampName = "VdfTeal";
+		public const string AccentRampName = "VdfAccent";
 
 		public override ColorPalette Create() {
 			ColorPalette palette = base.Create();
-			palette.Ramps.Add(CreateColorRamp(AccentRampName, isNeutral: false, UIColor.Parse("#34B39C")));
+			palette.Ramps.Add(CreateColorRamp(AccentRampName, isNeutral: false, UIColor.Parse("#4A97CD")));
 			return palette;
 		}
 	}

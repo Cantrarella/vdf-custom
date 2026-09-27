@@ -5,6 +5,12 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Opt out of the CET-compatible apphost. On this machine (Windows 10 21H1,
+         build 19043) the apphost built with /CETCOMPAT fails fast at startup with
+         "Your Windows doesn't fully support CET", because the OS advertises CET but
+         its user-mode shadow-stack support is incomplete. Opting out is the
+         workaround Microsoft documents for exactly this case. -->
+    <CETCompat>false</CETCompat>
     <!-- Avalonia 12 compiles bindings by default; our views use reflection bindings
          without x:DataType. Keep the v11 behavior until views are annotated. -->
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>

@@ -49,6 +49,8 @@ namespace VDF.GUI.Views {
 		bool durationMoreExpanded;
 		bool indexBuilt;
 		string selectedSectionId = "Scanning";
+		// A section the rail asked for before the index existed to select it from.
+		string? pendingSectionRequest;
 		MainWindowVM? vm;
 
 		public SettingsView() {
@@ -65,6 +67,10 @@ namespace VDF.GUI.Views {
 			Loaded += (_, __) => {
 				BuildIndex();
 				UpdateVisibility();
+				if (pendingSectionRequest is { } pending) {
+					pendingSectionRequest = null;
+					SelectSection(pending);
+				}
 			};
 		}
 
@@ -79,6 +85,30 @@ namespace VDF.GUI.Views {
 		void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
 			if (e.PropertyName == nameof(MainWindowVM.SettingsSearchQuery))
 				UpdateVisibility();
+			// The sidebar rail names the section it wants instead of picking the list entry.
+			else if (e.PropertyName == nameof(MainWindowVM.RequestedSettingsSection))
+				ShowRequestedSection(vm?.RequestedSettingsSection);
+		}
+
+		/// <summary>Selects the section the rail asked for; a request that arrives before
+		/// the index exists waits for Loaded, which is what builds it.</summary>
+		void ShowRequestedSection(string? sectionId) {
+			if (string.IsNullOrWhiteSpace(sectionId)) return;
+			if (!indexBuilt) {
+				pendingSectionRequest = sectionId;
+				return;
+			}
+			SelectSection(sectionId);
+		}
+
+		/// <summary>Picks a section the way the user's own click does: drop a running
+		/// search first, then let UpdateVisibility drive both the list and the panel.</summary>
+		void SelectSection(string sectionId) {
+			if (navItems.All(n => (string?)n.Tag != sectionId)) return;
+			selectedSectionId = sectionId;
+			if (vm != null && SettingsSearch.IsSearching(vm.SettingsSearchQuery))
+				vm.SettingsSearchQuery = string.Empty;
+			UpdateVisibility();
 		}
 
 		void BuildIndex() {

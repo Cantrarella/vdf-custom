@@ -819,13 +819,12 @@ namespace VDF.GUI.Data {
 
 		static string ResolveLanguageCode(string? languageCode) {
 			if (!string.IsNullOrWhiteSpace(languageCode))
-				return languageCode;
+				return LanguageService.NormalizeLanguageCode(languageCode);
 
 			var culture = CultureInfo.CurrentUICulture;
-			if (!string.IsNullOrWhiteSpace(culture.TwoLetterISOLanguageName))
-				return culture.TwoLetterISOLanguageName;
-
-			return "en";
+			// Normalized so a Chinese Windows ("zh") resolves to the zh-Hans locale
+			// we ship instead of silently falling back to English.
+			return LanguageService.NormalizeLanguageCode(culture.TwoLetterISOLanguageName);
 		}
 	}
 }
