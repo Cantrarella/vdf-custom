@@ -244,6 +244,41 @@ namespace VDF.GUI.Views {
 			ResultsListControl.SelectedItem = row;
 		}
 
+		// Row interaction from the approved mockup: clicking empty row space marks the
+		// row for deletion, and double-clicking it clears the mark again. Everything that
+		// already owns its clicks keeps them - the checkbox toggles itself, the path line
+		// copies the path (ResultsInteractionRules, #849), the preview opens on
+		// double-tap - so only truly empty row space gets this behaviour.
+		void OnResultRowPointerPressed(object? sender, PointerPressedEventArgs e) {
+			if (sender is not Border border) return;
+			if (border.DataContext is not ResultsItemRow row) return;
+			if (ResultsListControl == null) return;
+			if (!e.GetCurrentPoint(ResultsListControl).Properties.IsLeftButtonPressed) return;
+			if (HasOwnClickHandling(e.Source)) return;
+			row.Item.Checked = !row.Item.Checked;
+			e.Handled = true;
+		}
+
+		// A double tap also fires the single-press handler first (which toggles), so
+		// clearing here is what the second click is for: the row always ends up unmarked.
+		void OnResultRowDoubleTapped(object? sender, TappedEventArgs e) {
+			if (sender is not Border border) return;
+			if (border.DataContext is not ResultsItemRow row) return;
+			if (HasOwnClickHandling(e.Source)) return;
+			row.Item.Checked = false;
+			e.Handled = true;
+		}
+
+		/// <summary>True when the pointer landed on a control that handles its own clicks.</summary>
+		static bool HasOwnClickHandling(object? source) {
+			for (Visual? node = source as Visual; node != null; node = node.GetVisualParent()) {
+				if (node is CheckBox or Button) return true;
+				if (node is Control control && control.Tag is string tag
+					&& (tag == "PathLine" || tag == "Preview")) return true;
+			}
+			return false;
+		}
+
 		void OnThumbnailDoubleTapped(object? sender, TappedEventArgs e) {
 			ViewModel?.ThumbnailDoubleClickCommand.Execute().Subscribe();
 			e.Handled = true;

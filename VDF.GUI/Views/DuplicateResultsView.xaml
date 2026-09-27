@@ -597,7 +597,9 @@
           <Border
               Classes="resultrow"
               Classes.checked="{Binding Item.Checked}"
-              Padding="3,0,6,0">
+              Padding="3,0,6,0"
+              PointerPressed="OnResultRowPointerPressed"
+              DoubleTapped="OnResultRowDoubleTapped">
             <!-- Row height follows the Preview column width and, once loaded, the
                  preview's real shape: single frames keep their aspect ratio (#834),
                  multi-frame previews re-wrap to the column width (WrappedFilmstrip,
@@ -697,8 +699,10 @@
                   </MultiBinding>
                 </AutomationProperties.Name>
               </CheckBox>
-              <!-- preview filmstrip -->
+              <!-- preview filmstrip — Tag=Preview: keeps its own double-tap, so the
+                   row's empty-space handler must not claim clicks inside it. -->
               <Grid DockPanel.Dock="Left"
+                    Tag="Preview"
                     Width="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsPreviewWidth}"
                     IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowThumbnailColumn}">
                 <Border
@@ -990,6 +994,7 @@
                      (copy fires only on an already-selected row, #849) -->
                 <Border
                     Background="Transparent"
+                    Tag="PathLine"
                     IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=!ResultsCompactRows}"
                     ToolTip.Tip="{Binding Item.ItemInfo.Path}"
                     PointerPressed="OnPathPointerPressed">
