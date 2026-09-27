@@ -47,6 +47,36 @@
     <Style Selector="Button.group-action:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{actipro:ThemeResource Container3BackgroundBrush}" />
     </Style>
+    <!-- Row action pair (mockup .btn-ghost.btn-sm): outlined and quiet, because two of
+         them now sit in every row. They brighten on hover instead of shouting. -->
+    <Style Selector="Button.fileact">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="9,2" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.fileact:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfRowSelectedFrameBrush}" />
+    </Style>
+    <Style Selector="Button.fileact:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    </Style>
+    <!-- AI-matched group strip (mockup .callout). Amber, not the mockup's red: in this
+         build red means "this will be deleted", and this strip is the opposite advice. -->
+    <Style Selector="Border.callout">
+      <Setter Property="Margin" Value="12,10,12,8" />
+      <Setter Property="Padding" Value="11,9" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="{DynamicResource VdfWarnSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfWarnBorderBrush}" />
+    </Style>
     <Style Selector="ListBox.results ListBoxItem">
       <Setter Property="Padding" Value="0" />
       <Setter Property="MinHeight" Value="0" />
@@ -198,12 +228,78 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+
+    <!-- ======== Verdict band (mockup .verdict): what the scan found, stated once at
+         the top before any list detail. The three numbers decide whether this run is
+         worth acting on at all, so they carry the page's largest type. ======== -->
+    <Border
+        Grid.Row="0"
+        Padding="18,12"
+        Background="{DynamicResource VdfVerdictBrush}"
+        BorderBrush="{DynamicResource VdfVerdictBorderBrush}"
+        BorderThickness="0,0,0,1">
+      <DockPanel LastChildFill="True">
+        <!-- "N groups need a look": amber, the same "read this before you delete"
+             colour the AI strip uses. Red stays reserved for the delete action itself. -->
+        <Border
+            DockPanel.Dock="Right"
+            IsVisible="{Binding !!GroupsNeedingReview}"
+            VerticalAlignment="Center"
+            Margin="12,0,0,0"
+            Padding="9,3"
+            CornerRadius="99"
+            Background="{DynamicResource VdfWarnSoftBrush}"
+            BorderBrush="{DynamicResource VdfWarnBorderBrush}"
+            BorderThickness="1">
+          <TextBlock FontSize="11.5" FontWeight="SemiBold"
+                     Foreground="{DynamicResource VdfWarnBrush}">
+            <Run Text="{Binding GroupsNeedingReview, Mode=OneWay}" />
+            <Run Text=" " />
+            <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Verdict.NeedReview]}" />
+          </TextBlock>
+        </Border>
+        <StackPanel VerticalAlignment="Center" Spacing="2">
+          <TextBlock FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource VdfAccentTextBrush}">
+            <Run FontSize="21" FontWeight="Bold" Text="{Binding TotalDuplicateGroups, Mode=OneWay}" />
+            <Run Text=" " />
+            <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Verdict.Groups]}" />
+            <Run Text=" · " />
+            <Run FontSize="21" FontWeight="Bold" Text="{Binding TotalDuplicates, Mode=OneWay}" />
+            <Run Text=" " />
+            <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.FilesUnit]}" />
+            <Run Text=" · " />
+            <Run FontSize="21" FontWeight="Bold" Text="{Binding PotentialSavings, Mode=OneWay}" />
+            <Run Text=" " />
+            <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Verdict.Reclaimable]}" />
+          </TextBlock>
+          <!-- Second line: what the run looked at, so the numbers above have a scale.
+               Results restored from a previous session have no scan figures — the whole
+               line is dropped rather than claiming "Scanned 0 files". -->
+          <StackPanel Orientation="Horizontal" IsVisible="{Binding !!ScannedFileCount}">
+            <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}">
+              <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Verdict.Scanned]}" />
+              <Run Text=" " />
+              <Run Text="{Binding ScannedFileCount, Mode=OneWay, StringFormat={}{0:N0}}" />
+              <Run Text=" " />
+              <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.FilesUnit]}" />
+            </TextBlock>
+            <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                       IsVisible="{Binding TimeElapsed, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+              <Run Text=" · " />
+              <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Stats.ElapsedTime]}" />
+              <Run Text="{Binding TimeElapsed, Mode=OneWay}" />
+            </TextBlock>
+          </StackPanel>
+        </StackPanel>
+      </DockPanel>
+    </Border>
 
     <!-- ======== First-results hint (one-shot, dismissible): thumbnails are small by
          default — point at the Preview drag handle and the thumbnail-width setting ======== -->
     <Border
-        Grid.Row="0"
+        Grid.Row="1"
         Padding="10,6"
         Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
         BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
@@ -230,7 +326,7 @@
 
     <!-- ======== Toolbar: sort + filter chips ======== -->
     <Border
-        Grid.Row="1"
+        Grid.Row="2"
         Padding="8,6"
         Background="{actipro:ThemeResource Container2BackgroundBrush}"
         BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
@@ -392,7 +488,7 @@
          vertical scrollbar shifts every row cell left of its header (#837). -->
     <Border
         x:Name="ColumnHeaderStrip"
-        Grid.Row="2"
+        Grid.Row="3"
         Padding="6,4"
         Background="{actipro:ThemeResource Container2BackgroundBrush}"
         BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
@@ -483,10 +579,11 @@
       </DockPanel>
     </Border>
 
-    <!-- ======== Flattened results list ======== -->
+    <!-- ======== Flattened results list. The floating action dock (below) shares this
+         row and overlays its bottom edge, so checking items never resizes the list. -->
     <ListBox
         x:Name="ResultsList"
-        Grid.Row="3"
+        Grid.Row="4"
         AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.List]}"
         Classes="results"
         Background="Transparent"
@@ -582,6 +679,33 @@
                   <TextBlock FontSize="10" FontWeight="Bold"
                              Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Group.PHash]}" />
                 </Border>
+              </StackPanel>
+            </DockPanel>
+          </Border>
+          <!-- mockup .callout: an AI-found group is a suggestion, not a verdict. The
+               classic hash check could not confirm the pair, so say so before the user
+               checks files off — a wrongly deleted original is not recoverable. -->
+          <Border Classes="callout" IsVisible="{Binding HasAiMatches}">
+            <DockPanel LastChildFill="True">
+              <TextBlock
+                  DockPanel.Dock="Left"
+                  Margin="0,0,9,0"
+                  FontSize="14"
+                  VerticalAlignment="Top"
+                  Foreground="{DynamicResource VdfWarnBrush}"
+                  Text="⚠" />
+              <StackPanel Spacing="2">
+                <TextBlock
+                    FontSize="12.5"
+                    FontWeight="SemiBold"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource VdfWarnBrush}"
+                    Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.AiCallout.Title]}" />
+                <TextBlock
+                    FontSize="12"
+                    TextWrapping="Wrap"
+                    Opacity="{DynamicResource VdfTextSoftOpacity}"
+                    Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.AiCallout.Body]}" />
               </StackPanel>
             </DockPanel>
           </Border>
@@ -926,6 +1050,29 @@
                      engages; a plain horizontal StackPanel let long names paint over
                      the neighboring metadata columns. -->
                 <DockPanel LastChildFill="True">
+                  <!-- mockup .file-acts. Revealed on row hover: the name column already
+                       competes with the badges, and paying ~100px for the pair at all times
+                       truncated names down to one character in a narrow window. Hovering
+                       the row you are about to act on is the moment you want them.
+                       Keyed off the ListBoxItem, whose bounds never change, so showing
+                       them cannot flicker under the pointer. -->
+                  <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4"
+                              Margin="8,0,0,0" VerticalAlignment="Center"
+                              IsVisible="{Binding $parent[ListBoxItem].IsPointerOver}">
+                    <Button
+                        Classes="fileact"
+                        Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Open]}"
+                        AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Open]}"
+                        Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).OpenRowItemCommand}"
+                        CommandParameter="{Binding Item}" />
+                    <Button
+                        Classes="fileact"
+                        Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Reveal]}"
+                        AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Reveal]}"
+                        ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.OpenInFolder]}"
+                        Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RevealRowItemCommand}"
+                        CommandParameter="{Binding Item}" />
+                  </StackPanel>
                   <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6" Margin="6,0,0,0">
                   <!-- AI chip: pair found only by the AI embedding pass, not the classic
                        check. Lives with the badges — as a docked pseudo-column it shifted
@@ -1067,19 +1214,36 @@
       </ListBox.DataTemplates>
     </ListBox>
 
-    <!-- ======== Action bar (appears with checked items) ======== -->
+    <!-- ======== Floating action dock (mockup .dock). It shares the list's grid row and
+         pins itself to the bottom, so it hovers over the last rows instead of taking
+         height from the list: checking items must not resize the rows being read. ======== -->
     <Border
         Grid.Row="4"
-        Padding="10,7"
-        Background="{actipro:ThemeResource Container2BackgroundBrush}"
-        BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
-        BorderThickness="0,1,0,0"
-        IsVisible="{Binding !!DuplicatesCheckedCounter}">
+        IsVisible="{Binding !!DuplicatesCheckedCounter}"
+        VerticalAlignment="Bottom"
+        HorizontalAlignment="Stretch"
+        MaxWidth="1016"
+        Margin="28,0,28,16"
+        Padding="18,10"
+        CornerRadius="16"
+        Background="{actipro:ThemeResource Container1BackgroundBrush}"
+        BorderBrush="{DynamicResource VdfMutedBorderBrush}"
+        BorderThickness="1"
+        BoxShadow="0 8 22 0 #26003050">
       <DockPanel LastChildFill="False">
-        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold">
-          <Run Text="{Binding CheckedSummaryText, Mode=OneWay}" />
+        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="12.5"
+                   Opacity="{DynamicResource VdfTextDim85Opacity}">
+          <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Dock.Selected]}" />
+          <Run Text=" " />
+          <Run FontSize="15" FontWeight="SemiBold" Text="{Binding DuplicatesCheckedCounter, Mode=OneWay}" />
+          <Run Text=" " />
+          <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.FilesUnit]}" />
           <Run Text=" · " />
-          <Run Text="{Binding DuplicatesCheckedSize, Mode=OneWay}" />
+          <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Dock.WillFree]}" />
+          <Run Text=" " />
+          <Run FontSize="15" FontWeight="SemiBold"
+               Foreground="{DynamicResource VdfAccentTextBrush}"
+               Text="{Binding DuplicatesCheckedSize, Mode=OneWay}" />
         </TextBlock>
         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="8" Margin="16,0,0,0">
           <Button
@@ -1158,7 +1322,8 @@
               Command="{Binding ClearCheckedItemsCommand}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.ClearSelection]}" />
         </StackPanel>
-        <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}"
+        <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="12"
+                   Margin="16,0,0,0" Opacity="{DynamicResource VdfTextFaintOpacity}"
                    Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Hint]}" />
       </DockPanel>
     </Border>

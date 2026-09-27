@@ -48,6 +48,12 @@ namespace VDF.GUI.ViewModels {
 		public bool HasGrayscaleMatches { get; init; }
 		/// <summary>A member was matched by the pHash comparison (combined mode, #842).</summary>
 		public bool HasPHashMatches { get; init; }
+		/// <summary>
+		/// A member was found only by the AI embedding pass. The classic checks could not
+		/// confirm the pair, so the group gets a "look before you delete" strip — the same
+		/// uncertainty that makes it count towards the verdict bar's review figure.
+		/// </summary>
+		public bool HasAiMatches { get; init; }
 
 		/// <summary>Localized "Group N" title, set by the builder from the active formats.</summary>
 		public string Title { get; internal set; } = string.Empty;

@@ -275,6 +275,27 @@ namespace VDF.GUI.ViewModels {
 			get => _PotentialSavings;
 			set => this.RaiseAndSetIfChanged(ref _PotentialSavings, value);
 		}
+		int _GroupsNeedingReview;
+		/// <summary>
+		/// Groups whose match is not a certainty: the best similarity in the group is below
+		/// 100 %, or a member was found only by the AI pass. Those are the ones where
+		/// deleting without opening the file first is a gamble, so the verdict bar calls
+		/// them out separately.
+		/// </summary>
+		public int GroupsNeedingReview {
+			get => _GroupsNeedingReview;
+			set => this.RaiseAndSetIfChanged(ref _GroupsNeedingReview, value);
+		}
+		int _ScannedFileCount;
+		/// <summary>
+		/// Files the last scan walked through. Kept after the scan ends so the results
+		/// header can say what was looked at — the live progress string is "N / M" and
+		/// gets cleared, this is the number that stays.
+		/// </summary>
+		public int ScannedFileCount {
+			get => _ScannedFileCount;
+			set => this.RaiseAndSetIfChanged(ref _ScannedFileCount, value);
+		}
 		long _TotalSizeRemovedInternal;
 		long TotalSizeRemovedInternal {
 			get => _TotalSizeRemovedInternal;
@@ -721,6 +742,7 @@ namespace VDF.GUI.ViewModels {
 				RemainingTime = e.Remaining.Format();
 				ScanProgressValue = e.CurrentPosition;
 				ScanProgressCount = $"{e.CurrentPosition:N0} / {e.MaxPosition:N0}";
+				ScannedFileCount = e.CurrentPosition;
 				TimeElapsed = e.Elapsed.Format();
 				ScanProgressMaxValue = e.MaxPosition;
 				ScanDrives.Update(e.Drives, DateTime.UtcNow);
@@ -826,22 +848,31 @@ namespace VDF.GUI.ViewModels {
 		void RefreshGroupStats() {
 			TotalDuplicates = Duplicates.Count;
 			int groupCount = 0;
+			int needsReview = 0;
 			long totalSize = 0;
 			long savings = 0;
 			foreach (var group in Duplicates.GroupBy(x => x.ItemInfo.GroupId)) {
 				groupCount++;
 				long groupTotal = 0;
 				long largest = 0;
+				float best = float.MinValue;
+				bool aiMatched = false;
 				foreach (var item in group) {
 					long size = Math.Max(0, item.ItemInfo.SizeLong);
 					groupTotal += size;
 					if (size > largest) largest = size;
+					if (item.ItemInfo.Similarity > best) best = item.ItemInfo.Similarity;
+					aiMatched |= item.ItemInfo.IsAiMatched;
 				}
 				totalSize += groupTotal;
 				savings += groupTotal - largest;
+				// 100 % is the "byte-for-byte the same content" line; anything under it, and
+				// anything the AI pass had to suggest, is worth a glance before deleting.
+				if (best < 100f || aiMatched) needsReview++;
 			}
 			TotalDuplicatesSize = totalSize.BytesToString();
 			TotalDuplicateGroups = groupCount;
+			GroupsNeedingReview = needsReview;
 			PotentialSavings = savings.BytesToString();
 		}
 
@@ -1289,25 +1320,7 @@ namespace VDF.GUI.ViewModels {
 				return;
 
 			if (GetSelectedDuplicateItem() is not DuplicateItemVM currentItem) return;
-			try {
-				if (CoreUtils.IsWindows) {
-					Process.Start(new ProcessStartInfo {
-						FileName = currentItem.ItemInfo.Path,
-						UseShellExecute = true
-					});
-				}
-				else {
-					Process.Start(new ProcessStartInfo {
-						FileName = currentItem.ItemInfo.Path,
-						UseShellExecute = true,
-						Verb = "open"
-					});
-				}
-			}
-			catch (Exception ex) {
-				await MessageBoxService.Show(string.Format(App.Lang["Message.OpenFilesFailed"], ex.Message));
-				return;
-			}
+			await LaunchFile(currentItem.ItemInfo.Path);
 		}
 
 		public async void OpenItemsInFolder() {
@@ -1317,6 +1330,54 @@ namespace VDF.GUI.ViewModels {
 
 			if (GetSelectedDuplicateItem() is not DuplicateItemVM currentItem) return;
 			await RevealInFileManager(currentItem.ItemInfo.Path);
+		}
+
+		// ---- Per-row buttons (mockup .file-acts) ----
+		// The context menu's open/reveal commands work off the list selection. A button
+		// sitting inside a row has to act on ITS file instead: with several rows selected,
+		// or none at all, "open whatever happens to be highlighted" is the wrong file.
+
+		public ReactiveCommand<DuplicateItemVM, Unit> OpenRowItemCommand =>
+			ReactiveCommand.CreateFromTask<DuplicateItemVM>(async item => {
+				if (item == null) return;
+				if (AlternativeOpen(SettingsFile.Instance.CustomCommands.OpenItem,
+									SettingsFile.Instance.CustomCommands.OpenMultiple,
+									new List<DuplicateItemVM> { item }))
+					return;
+				await LaunchFile(item.ItemInfo.Path);
+			});
+
+		public ReactiveCommand<DuplicateItemVM, Unit> RevealRowItemCommand =>
+			ReactiveCommand.CreateFromTask<DuplicateItemVM>(async item => {
+				if (item == null) return;
+				if (AlternativeOpen(SettingsFile.Instance.CustomCommands.OpenItemInFolder,
+									SettingsFile.Instance.CustomCommands.OpenMultipleInFolder,
+									new List<DuplicateItemVM> { item }))
+					return;
+				await RevealInFileManager(item.ItemInfo.Path);
+			});
+
+		// Hands one file to the OS default handler. Shared by the selection-based
+		// OpenItems() and the per-row button so both report failures the same way.
+		async Task LaunchFile(string path) {
+			try {
+				if (CoreUtils.IsWindows) {
+					Process.Start(new ProcessStartInfo {
+						FileName = path,
+						UseShellExecute = true
+					});
+				}
+				else {
+					Process.Start(new ProcessStartInfo {
+						FileName = path,
+						UseShellExecute = true,
+						Verb = "open"
+					});
+				}
+			}
+			catch (Exception ex) {
+				await MessageBoxService.Show(string.Format(App.Lang["Message.OpenFilesFailed"], ex.Message));
+			}
 		}
 
 		// Reveal a single file in the OS file manager, selecting it where the
@@ -1703,6 +1764,8 @@ Non-Windows setup:
 			TotalDuplicateGroups = 0;
 			TotalDuplicates = 0;
 			TotalDuplicatesSize = string.Empty;
+			GroupsNeedingReview = 0;
+			ScannedFileCount = 0;
 
 			SettingsFile.SaveSettings();
 			SyncCoreSettings();

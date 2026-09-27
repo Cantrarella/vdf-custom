@@ -65,6 +65,11 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#C9D6E3" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
+                    <!-- Verdict band on the results page (mockup .verdict): the one surface
+                         that states what the scan found, so it sits a step above the page in
+                         every theme instead of blending into it. -->
+                    <SolidColorBrush x:Key="VdfVerdictBrush" Color="#E3F2FF" />
+                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#A9D7F6" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
                          are 3.3 to 4.4:1, so the light theme dims less. -->
@@ -129,6 +134,11 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#E9F4FF" />
+                    <!-- Verdict band on the results page (mockup .verdict): the one surface
+                         that states what the scan found, so it sits a step above the page in
+                         every theme instead of blending into it. -->
+                    <SolidColorBrush x:Key="VdfVerdictBrush" Color="#16293C" />
+                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#2C4763" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>
@@ -176,6 +186,11 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#2E6E9E" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
+                    <!-- Verdict band on the results page (mockup .verdict): the one surface
+                         that states what the scan found, so it sits a step above the page in
+                         every theme instead of blending into it. -->
+                    <SolidColorBrush x:Key="VdfVerdictBrush" Color="#0E2438" />
+                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#2E6E9E" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
@@ -248,6 +263,11 @@
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#4A4F5A" />
                     <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#14507A" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
+                    <!-- Verdict band on the results page (mockup .verdict): the one surface
+                         that states what the scan found, so it sits a step above the page in
+                         every theme instead of blending into it. -->
+                    <SolidColorBrush x:Key="VdfVerdictBrush" Color="#D6E9FA" />
+                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#14507A" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
