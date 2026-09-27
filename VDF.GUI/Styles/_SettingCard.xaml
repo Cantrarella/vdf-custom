@@ -1,0 +1,128 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
+        xmlns:views="clr-namespace:VDF.GUI.Views;assembly=VDF.GUI">
+
+  <!-- The mockup's section card + option row, shared by the settings page and the
+       setup page. Both group their options the same way, so the two pages cannot
+       drift apart: one card style, one row template, one hover surface. -->
+
+  <!-- One card per section: a white surface with the hairline border, rows separated
+       by hairlines inside it. The page behind is a step darker, so the cards read as
+       cards. -->
+  <Style Selector="Border.setcard">
+    <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="0,6" />
+    <Setter Property="Margin" Value="0,0,0,14" />
+  </Style>
+
+  <!-- Card header: title + optional description on the left, an action on the right
+       (mockup .card-head). Rows inside the card already carry their own padding. -->
+  <Style Selector="Border.cardhead">
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+  <Style Selector="TextBlock.cardtitle">
+    <Setter Property="FontSize" Value="14.5" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.carddesc">
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="Opacity" Value="{DynamicResource VdfTextDim70Opacity}" />
+  </Style>
+
+  <!-- one option per row: title + always-visible description left, control right -->
+  <Style Selector="views|SettingRow">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <StackPanel>
+          <!-- The row carries the pointer-over surface; the hairline below it stays
+               full width (mockup .row + .row:hover). -->
+          <Border Name="RowSurface"
+                  Margin="4,0"
+                  Padding="16,13"
+                  Background="Transparent"
+                  CornerRadius="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Grid.Column="0" Margin="0,0,18,0" Spacing="2" VerticalAlignment="Center">
+                <TextBlock FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
+                           Text="{TemplateBinding Title}" />
+                <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" MaxWidth="470"
+                           HorizontalAlignment="Left"
+                           Text="{TemplateBinding Description}"
+                           IsVisible="{TemplateBinding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock FontSize="12.5" TextWrapping="Wrap" MaxWidth="470" HorizontalAlignment="Left"
+                           Foreground="{DynamicResource VdfWarnBrush}"
+                           Text="{TemplateBinding Warning}"
+                           IsVisible="{TemplateBinding Warning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              </StackPanel>
+              <ContentPresenter Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}" />
+            </Grid>
+          </Border>
+          <Border Height="1" Background="{actipro:ThemeResource Container3BorderBrush}"
+                  IsVisible="{TemplateBinding ShowSeparator}" />
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="views|SettingRow:pointerover /template/ Border#RowSurface">
+    <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+  </Style>
+  <Style Selector="views|SettingRow:disabled">
+    <Setter Property="Opacity" Value="0.55" />
+  </Style>
+
+  <!-- The mockup's switch: a 42x24 pill with an 18px round knob. The two theme
+       tracks differ in lightness so the state reads at a glance (the mockup calls
+       this out). PART_SwitchKnob is a Canvas whose width IS the knob travel: the
+       control sets Canvas.Left on PART_MovingKnobs to that width, so it is sized
+       to the distance the knob actually moves (42 minus 18 minus twice 3).
+       Lives here and not on the settings page, because the setup page uses the
+       same switches and the theme default prints "On" / "Off" next to them. -->
+  <Style Selector="ToggleSwitch.plain">
+    <Setter Property="OnContent" Value="" />
+    <Setter Property="OffContent" Value="" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="KnobTransitions">
+      <Transitions>
+        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.2" Easing="CubicEaseOut" />
+      </Transitions>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+          <Grid Grid.Column="0" Width="42" Height="24" VerticalAlignment="Center">
+            <Border x:Name="VdfSwitchTrack"
+                    Width="42" Height="24" CornerRadius="12"
+                    Background="{DynamicResource VdfSwitchTrackOffBrush}" />
+            <Canvas x:Name="PART_SwitchKnob"
+                    Width="18" Height="24" Margin="3,0,0,0"
+                    HorizontalAlignment="Left" VerticalAlignment="Center">
+              <Grid x:Name="PART_MovingKnobs" Width="18" Height="24">
+                <Ellipse Width="18" Height="18"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         Fill="{DynamicResource VdfSwitchKnobBrush}" />
+              </Grid>
+            </Canvas>
+          </Grid>
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="ToggleSwitch.plain:checked /template/ Border#VdfSwitchTrack">
+    <Setter Property="Background" Value="{DynamicResource VdfSwitchTrackOnBrush}" />
+  </Style>
+
+  <!-- Compact numeric field used inside a SettingRow's control slot. -->
+  <Style Selector="NumericUpDown.stepper">
+    <Setter Property="Width" Value="150" />
+    <Setter Property="HorizontalAlignment" Value="Right" />
+  </Style>
+</Styles>

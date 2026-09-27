@@ -47,11 +47,6 @@ namespace VDF.GUI.Views {
 			}
 		}
 
-		void OnProfileCardPressed(object? sender, PointerPressedEventArgs e) {
-			if ((sender as Control)?.DataContext is ScanProfileOptionVM option)
-				ViewModel?.SelectScanProfileCommand.Execute(option).Subscribe();
-		}
-
 		void OnAdvancedSettingsClick(object? sender, RoutedEventArgs e) {
 			if (ViewModel != null)
 				ViewModel.ActiveShellView = Data.ShellView.Settings;

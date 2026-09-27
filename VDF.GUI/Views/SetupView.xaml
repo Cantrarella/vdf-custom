@@ -6,321 +6,210 @@
     xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
     xmlns:local="clr-namespace:VDF.GUI;assembly=VDF.GUI"
     xmlns:mvvm="clr-namespace:VDF.GUI.Mvvm;assembly=VDF.GUI"
+    xmlns:views="clr-namespace:VDF.GUI.Views;assembly=VDF.GUI"
     xmlns:vm="clr-namespace:VDF.GUI.ViewModels;assembly=VDF.GUI"
     x:DataType="vm:MainWindowVM">
 
   <UserControl.Resources>
-    <!-- local instances: StaticResource inside templates resolves against THIS scope -->
-    <!-- 0.9, not the mockup's 0.55: dimming the whole card took its text down to 2.2:1.
-         The red drive chip and the "Excluded" line still mark it. -->
-    <mvvm:BoolToValueConverter x:Key="ExcludedOpacityConverter" TrueValue="0.9" FalseValue="1.0" />
+    <mvvm:BoolToValueConverter x:Key="DisabledOpacityConverter" TrueValue="0.55" FalseValue="1.0" />
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <Style Selector="TextBlock.paneltitle">
-      <Setter Property="FontSize" Value="12" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
-      <Setter Property="Margin" Value="0,0,0,14" />
-    </Style>
-    <Style Selector="Border.foldercard">
+    <!-- Mockup .scanbar: the estimate on the left, the CTA on the right. It stays put
+         while the cards below scroll, so starting a scan never needs scrolling. -->
+    <Style Selector="Border.scanbar">
+      <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
       <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="10,8" />
-      <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="16,12" />
     </Style>
-    <Style Selector="Border.profilecard">
+    <!-- Mockup .dir-row: one include folder. Rows are separated by hairlines and the
+         whole row dims while the folder is switched off. -->
+    <Style Selector="Border.dirrow">
       <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="12,10" />
-      <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
-      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="Padding" Value="16,11" />
     </Style>
-    <!-- The mockup's accent (.profile.on), from the token that the high contrast themes turn
-         into black or white: the chosen card must not be the one with the faintest outline. -->
-    <Style Selector="Border.profilecard.active">
-      <Setter Property="BorderBrush" Value="{DynamicResource VdfRowSelectedFrameBrush}" />
-    </Style>
-    <!-- mockup .folder .drive: accent-soft chip with accent label; excluded flips to danger -->
     <Style Selector="Border.drivechip">
       <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
     </Style>
     <Style Selector="Border.drivechip TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
     </Style>
-    <Style Selector="Border.drivechip.excluded">
-      <Setter Property="Background" Value="{DynamicResource VdfDangerSoftBrush}" />
+    <Style Selector="Border.offchip">
+      <Setter Property="Background" Value="{DynamicResource VdfMutedSoftBrush}" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Padding" Value="5,0" />
     </Style>
-    <Style Selector="Border.drivechip.excluded TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource VdfDangerBrush}" />
+    <Style Selector="Border.offchip TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontWeight" Value="Bold" />
     </Style>
   </UserControl.Styles>
 
-  <!-- Mockup structure: hint strip, then the sticky scan bar (mockup .topbar: the scan
-       button lives at the TOP so it never needs scrolling), split panels, status line. -->
+  <!-- Mockup page 1: scan bar, then one card per group of options in a single column.
+       The two-column split it replaces put folders and options side by side, which is
+       not what the approved mockup shows. -->
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
-    <StackPanel Grid.Row="0" Spacing="4">
-
-      <!-- "no duplicates found" notice: shown after a completed scan that matched
-           nothing, so returning to the Setup screen is distinguishable from the
-           never-scanned state -->
-      <Border
-          CornerRadius="8"
-          Padding="12,8"
-          Margin="24,14,24,0"
-          Background="{DynamicResource VdfGoodSoftBrush}"
-          BorderBrush="{DynamicResource VdfGoodBorderBrush}"
-          BorderThickness="1"
-          IsVisible="{Binding ShowNoDuplicatesNotice}">
-        <DockPanel LastChildFill="True">
-          <Button
-              DockPanel.Dock="Right"
-              Background="Transparent"
-              BorderThickness="0"
-              FontSize="12"
-              Opacity="{DynamicResource VdfTextDim85Opacity}"
-              VerticalAlignment="Center"
-              Command="{Binding DismissNoDuplicatesNoticeCommand}"
-              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Close]}"
-              ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Close]}"
-              Content="✕" />
-          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-            <TextBlock FontSize="14" VerticalAlignment="Center"
-                       Foreground="{DynamicResource VdfGoodBrush}"
-                       Text="✓" />
-            <TextBlock FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
-                       Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.NoDuplicates.Title]}" />
-            <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextDim80Opacity}" TextWrapping="Wrap" VerticalAlignment="Center"
-                       Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.NoDuplicates.Text]}" />
-          </StackPanel>
-        </DockPanel>
-      </Border>
-
-      <!-- welcome strip -->
-      <Border
-          CornerRadius="8"
-          Padding="12,8"
-          Margin="24,14,24,4"
-          Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
-          BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
-          BorderThickness="1"
-          IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=!WelcomeStripDismissed}">
-        <DockPanel LastChildFill="True">
-          <Button
-              DockPanel.Dock="Right"
-              Background="Transparent"
-              BorderThickness="0"
-              FontSize="12"
-              Opacity="{DynamicResource VdfTextDim85Opacity}"
-              VerticalAlignment="Center"
-              Command="{Binding DismissWelcomeStripCommand}"
-              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Welcome.Dismiss]}">
-            <!-- The glyph is decoration and stays out of the translated text, where a
-                 screen reader read it out as part of the sentence. -->
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Welcome.Dismiss]}" />
-              <TextBlock Text="✕" />
-            </StackPanel>
-          </Button>
-          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-            <TextBlock FontSize="13" FontWeight="SemiBold"
-                       Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Welcome.Title]}" />
-            <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextDim80Opacity}" TextWrapping="Wrap"
-                       Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Welcome.Text]}" />
-          </StackPanel>
-        </DockPanel>
-      </Border>
-
-    </StackPanel>
-
-    <!-- sticky scan bar (mockup .topbar): scan CTA + hint, always visible without scrolling -->
+    <!-- "no duplicates found": shown after a completed scan that matched nothing, so
+         returning to this screen is distinguishable from the never-scanned state -->
     <Border
-        Grid.Row="1"
-        Padding="24,10"
-        Margin="0,6,0,0"
-        Background="{actipro:ThemeResource Container2BackgroundBrush}"
-        BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
-        BorderThickness="0,1,0,1">
+        Grid.Row="0"
+        CornerRadius="8"
+        Padding="12,8"
+        Margin="24,14,24,0"
+        Background="{DynamicResource VdfGoodSoftBrush}"
+        BorderBrush="{DynamicResource VdfGoodBorderBrush}"
+        BorderThickness="1"
+        IsVisible="{Binding ShowNoDuplicatesNotice}">
+      <DockPanel LastChildFill="True">
+        <Button
+            DockPanel.Dock="Right"
+            Background="Transparent"
+            BorderThickness="0"
+            FontSize="12"
+            Opacity="{DynamicResource VdfTextDim85Opacity}"
+            VerticalAlignment="Center"
+            Command="{Binding DismissNoDuplicatesNoticeCommand}"
+            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Close]}"
+            ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Close]}"
+            Content="✕" />
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <TextBlock FontSize="14" VerticalAlignment="Center"
+                     Foreground="{DynamicResource VdfGoodBrush}"
+                     Text="✓" />
+          <TextBlock FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
+                     Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.NoDuplicates.Title]}" />
+          <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextDim80Opacity}" TextWrapping="Wrap" VerticalAlignment="Center"
+                     Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.NoDuplicates.Text]}" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- ===== scan bar ===== -->
+    <Border Grid.Row="1" Classes="scanbar" Margin="24,14,24,0">
       <DockPanel LastChildFill="True">
         <StackPanel
             DockPanel.Dock="Right"
             Orientation="Horizontal"
-            Spacing="14"
+            Spacing="12"
             VerticalAlignment="Center">
+          <Button
+              Classes="hyperlink"
+              FontSize="12.5"
+              VerticalAlignment="Center"
+              Click="OnAdvancedSettingsClick"
+              Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AdvancedSettings]}" />
           <Button
               x:Name="ScanButton"
               Classes="solid"
               FontSize="14"
               FontWeight="SemiBold"
-              Padding="26,9"
+              Padding="22,9"
               VerticalAlignment="Center"
               Background="{actipro:ThemeResource ControlBackgroundBrushSolidAccent}"
               Foreground="{DynamicResource VdfOnAccentBrush}"
-              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scan]}"
+              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}"
               Command="{Binding StartScanCommand}"
               CommandParameter="FullScan">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <TextBlock Text="▶" FontSize="12" VerticalAlignment="Center" />
-              <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scan]}" />
+              <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}" />
             </StackPanel>
           </Button>
-          <Button
-              Classes="hyperlink"
-              FontSize="13"
-              VerticalAlignment="Center"
-              VerticalContentAlignment="Center"
-              Click="OnAdvancedSettingsClick"
-              Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AdvancedSettings]}" />
         </StackPanel>
-        <TextBlock
-            FontSize="13"
-            Opacity="{DynamicResource VdfTextDim85Opacity}"
-            VerticalAlignment="Center"
-            TextTrimming="CharacterEllipsis"
-            Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.TopHint]}" />
+        <StackPanel VerticalAlignment="Center" Spacing="2">
+          <TextBlock FontSize="13.5" FontWeight="SemiBold" Text="{Binding SetupEstimatedFilesText}" />
+          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim70Opacity}" Text="{Binding SetupEstimatedHintText}" />
+        </StackPanel>
       </DockPanel>
     </Border>
 
-    <!-- split panels -->
-    <Grid Grid.Row="2" ColumnDefinitions="1.25*,*" Margin="0,10,0,0">
+    <!-- ===== the three option cards ===== -->
+    <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Margin="24,14,24,20">
 
-      <!-- ===== left: where to look ===== -->
-      <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Margin="28,14,28,20">
-          <TextBlock Classes="paneltitle" Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.WhereToLook]}" />
-          <ItemsControl ItemsSource="{Binding SetupFolders}"
-                        AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.WhereToLook]}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Spacing="8" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:SetupFolderVM">
-                <Border Classes="foldercard" Opacity="{Binding IsExcluded, Converter={StaticResource ExcludedOpacityConverter}}">
-                  <DockPanel LastChildFill="True">
-                    <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="7"
-                            Classes="drivechip"
-                            Classes.excluded="{Binding IsExcluded}">
-                      <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                                 FontWeight="Bold" FontSize="12" Text="{Binding DriveLabel}" />
-                    </Border>
-                    <Button DockPanel.Dock="Right"
-                            Background="Transparent" BorderThickness="0"
-                            VerticalAlignment="Center" Padding="6,2"
-                            Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RemoveSetupFolderCommand}"
-                            CommandParameter="{Binding}"
-                            ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Setup.RemoveFolder]}">
-                      <!-- says which folder it removes, the glyph alone says nothing -->
-                      <AutomationProperties.Name>
-                        <MultiBinding StringFormat="{}{0}: {1}">
-                          <Binding Source="{x:Static local:App.Lang}" Path="[Setup.RemoveFolder]" />
-                          <Binding Path="Path" />
-                        </MultiBinding>
-                      </AutomationProperties.Name>
-                      <TextBlock Text="✕" FontSize="13" Opacity="{DynamicResource VdfTextDim70Opacity}" />
-                    </Button>
-                    <Button DockPanel.Dock="Right"
-                            Classes="hyperlink"
+        <!-- 扫描目录 -->
+        <Border Classes="setcard">
+          <StackPanel>
+            <Border Classes="cardhead">
+              <DockPanel LastChildFill="True">
+                <Button
+                    DockPanel.Dock="Right"
+                    FontSize="12.5"
+                    VerticalAlignment="Center"
+                    Command="{Binding AddIncludesToListCommand}"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddDir]}" />
+                <StackPanel Spacing="2">
+                  <TextBlock Classes="cardtitle"
+                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Folders.Title]}" />
+                  <TextBlock Classes="carddesc"
+                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Folders.Desc]}" />
+                </StackPanel>
+              </DockPanel>
+            </Border>
+
+            <ItemsControl ItemsSource="{Binding SetupFolders}"
+                          AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Folders.Title]}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SetupFolderVM">
+                  <!-- Excluded folders belong to the ignore list page; this card lists
+                       what will actually be scanned. -->
+                  <Border Classes="dirrow" IsVisible="{Binding !IsExcluded}"
+                          Opacity="{Binding IsDisabled, Converter={StaticResource DisabledOpacityConverter}}">
+                    <DockPanel LastChildFill="True">
+                      <Border DockPanel.Dock="Left" Width="34" Height="34" CornerRadius="7"
+                              Classes="drivechip">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontWeight="Bold" FontSize="12" Text="{Binding DriveLabel}" />
+                      </Border>
+                      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6"
+                                  VerticalAlignment="Center" Margin="8,0,0,0">
+                        <Button
                             FontSize="12"
-                            VerticalAlignment="Center"
+                            Padding="8,4"
                             IsVisible="{Binding ShowCountNow}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).CountFolderNowCommand}"
                             CommandParameter="{Binding}"
                             Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.CountNow]}" />
-                    <StackPanel Margin="10,0,6,0" VerticalAlignment="Center" Spacing="1">
-                      <TextBlock FontSize="13.5" FontWeight="SemiBold"
-                                 TextTrimming="CharacterEllipsis"
-                                 Text="{Binding Path}" ToolTip.Tip="{Binding Path}" />
-                      <StackPanel Orientation="Horizontal" Spacing="6">
-                        <ProgressBar Width="40" Height="4" IsIndeterminate="True"
-                                     IsVisible="{Binding IsCounting}" VerticalAlignment="Center" />
-                        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextSecondaryOpacity}" Text="{Binding MetaText}" />
+                        <Button
+                            FontSize="12"
+                            Padding="8,4"
+                            IsVisible="{Binding !IsDisabled}"
+                            Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleSetupFolderCommand}"
+                            CommandParameter="{Binding}"
+                            Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Disable]}" />
+                        <Button
+                            FontSize="12"
+                            Padding="8,4"
+                            IsVisible="{Binding IsDisabled}"
+                            Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleSetupFolderCommand}"
+                            CommandParameter="{Binding}"
+                            Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Enable]}" />
+                        <Button
+                            FontSize="12"
+                            Padding="8,4"
+                            Foreground="{DynamicResource VdfDangerBrush}"
+                            Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RemoveSetupFolderCommand}"
+                            CommandParameter="{Binding}"
+                            ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Setup.RemoveFolder]}"
+                            Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Remove]}" />
                       </StackPanel>
-                    </StackPanel>
-                  </DockPanel>
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-
-          <!-- dashed drop zone (drop handled view-wide; Alt = exclude) -->
-          <Grid Margin="0,10,0,0" MinHeight="58">
-            <Rectangle
-                Stroke="{actipro:ThemeResource Container4BorderBrush}"
-                StrokeThickness="1.5"
-                StrokeDashArray="4,3"
-                RadiusX="8" RadiusY="8"
-                Fill="Transparent" />
-            <StackPanel Orientation="Horizontal" Spacing="4"
-                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Margin="14,10">
-              <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextDim85Opacity}" FontWeight="SemiBold"
-                         Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Drop.Bold]}" />
-              <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextFaintOpacity}"
-                         Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Drop.Text]}" />
-              <Button Classes="hyperlink" FontSize="13" VerticalAlignment="Center"
-                      Command="{Binding AddIncludesToListCommand}"
-                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Drop.Browse]}" />
-            </StackPanel>
-          </Grid>
-
-          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,10,0,0">
-            <Button
-                FontSize="12.5"
-                Command="{Binding AddIncludesToListCommand}"
-                Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddFolder]}" />
-            <Button
-                FontSize="12.5"
-                Command="{Binding AddBlacklistToListCommand}"
-                Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddExcluded]}" />
-          </StackPanel>
-        </StackPanel>
-      </ScrollViewer>
-
-      <!-- ===== right: what to look for (tinted panel, left border — mockup .setup-right) ===== -->
-      <Border Grid.Column="1"
-              Background="{actipro:ThemeResource Container2BackgroundBrush}"
-              BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
-              BorderThickness="1,0,0,0">
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-          <StackPanel Margin="28,14,28,20">
-            <TextBlock Classes="paneltitle" Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.WhatToLookFor]}" />
-            <ItemsControl ItemsSource="{Binding ScanProfileOptions}"
-                          AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.WhatToLookFor]}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <StackPanel Spacing="8" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:ScanProfileOptionVM">
-                  <Border Classes="profilecard"
-                          Classes.active="{Binding IsActive}"
-                          PointerPressed="OnProfileCardPressed">
-                    <DockPanel LastChildFill="True">
-                      <TextBlock DockPanel.Dock="Right" FontSize="11" Opacity="{DynamicResource VdfTextFaintOpacity}"
-                                 VerticalAlignment="Top" Text="{Binding TimeHint}" />
-                      <StackPanel Spacing="2">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                          <!-- The mouse picks a profile by clicking anywhere on the card (the
-                               radio is not hit-testable, so the click reaches the card). The
-                               keyboard and screen readers operate the radio itself, so it runs
-                               the same command: without it, Space checked the radio on screen
-                               while the scan kept the previous profile. -->
-                          <RadioButton GroupName="ScanProfiles" IsHitTestVisible="False"
-                                       AutomationProperties.Name="{Binding Name}"
-                                       AutomationProperties.HelpText="{Binding Description}"
-                                       Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).SelectScanProfileCommand}"
-                                       CommandParameter="{Binding}"
-                                       IsChecked="{Binding IsActive, Mode=OneWay}" />
-                          <TextBlock FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"
-                                     Text="{Binding Name}" />
+                      <StackPanel Margin="10,0,6,0" VerticalAlignment="Center" Spacing="1">
+                        <TextBlock FontSize="13.5" FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis"
+                                   Text="{Binding Path}" ToolTip.Tip="{Binding Path}" />
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <ProgressBar Width="40" Height="4" IsIndeterminate="True"
+                                       IsVisible="{Binding IsCounting}" VerticalAlignment="Center" />
+                          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextSecondaryOpacity}" Text="{Binding MetaText}" />
+                          <Border Classes="offchip" VerticalAlignment="Center" IsVisible="{Binding IsDisabled}">
+                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.DisabledChip]}" />
+                          </Border>
                         </StackPanel>
-                        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" Text="{Binding Description}" />
                       </StackPanel>
                     </DockPanel>
                   </Border>
@@ -328,28 +217,157 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- scan CTA moved to the sticky top bar (mockup: no scrolling to start) -->
-            <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" Margin="0,18,0,0" TextWrapping="Wrap"
-                       Text="{Binding SetupFootnote}" />
+            <!-- dashed drop zone (drop handled view-wide; Alt = exclude) -->
+            <Grid Margin="16,12,16,12" MinHeight="54">
+              <Rectangle
+                  Stroke="{actipro:ThemeResource Container4BorderBrush}"
+                  StrokeThickness="1.5"
+                  StrokeDashArray="4,3"
+                  RadiusX="8" RadiusY="8"
+                  Fill="Transparent" />
+              <StackPanel Orientation="Horizontal" Spacing="4"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Margin="14,10">
+                <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextDim85Opacity}" FontWeight="SemiBold"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Drop.Bold]}" />
+                <TextBlock FontSize="13" Opacity="{DynamicResource VdfTextFaintOpacity}"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Drop.Text]}" />
+                <Button Classes="hyperlink" FontSize="13" VerticalAlignment="Center"
+                        Command="{Binding AddIncludesToListCommand}"
+                        Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Drop.Browse]}" />
+              </StackPanel>
+            </Grid>
           </StackPanel>
-        </ScrollViewer>
-      </Border>
-    </Grid>
+        </Border>
 
-    <!-- window-wide status line (mockup .statusline) -->
+        <!-- 比对范围 -->
+        <Border Classes="setcard">
+          <StackPanel>
+            <Border Classes="cardhead">
+              <TextBlock Classes="cardtitle"
+                         Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Title]}" />
+            </Border>
+
+            <views:SettingRow
+                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Video.Title]}"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Video.Desc]}">
+              <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                            IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=IncludeVideos}" />
+            </views:SettingRow>
+
+            <views:SettingRow
+                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Image.Title]}"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.Image.Desc]}">
+              <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                            IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=IncludeImages}" />
+            </views:SettingRow>
+
+            <views:SettingRow ShowSeparator="False"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Scope.MinSize.Desc]}">
+              <views:SettingRow.Title>
+                <MultiBinding StringFormat="{}{0} {1} {2}">
+                  <Binding Source="{x:Static local:App.Lang}" Path="[Setup.Scope.MinSize.Pre]" />
+                  <Binding Source="{x:Static Settings:SettingsFile.Instance}" Path="MinimumFileSize" />
+                  <Binding Source="{x:Static local:App.Lang}" Path="[Setup.Scope.MinSize.Post]" />
+                </MultiBinding>
+              </views:SettingRow.Title>
+              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <NumericUpDown Classes="stepper" Increment="1" Minimum="0" Maximum="999999" Width="90"
+                               IsEnabled="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilterByFileSize}"
+                               Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=MinimumFileSize}" />
+                <TextBlock VerticalAlignment="Center" FontSize="12.5"
+                           Opacity="{DynamicResource VdfTextDim80Opacity}" Text="MB" />
+                <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilterByFileSize}" />
+              </StackPanel>
+            </views:SettingRow>
+          </StackPanel>
+        </Border>
+
+        <!-- 匹配强度 -->
+        <Border Classes="setcard">
+          <StackPanel>
+            <Border Classes="cardhead">
+              <StackPanel Spacing="2">
+                <TextBlock Classes="cardtitle"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Title]}" />
+                <TextBlock Classes="carddesc"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Desc]}" />
+              </StackPanel>
+            </Border>
+
+            <!-- The profile picker: the mockup has no row for it, but dropping it would
+                 leave no way to pick a profile anywhere, so it lives here as one row. -->
+            <views:SettingRow
+                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Title]}"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Desc]}">
+              <ComboBox MinWidth="200" VerticalAlignment="Center"
+                        ItemsSource="{Binding ScanProfileOptions}"
+                        SelectedItem="{Binding ActiveScanProfileOption}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="vm:ScanProfileOptionVM">
+                    <TextBlock Text="{Binding Name}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+            </views:SettingRow>
+
+            <!-- mockup .slider-box -->
+            <StackPanel Margin="16,14,16,10" Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <TextBlock FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource VdfAccentTextBrush}"
+                           Text="{Binding SimilarityThreshold, StringFormat=\{0:0.#\}}" />
+                <TextBlock FontSize="13" VerticalAlignment="Center"
+                           Opacity="{DynamicResource VdfTextDim70Opacity}"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Threshold]}" />
+              </StackPanel>
+              <Slider Minimum="70" Maximum="100" TickFrequency="0.5" IsSnapToTickEnabled="True"
+                      Value="{Binding SimilarityThreshold}" />
+              <Grid ColumnDefinitions="*,*,*">
+                <TextBlock Grid.Column="0" FontSize="11.5" HorizontalAlignment="Left"
+                           Opacity="{DynamicResource VdfTextFaintOpacity}"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Scale.Loose]}" />
+                <TextBlock Grid.Column="1" FontSize="11.5" HorizontalAlignment="Center"
+                           Opacity="{DynamicResource VdfTextFaintOpacity}"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Scale.Standard]}" />
+                <TextBlock Grid.Column="2" FontSize="11.5" HorizontalAlignment="Right"
+                           Opacity="{DynamicResource VdfTextFaintOpacity}"
+                           Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Scale.Strict]}" />
+              </Grid>
+            </StackPanel>
+
+            <views:SettingRow
+                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Ai.Title]}"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Ai.Desc]}">
+              <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                            IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=UseAiMatching}" />
+            </views:SettingRow>
+
+            <views:SettingRow
+                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Clip.Title]}"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Clip.Desc]}">
+              <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                            IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=EnablePartialClipDetection}" />
+            </views:SettingRow>
+
+            <views:SettingRow ShowSeparator="False"
+                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Skip.Title]}"
+                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Skip.Desc]}">
+              <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                            IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=HideConfirmedGroups}" />
+            </views:SettingRow>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- window-wide status line -->
     <Border Grid.Row="3"
             Padding="24,6"
             BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
             BorderThickness="0,1,0,0">
-      <StackPanel Orientation="Horizontal" Spacing="24">
-        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" Text="{Binding DatabaseInfoText}" />
-        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}"
-                   IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=RememberDeletedContent}"
-                   Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.RememberingDeletedOn]}" />
-        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}"
-                   IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=!RememberDeletedContent}"
-                   Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.RememberingDeletedOff]}" />
-      </StackPanel>
+      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" Text="{Binding DatabaseInfoText}" />
     </Border>
   </Grid>
 </UserControl>

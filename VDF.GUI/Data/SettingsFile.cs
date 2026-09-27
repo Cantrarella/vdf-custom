@@ -218,6 +218,40 @@ namespace VDF.GUI.Data {
 			get;
 			set => this.RaiseAndSetIfChanged(ref field, value);
 		} = true;
+		// Mockup "比对范围 / 视频文件". The core only ever had an image switch, so a
+		// scan of pictures alone was impossible without emptying the folder list.
+		[JsonPropertyName("IncludeVideos")]
+		public bool IncludeVideos {
+			get;
+			set => this.RaiseAndSetIfChanged(ref field, value);
+		} = true;
+		/// <summary>Setup screen: an include folder switched off but kept in the list.</summary>
+		[JsonPropertyName("DisabledIncludes")]
+		public ObservableCollection<string> DisabledIncludes {
+			get;
+			set => this.RaiseAndSetIfChanged(ref field, value);
+		} = new();
+		/// <summary>
+		/// Mockup "跳过已确认过的组". Groups marked "not a match" are remembered on disk;
+		/// this decides whether they stay hidden on the next scan. True keeps the
+		/// long-standing behavior, so an existing blacklist does not suddenly reappear.
+		/// </summary>
+		[JsonPropertyName("HideConfirmedGroups")]
+		public bool HideConfirmedGroups {
+			get;
+			set => this.RaiseAndSetIfChanged(ref field, value);
+		} = true;
+		// Setup screen "上次同样规模用时 …". Both are filled in when a scan finishes.
+		[JsonPropertyName("LastScanDurationSeconds")]
+		public double? LastScanDurationSeconds {
+			get;
+			set => this.RaiseAndSetIfChanged(ref field, value);
+		}
+		[JsonPropertyName("LastScanFileCount")]
+		public int? LastScanFileCount {
+			get;
+			set => this.RaiseAndSetIfChanged(ref field, value);
+		}
 		[JsonPropertyName("GeneratePreviewThumbnails")]
 		public bool GeneratePreviewThumbnails {
 			get;

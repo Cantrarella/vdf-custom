@@ -62,6 +62,24 @@ namespace VDF.GUI.ViewModels {
 		}
 		/// <summary>Instant count from the fingerprint database, before any folder walk.</summary>
 		internal int? DbKnownCount;
+
+		/// <summary>Result of the last completed walk; drives the Setup screen's estimate.</summary>
+		long? _FileCount;
+		public long? FileCount {
+			get => _FileCount;
+			set => this.RaiseAndSetIfChanged(ref _FileCount, value);
+		}
+		long? _TotalBytes;
+		public long? TotalBytes {
+			get => _TotalBytes;
+			set => this.RaiseAndSetIfChanged(ref _TotalBytes, value);
+		}
+		/// <summary>Switched off on the Setup screen: kept in the list, left out of the scan.</summary>
+		bool _IsDisabled;
+		public bool IsDisabled {
+			get => _IsDisabled;
+			set => this.RaiseAndSetIfChanged(ref _IsDisabled, value);
+		}
 	}
 
 	public sealed class ScanProfileOptionVM : ReactiveObject {
@@ -159,14 +177,17 @@ namespace VDF.GUI.ViewModels {
 			set => this.RaiseAndSetIfChanged(ref _DatabaseInfoText, value);
 		}
 
-		internal void RebuildSetupFolders() {
-			SetupFolders.Clear();
-			foreach (var path in SettingsFile.Instance.Includes)
-				SetupFolders.Add(new SetupFolderVM(path, isExcluded: false));
-			foreach (var path in SettingsFile.Instance.Blacklists)
-				SetupFolders.Add(new SetupFolderVM(path, isExcluded: true) {
-					MetaText = App.Lang["Setup.Excluded"]
-				});
+	internal void RebuildSetupFolders() {
+		SetupFolders.Clear();
+		foreach (var path in SettingsFile.Instance.Includes)
+			SetupFolders.Add(new SetupFolderVM(path, isExcluded: false) {
+				IsDisabled = SettingsFile.Instance.DisabledIncludes.Contains(path)
+			});
+		foreach (var path in SettingsFile.Instance.Blacklists)
+			SetupFolders.Add(new SetupFolderVM(path, isExcluded: true) {
+				MetaText = App.Lang["Setup.Excluded"]
+			});
+		RefreshSetupEstimate();
 
 			SetupFootnote = string.Format(App.Lang["Setup.LocationsFootnote"], SettingsFile.Instance.Includes.Count);
 
@@ -229,17 +250,88 @@ namespace VDF.GUI.ViewModels {
 				folder.IsCounting = folderCounting.IsCounting(folder.Path);
 		}
 
-		void ApplyFinalCount(SetupFolderVM folder, FolderCountProgress result) {
-			if (result.Failed) {
-				folder.MetaText = App.Lang["Setup.CountFailed"];
-				return;
-			}
-			string text = string.Format(App.Lang["Setup.MetaCounted"],
+	void ApplyFinalCount(SetupFolderVM folder, FolderCountProgress result) {
+		if (result.Failed) {
+			folder.MetaText = App.Lang["Setup.CountFailed"];
+			return;
+		}
+		folder.FileCount = result.FileCount;
+		folder.TotalBytes = result.TotalBytes;
+		string text = string.Format(App.Lang["Setup.MetaCounted"],
 				result.FileCount.ToString("N0"), result.TotalBytes.BytesToString());
 			if (folder.DbKnownCount is int known && result.FileCount - known > 0)
-				text += " · " + string.Format(App.Lang["Setup.MetaNotScanned"], (result.FileCount - known).ToString("N0"));
-			folder.MetaText = text;
+			text += " · " + string.Format(App.Lang["Setup.MetaNotScanned"], (result.FileCount - known).ToString("N0"));
+		folder.MetaText = text;
+		RefreshSetupEstimate();
+	}
+
+	/// <summary>
+	/// The mockup's 匹配强度 slider. Percent is a float on the settings file, which a
+	/// Slider cannot bind to directly, so this proxies it as a double.
+	/// </summary>
+	public double SimilarityThreshold {
+		get => SettingsFile.Instance.Percent;
+		set {
+			float rounded = (float)Math.Round(value, 1);
+			if (SettingsFile.Instance.Percent == rounded) return;
+			SettingsFile.Instance.Percent = rounded;
+			this.RaisePropertyChanged();
 		}
+	}
+
+	// ---------- estimate line on the scan bar (mockup .scanbar) ----------
+	string _SetupEstimatedFilesText = string.Empty;
+	/// <summary>"预计扫描 12,480 个文件", or a counting placeholder while walks run.</summary>
+	public string SetupEstimatedFilesText {
+		get => _SetupEstimatedFilesText;
+		set => this.RaiseAndSetIfChanged(ref _SetupEstimatedFilesText, value);
+	}
+	string _SetupEstimatedHintText = string.Empty;
+	/// <summary>"上次同样规模用时 4 分 12 秒（有缓存会更快）".</summary>
+	public string SetupEstimatedHintText {
+		get => _SetupEstimatedHintText;
+		set => this.RaiseAndSetIfChanged(ref _SetupEstimatedHintText, value);
+	}
+
+	/// <summary>
+	/// Sums the folders that will actually take part in the scan. Folders still being
+	/// walked contribute nothing yet, so the number climbs while it settles instead of
+	/// starting at a wrong zero.
+	/// </summary>
+	internal void RefreshSetupEstimate() {
+		long files = 0;
+		int known = 0, due = 0;
+		foreach (var folder in SetupFolders.Where(f => !f.IsExcluded && !f.IsDisabled)) {
+			due++;
+			if (folder.FileCount is long counted) {
+				files += counted;
+				known++;
+			}
+			else if (folder.DbKnownCount is int dbCount && dbCount > 0)
+				files += dbCount; // fingerprint database: a floor, not the whole story
+		}
+
+		if (due == 0 || files == 0)
+			SetupEstimatedFilesText = App.Lang["Setup.Estimate.Counting"];
+		else
+			SetupEstimatedFilesText = string.Format(App.Lang["Setup.Estimate.Files"], files.ToString("N0"));
+
+		double? seconds = SettingsFile.Instance.LastScanDurationSeconds;
+		if (seconds is double s && s >= 1)
+			SetupEstimatedHintText = string.Format(App.Lang["Setup.Estimate.Hint"], FormatDuration(s));
+		else
+			SetupEstimatedHintText = App.Lang["Setup.Estimate.HintFirst"];
+	}
+
+	/// <summary>Chinese reads "4 分 12 秒"; the shared TimeSpan.Format() prints "4m, 12s".</summary>
+	static string FormatDuration(double seconds) {
+		TimeSpan t = TimeSpan.FromSeconds(seconds);
+		return t.TotalHours >= 1
+			? string.Format(App.Lang["Setup.Estimate.Hours"], (int)t.TotalHours, t.Minutes)
+			: t.TotalMinutes >= 1
+				? string.Format(App.Lang["Setup.Estimate.Minutes"], (int)t.TotalMinutes, t.Seconds)
+				: string.Format(App.Lang["Setup.Estimate.Seconds"], t.Seconds);
+	}
 
 		public ReactiveCommand<SetupFolderVM, Unit> CountFolderNowCommand => ReactiveCommand.Create<SetupFolderVM>(folder => {
 			if (folder != null && !folder.IsCounting)
@@ -250,11 +342,31 @@ namespace VDF.GUI.ViewModels {
 			if (folder == null) return;
 			if (folder.IsExcluded)
 				SettingsFile.Instance.Blacklists.Remove(folder.Path);
-			else {
-				folderCounting.Cancel(folder.Path);
-				SettingsFile.Instance.Includes.Remove(folder.Path);
-			}
-		});
+		else {
+			folderCounting.Cancel(folder.Path);
+			SettingsFile.Instance.Includes.Remove(folder.Path);
+			SettingsFile.Instance.DisabledIncludes.Remove(folder.Path);
+		}
+		RefreshSetupEstimate();
+	});
+
+	/// <summary>
+	/// Mockup .dir-row "停用": the folder stays in the list and out of the next scan.
+	/// Excluded (blacklisted) folders have no on/off state of their own.
+	/// </summary>
+	public ReactiveCommand<SetupFolderVM, Unit> ToggleSetupFolderCommand => ReactiveCommand.Create<SetupFolderVM>(folder => {
+		if (folder == null || folder.IsExcluded) return;
+		bool nowDisabled = !folder.IsDisabled;
+		var disabled = SettingsFile.Instance.DisabledIncludes;
+		if (nowDisabled) {
+			folderCounting.Cancel(folder.Path); // no point walking what will not be scanned
+			if (!disabled.Contains(folder.Path)) disabled.Add(folder.Path);
+		}
+		else
+			disabled.Remove(folder.Path);
+		folder.IsDisabled = nowDisabled;
+		RefreshSetupEstimate();
+	});
 
 		// ---------- scan profiles ----------
 		public ScanProfileOptionVM[] ScanProfileOptions { get; } = {
@@ -265,13 +377,29 @@ namespace VDF.GUI.ViewModels {
 			new(ScanProfile.Custom, App.Lang["Profile.Custom.Name"], App.Lang["Profile.Custom.Desc"], string.Empty),
 		};
 
-		internal void RefreshScanProfileSelection() {
-			var active = ScanProfileMapper.Detect(SettingsFile.Instance);
-			foreach (var option in ScanProfileOptions)
-				option.IsActive = option.Value == active;
-			ActiveScanProfileIsManaged = active != ScanProfile.Custom;
-			ActiveScanProfileName = ScanProfileOptions.First(o => o.Value == active).Name;
+	internal void RefreshScanProfileSelection() {
+		var active = ScanProfileMapper.Detect(SettingsFile.Instance);
+		foreach (var option in ScanProfileOptions)
+			option.IsActive = option.Value == active;
+		ActiveScanProfileIsManaged = active != ScanProfile.Custom;
+		ActiveScanProfileName = ScanProfileOptions.First(o => o.Value == active).Name;
+		ActiveScanProfileOption = ScanProfileOptions.FirstOrDefault(o => o.IsActive);
+	}
+
+	/// <summary>
+	/// The same choice as the old profile cards, as one row of the mockup's 匹配强度
+	/// card. Setting it applies the profile; the setter ignores the echo that
+	/// <see cref="RefreshScanProfileSelection"/> writes back after applying.
+	/// </summary>
+	ScanProfileOptionVM? _ActiveScanProfileOption;
+	public ScanProfileOptionVM? ActiveScanProfileOption {
+		get => _ActiveScanProfileOption;
+		set {
+			this.RaiseAndSetIfChanged(ref _ActiveScanProfileOption, value);
+			if (value != null && !value.IsActive)
+				SelectScanProfileCommand.Execute(value).Subscribe();
 		}
+	}
 
 		bool _ActiveScanProfileIsManaged;
 		/// <summary>True while the managed knobs match a profile bundle — drives the

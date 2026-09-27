@@ -833,6 +833,10 @@ namespace VDF.Core {
 				reason = "image files are disabled";
 				return true;
 			}
+			if (Settings.IncludeVideos == false && !entry.IsImage) {
+				reason = "video files are disabled";
+				return true;
+			}
 			if (Settings.BlackList.Any(f => IsBlackListed(entry.Folder, f))) {
 				reason = "path is in the excluded directories list";
 				return true;

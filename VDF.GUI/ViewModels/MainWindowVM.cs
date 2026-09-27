@@ -112,6 +112,8 @@ namespace VDF.GUI.ViewModels {
 		readonly DispatcherTimer scheduledScanTimer = new();
 		DateTime lastScheduledScanDate = DateTime.MinValue;
 		bool scheduledScanInProgress;
+	// Wall-clock start of the running scan; feeds the Setup screen's "上次同样规模用时".
+	DateTime scanStartedAt;
 		bool scheduleTimeInvalidNotified;
 
 		bool _IsScanning;
@@ -771,10 +773,20 @@ namespace VDF.GUI.ViewModels {
 				var completedScheduledScan = scheduledScanInProgress;
 				scheduledScanInProgress = false;
 
-				var blacklistedGids = ComputeBlacklistedGroupIds(
-					Scanner.Duplicates.Select(d => (d.GroupId, d.Path)));
-				if (blacklistedGids.Count > 0)
-					Scanner.Duplicates.RemoveWhere(d => blacklistedGids.Contains(d.GroupId));
+				// Mockup "跳过已确认过的组": groups once marked "not a match" stay hidden
+				// until the option is turned off. Default on, so an existing blacklist
+				// does not suddenly reappear for users who never saw the switch.
+				if (SettingsFile.Instance.HideConfirmedGroups) {
+					var blacklistedGids = ComputeBlacklistedGroupIds(
+						Scanner.Duplicates.Select(d => (d.GroupId, d.Path)));
+					if (blacklistedGids.Count > 0)
+						Scanner.Duplicates.RemoveWhere(d => blacklistedGids.Contains(d.GroupId));
+				}
+
+				SettingsFile.Instance.LastScanDurationSeconds = (DateTime.UtcNow - scanStartedAt).TotalSeconds;
+				SettingsFile.Instance.LastScanFileCount = ScannedFileCount;
+				SettingsFile.SaveSettings();
+				RefreshSetupEstimate();
 
 				AddDuplicatesInBulk(Scanner.Duplicates.Select(item => new DuplicateItemVM(item)));
 
@@ -1773,6 +1785,7 @@ Non-Windows setup:
 			ChangeIsBusyMessage();
 			IsBusy = true;
 
+			scanStartedAt = DateTime.UtcNow;
 			if (isFreshScan) {
 				Scanner.StartSearch();
 			}
@@ -1796,6 +1809,7 @@ Non-Windows setup:
 		void SyncCoreSettings() {
 			Scanner.Settings.IncludeSubDirectories = SettingsFile.Instance.IncludeSubDirectories;
 			Scanner.Settings.IncludeImages = SettingsFile.Instance.IncludeImages;
+			Scanner.Settings.IncludeVideos = SettingsFile.Instance.IncludeVideos;
 			Scanner.Settings.GeneratePreviewThumbnails = SettingsFile.Instance.GeneratePreviewThumbnails;
 			Scanner.Settings.IgnoreReadOnlyFolders = SettingsFile.Instance.IgnoreReadOnlyFolders;
 			Scanner.Settings.IgnoreReparsePoints = SettingsFile.Instance.IgnoreReparsePoints;
@@ -1850,8 +1864,10 @@ Non-Windows setup:
 			Scanner.Settings.PartialClipRequireVisualMatch = SettingsFile.Instance.PartialClipRequireVisualMatch;
 			Scanner.Settings.PartialClipVisualThreshold = SettingsFile.Instance.PartialClipVisualThresholdPercent / 100.0;
 			Scanner.Settings.IncludeList.Clear();
+			// A folder switched off on the Setup screen stays listed but is not scanned.
 			foreach (var s in SettingsFile.Instance.Includes)
-				Scanner.Settings.IncludeList.Add(s);
+				if (!SettingsFile.Instance.DisabledIncludes.Contains(s))
+					Scanner.Settings.IncludeList.Add(s);
 			Scanner.Settings.BlackList.Clear();
 			foreach (var s in SettingsFile.Instance.Blacklists)
 				Scanner.Settings.BlackList.Add(s);

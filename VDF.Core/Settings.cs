@@ -32,6 +32,7 @@ namespace VDF.Core {
 		public bool UseNativeFfmpegBinding;
 		public bool IncludeSubDirectories = true;
 		public bool IncludeImages = true;
+		public bool IncludeVideos = true;
 		public bool ExtendedFFToolsLogging;
 		public bool LogExcludedFiles;
 		public bool AlwaysRetryFailedSampling;
