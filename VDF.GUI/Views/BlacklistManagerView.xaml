@@ -11,11 +11,17 @@
         MinHeight="320"
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterOwner"
+        WindowDecorations="BorderOnly"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Title]}">
     <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方（卡片 + dlgprimary/dlgghost + dlglist），
          窗口底色由全局 Window 规则给。 -->
-    <Border Classes="dlgcard" Margin="14">
+    <Border Classes="dlgbody">
     <DockPanel>
+        <!-- The caption is gone, so the window's own name is the body's heading. -->
+        <TextBlock DockPanel.Dock="Top"
+                   Classes="dlgtitle"
+                   Text="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Title]}"
+                   Margin="0,0,0,10" />
         <TextBlock DockPanel.Dock="Top"
                    Classes="dlghint"
                    Text="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Description]}"

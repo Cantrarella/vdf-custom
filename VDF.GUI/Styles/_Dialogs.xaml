@@ -5,29 +5,37 @@
   <!-- ===== The dialogs =====
        Every window that is not MainWindow: the message box, the input box, About, the
        blacklist manager, the custom selection, the database viewer, the thumbnail
-       comparer, the relocate/expression/quality dialogs. They used to come up in the
-       theme's neutral chrome - a plain white sheet in the light theme and a grey one in
-       the dark - so the program looked like two programs. They all take the palette's
-       page tint, and their bodies are built from the same card and button recipes the
-       pages use.
-       MainWindow keeps its own frame: it sets Background and BorderBrush locally, and a
-       local value outranks a style, so the one Window rule below only reaches the rest. -->
+       comparer, the relocate/expression/quality dialogs.
+
+       They used to be a tinted page with a card floating inside it, under the system
+       caption. That is two surfaces and a titlebar where the reference design has one
+       surface and none, so the dialogs now take the shape the user pointed at:
+
+         * the caption is gone (WindowDecorations="BorderOnly" on every window, set in
+           XAML because MainWindow must keep its own extended caption), so the dialog
+           starts at its content instead of a strip carrying the app name;
+         * the window itself IS the card - its background is VdfCardBrush and the body
+           carries nothing but padding, so there is no nested frame and no second
+           colour behind it;
+         * the affirmative button is the palette's solid accent, not the soft tint: on
+           a card-coloured surface a soft fill on the primary action reads as disabled,
+           and the reference's primary is the loudest thing in the box.
+
+       BorderOnly rather than None on purpose: the dialogs still resize, and on Windows
+       the frame is what draws their shadow. Only MainWindow keeps the full caption. -->
 
   <Style Selector="Window">
-    <Setter Property="Background" Value="{DynamicResource VdfPageBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
     <Setter Property="FontSize" Value="13.5" />
   </Style>
 
-  <!-- The dialog's body: one card, the surface and elevation the settings cards wear, so a
-       dialog reads as belonging to the page behind it. -->
-  <Style Selector="Border.dlgcard">
-    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="16" />
-    <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
-    <Setter Property="Padding" Value="20" />
+  <!-- The dialog body: padding only. It drew a card with a border and a shadow while the
+       window behind it was the page tint; with the window wearing the card surface that
+       frame would be a line inside its own colour. -->
+  <Style Selector="Border.dlgbody">
+    <Setter Property="Padding" Value="22,18,22,20" />
   </Style>
+
   <Style Selector="TextBlock.dlgtitle">
     <Setter Property="FontSize" Value="15" />
     <Setter Property="FontWeight" Value="SemiBold" />
@@ -49,24 +57,30 @@
     <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
   </Style>
 
-  <!-- The affirmative action: the same soft-accent fill with the accent ink the pages'
-       main CTA uses (see SetupView's 开始扫描). The fill has to be re-applied under the
-       pointer and while pressed, because the theme paints its own hover colour over the
-       presenter otherwise - the same reason Button.solid exists in _Buttons.xaml.
-       The ink needs the same treatment: the theme also puts a foreground on the
-       presenter, which outranks the one on the button, and the label came out the
-       theme's dim grey instead of the palette's accent. -->
+  <!-- The affirmative action: a solid fill of the palette's accent INK (the deep blue the
+       accent text uses) with the on-accent ink on top - white on #17587F in the light theme,
+       #0B1F2E on #CDE9FF in the dark one. It was the soft accent fill, which on the card
+       surface the window now wears had nothing to stand against; a solid one has to pick a
+       fill that can carry its own label. The accent ramp's #4A97CD (the rail badge) cannot:
+       white on it is 3.2:1, and the contrast tests in VDF.GUI.HeadlessTests say so.
+       The fill and the ink both have to be re-applied under the pointer and while
+       pressed, because the theme paints its own colours onto the presenter - the same
+       reason Button.solid exists in _Buttons.xaml. The hover state is an opacity step
+       instead, so the fill itself never leaves. -->
   <Style Selector="Button.dlgprimary">
-    <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfAccentTextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource VdfOnAccentSolidBrush}" />
     <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="9" />
     <Setter Property="Padding" Value="18,7" />
     <Setter Property="MinWidth" Value="96" />
     <Setter Property="FontSize" Value="13" />
-    <Setter Property="FontWeight" Value="550" />
+    <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.dlgprimary:pointerover">
+    <Setter Property="Opacity" Value="0.88" />
   </Style>
   <Style Selector="Button.dlgprimary /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -81,11 +95,13 @@
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
   </Style>
 
-  <!-- The other choices: the mockup's ghost button, a card surface with the hairline edge,
-       so the safe answer does not compete with the affirmative one. -->
+  <!-- The other choices: an outlined button. It was a card surface with the card's own
+       hairline, which works on a tinted page and disappears on the card the window now
+       is; the outline steps up to the muted border so the safe answer still reads as a
+       button. -->
   <Style Selector="Button.dlgghost">
-    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="9" />
     <Setter Property="Padding" Value="18,7" />
@@ -93,10 +109,42 @@
     <Setter Property="FontSize" Value="13" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
   </Style>
+  <Style Selector="Button.dlgghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  </Style>
+  <Style Selector="Button.dlgghost:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+  </Style>
 
-  <!-- Text fields, lists and tables inside a dialog take the card surface: the theme gives
-       them the chrome grey, which is the one thing that still looked foreign on a tinted
-       dialog. -->
+  <!-- A window with no caption has no close button either, so the ones whose only way out
+       used to be the caption ✕ (the database viewer, the comparer, the About box) carry
+       this one in their own header row. -->
+  <Style Selector="Button.dlgclose">
+    <Setter Property="Width" Value="28" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="FontSize" Value="13" />
+    <!-- No ink of its own: VdfMutedBrush on the sunken toolbar is 2.8:1, under the 3:1 a
+         glyph needs (caught by DialogContrastTests). The window's foreground follows the
+         theme and clears it in all four. -->
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.dlgclose /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  </Style>
+  <Style Selector="Button.dlgclose:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  </Style>
+
+  <!-- Text fields, lists and tables inside a dialog take the sunken surface: the theme
+       gives them the chrome grey, which is the one thing that still looked foreign. -->
   <Style Selector="TextBox.dlgfield">
     <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
@@ -104,10 +152,18 @@
     <Setter Property="Padding" Value="10,7" />
   </Style>
   <Style Selector="ListBox.dlglist">
-    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="12" />
     <Setter Property="Padding" Value="4" />
+  </Style>
+  <!-- The theme answers the pointer with a neutral grey and selection with its own accent;
+       both read as a second, unrelated palette inside a dialog. Same tint the pages use. -->
+  <Style Selector="ListBox.dlglist ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+  </Style>
+  <Style Selector="ListBox.dlglist ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource VdfRowSelectedBrush}" />
   </Style>
 </Styles>

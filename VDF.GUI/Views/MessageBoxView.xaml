@@ -12,14 +12,14 @@
     MaxHeight="600"
     CanResize="false"
     SizeToContent="WidthAndHeight"
-    WindowStartupLocation="CenterOwner">
+    WindowStartupLocation="CenterOwner"
+    WindowDecorations="BorderOnly">
     <ScrollViewer x:Name="ScrollViewerMessageboxContent" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <!-- This box is the program's voice for every confirmation and every error, and it
-             used to come up as a bare sheet in the theme's own chrome with the theme's own
-             buttons: the one dialog the user sees most often was the one that looked least
-             like the program. It is now the same card the pages are built from, on the same
-             page tint (Window rule, Styles/_Dialogs.xaml). -->
-        <Border Classes="dlgcard" Margin="14">
+        <!-- This box is the program's voice for every confirmation and every error. It now
+             carries no caption at all and no card of its own: the window is the card
+             (Window rule, Styles/_Dialogs.xaml), so the box is the message and its buttons
+             and nothing else. -->
+        <Border Classes="dlgbody">
             <Grid RowDefinitions="Auto, Auto" RowSpacing="20">
                 <!-- MaxWidth must be set here, not only on the window: SizeToContent measures
                      the text at infinite width first, so the window's own MaxWidth clamp CLIPS

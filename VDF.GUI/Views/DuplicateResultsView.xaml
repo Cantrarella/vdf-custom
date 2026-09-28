@@ -99,6 +99,14 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="MinHeight" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <!-- The rows paint their own surfaces (Border.cardtop / .cardseg / .grouprow), so the
+           item must not paint one of its own. The theme fills the item with a neutral grey
+           under the pointer, and on the group header that grey showed up in the 14px gap
+           above the card - a band the user read as a shadow under the card. -->
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.results ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="TextBlock.colheader">
       <Setter Property="FontSize" Value="11" />
@@ -845,7 +853,10 @@
 
         <!-- ~~~~ Group header row ~~~~ -->
         <DataTemplate DataType="vm:ResultsGroupHeader">
-          <Panel>
+          <!-- The page brush covers the whole item on purpose: the header owns the 14px gap
+               that separates two groups (the margin on Border.cardtop), and anything the item
+               or the theme paints behind it lands in that gap as a band above the card. -->
+          <Panel Background="{DynamicResource VdfPageBrush}">
             <!-- The mockup's group card, spelled out over consecutive list rows: this row
                  draws the top edge and the rounded shoulders, every member row carries the
                  side edges, and whoever ends the group closes the bottom. Head and callout
@@ -1476,14 +1487,15 @@
         HorizontalAlignment="Stretch"
         MaxWidth="1016"
         Margin="28,0,28,16"
-        Padding="18,10"
+        Padding="18,12"
         CornerRadius="16"
         Background="{DynamicResource VdfCardBrush}"
         BorderBrush="{DynamicResource VdfMutedBorderBrush}"
         BorderThickness="1"
         BoxShadow="0 8 22 0 #26003050">
-      <DockPanel LastChildFill="False">
-        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="12.5"
+      <!-- Two rows instead of one: the hint used to share the row and lost. -->
+      <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="7">
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Center" FontSize="12.5"
                    Opacity="{DynamicResource VdfTextDim85Opacity}">
           <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Dock.Selected]}" />
           <Run Text=" " />
@@ -1497,7 +1509,7 @@
                Foreground="{DynamicResource VdfAccentTextBrush}"
                Text="{Binding DuplicatesCheckedSize, Mode=OneWay}" />
         </TextBlock>
-        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="8" Margin="16,0,0,0">
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
           <Button
               Classes="solid"
               Background="{DynamicResource VdfDangerSolidBrush}"
@@ -1547,18 +1559,17 @@
               Command="{Binding ClearCheckedItemsCommand}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.ClearSelection]}" />
         </StackPanel>
-        <!-- Ellipsised rather than clipped: on a narrow window the hint is the first
-             thing to give way, and half a sentence is worse than a shortened one. -->
+        <!-- The hint has a line of its own now. Sharing the row made it the first thing to
+             give way at the window's narrow end, where a shortened sentence reads as a bug;
+             full width it always says what it means. -->
         <TextBlock
-            DockPanel.Dock="Right"
-            VerticalAlignment="Center"
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
             FontSize="12"
-            MaxWidth="300"
-            Margin="16,0,0,0"
+            TextWrapping="Wrap"
             Opacity="{DynamicResource VdfTextFaintOpacity}"
-            Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Hint]}"
-            TextTrimming="CharacterEllipsis" />
-      </DockPanel>
+            Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Hint]}" />
+      </Grid>
     </Border>
 
     <!-- ======== Statusline (mockup .statusline): results stats, Review only.

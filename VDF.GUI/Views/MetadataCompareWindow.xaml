@@ -11,6 +11,7 @@
         MinHeight="360"
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterOwner"
+        WindowDecorations="BorderOnly"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[MetadataCompare.Title]}">
   <Window.Styles>
     <Style Selector="Border.cell">
@@ -40,6 +41,11 @@
   </Window.Styles>
 
   <DockPanel Margin="14">
+    <!-- The caption is gone, so the window's own name is the body's heading. -->
+    <TextBlock DockPanel.Dock="Top"
+               Classes="dlgtitle"
+               Text="{Binding Source={x:Static app:App.Lang}, Path=[MetadataCompare.Title]}"
+               Margin="0,0,0,8" />
     <TextBlock DockPanel.Dock="Top"
                Classes="dlghint"
                Text="{Binding Source={x:Static app:App.Lang}, Path=[MetadataCompare.Description]}"

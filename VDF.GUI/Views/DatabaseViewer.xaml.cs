@@ -52,6 +52,10 @@ namespace VDF.GUI.Views {
 		void DatabaseViewer_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
 			=> VM.Save();
 
+		// The window wears no caption any more, so its own ✕ is the way out. The dialog is
+		// awaited with ShowDialog<bool>, and Close(true) is what resolves that.
+		public void OnCloseClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => Close(true);
+
 		void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
 		public void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)

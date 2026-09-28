@@ -12,10 +12,11 @@
     MaxWidth="600"
     CanResize="false"
     SizeToContent="Height"
-    WindowStartupLocation="CenterOwner">
+    WindowStartupLocation="CenterOwner"
+    WindowDecorations="BorderOnly">
     <!-- The dialog's card and its buttons come from Styles/_Dialogs.xaml, the same recipes
          the pages use; the window's own tint is set there too. -->
-    <Border Classes="dlgcard" Margin="14">
+    <Border Classes="dlgbody">
         <StackPanel Spacing="14">
             <TextBlock Classes="dlgtext" Text="{Binding Message}" TextWrapping="Wrap" />
             <StackPanel IsVisible="{Binding HasReadOnlyInfo}" Spacing="2">

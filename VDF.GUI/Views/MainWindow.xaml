@@ -573,29 +573,9 @@
                                     IsVisible="{Binding ShowRailLabels}"
                                     Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Group.Manage]}" />
 
-                                <!-- 扫描目录 -->
-                                <Button
-                                    Classes="railitem"
-                                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Folders]}"
-                                    Command="{Binding ShowRailScannerCommand}"
-                                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Folders]}">
-                                    <StackPanel Orientation="Horizontal" Spacing="10">
-                                        <Path
-                                        Stretch="Uniform"
-                                            Width="15"
-                                            Height="15"
-                                            VerticalAlignment="Center"
-                                            Data="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"
-                                            Fill="Transparent"
-                                            StrokeLineCap="Round"
-                                            StrokeJoin="Round"
-                                            StrokeThickness="1.7" />
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            IsVisible="{Binding ShowRailLabels}"
-                                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Folders]}" />
-                                    </StackPanel>
-                                </Button>
+                                <!-- 扫描设置 就是文件夹那一页：它原来另有一个「扫描目录」入口，
+                                     点进去是同一张表，用户说这一项单列出来没用，已删除。
+                                     回到文件夹页仍走「扫描设置」→ 放弃当前结果的确认。 -->
 
                                 <!-- 忽略名单 -->
                                 <Button

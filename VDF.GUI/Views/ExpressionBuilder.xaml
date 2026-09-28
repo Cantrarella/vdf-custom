@@ -18,9 +18,10 @@
     Icon="/Assets/icon.ico"
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
+    WindowDecorations="BorderOnly"
     mc:Ignorable="d">
     <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方，窗口底色由全局 Window 规则给。 -->
-    <Border Classes="dlgcard" Margin="14">
+    <Border Classes="dlgbody">
     <Grid
         RowDefinitions="Auto,Auto,Auto,Auto"
         RowSpacing="12">

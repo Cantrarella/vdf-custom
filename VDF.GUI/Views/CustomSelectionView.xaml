@@ -17,6 +17,7 @@
     Icon="/Assets/icon.ico"
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
+    WindowDecorations="BorderOnly"
     mc:Ignorable="d">
 
     <Window.Styles>

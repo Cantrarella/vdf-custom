@@ -13,11 +13,15 @@
         Icon="/Assets/icon.ico"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
+        WindowDecorations="BorderOnly"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Title]}">
     <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方：窗口底色是全局 Window 规则给的页面色，
          内容装在一张 dlgcard 里，主/次按钮用 dlgprimary / dlgghost。 -->
-    <Border Classes="dlgcard" Margin="14">
+    <Border Classes="dlgbody">
     <StackPanel Spacing="12">
+        <!-- The caption is gone, so the window's own name is the body's heading. -->
+        <TextBlock Classes="dlgtitle"
+                   Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Title]}" />
         <TextBlock Classes="dlgtext"
                    Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Description]}" />
         <TextBlock Classes="dlghint"

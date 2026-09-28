@@ -21,10 +21,10 @@
     MinHeight="520"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    ExtendClientAreaToDecorationsHint="True"
     FontSize="14"
     Icon="/Assets/icon.ico"
     WindowStartupLocation="CenterScreen"
+    WindowDecorations="BorderOnly"
     mc:Ignorable="d">
     <Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+Down" Command="{Binding NextGroupCommand}" />
@@ -178,11 +178,12 @@
                 HorizontalAlignment="Center"
                 IsHitTestVisible="false"
                 Text="{Binding #ThumbnailComparerWindow.Title}" />
-            <!-- mockup: in-titlebar "✕ Close comparer", right-aligned before the caption buttons -->
+            <!-- mockup: in-titlebar "✕ Close comparer". The strip used to reserve 190px for the
+                 caption buttons; there is no caption any more, so it sits at the edge. -->
             <Button
                 AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[Shell.CloseComparer]}"
                 Grid.Row="0"
-                Margin="0,0,190,0"
+                Margin="0,0,10,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Height="28"

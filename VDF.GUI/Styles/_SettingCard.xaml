@@ -53,12 +53,17 @@
       <ControlTemplate>
         <StackPanel>
           <!-- The row carries the pointer-over surface; the hairline below it stays
-               full width (mockup .row + .row:hover). -->
+               full width (mockup .row + .row:hover).
+               The surface runs the card's full width. It used to sit in a 4px margin,
+               which left a white sliver between it and the card's edge on both sides -
+               the user read the highlight as not reaching ("选中状态没有占满"). The 12px
+               corner keeps it inside the card's own 20px shoulder on the first and last
+               rows, where a square corner would poke past the curve. -->
           <Border Name="RowSurface"
-                  Margin="4,0"
+                  Margin="0"
                   Padding="20,15"
                   Background="Transparent"
-                  CornerRadius="8">
+                  CornerRadius="12">
             <Grid ColumnDefinitions="*,Auto">
               <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="2" VerticalAlignment="Center">
                 <TextBlock FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
