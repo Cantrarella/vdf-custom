@@ -24,7 +24,9 @@ namespace VDF.GUI.Tests {
 	/// its value, which conveys nothing and reads as corrupted cells.
 	/// </summary>
 	public class HoverDiffTests {
-		const string Best = "BEST";
+		// The badge text comes from the locale, so the test asks the locale instead of
+		// repeating the literal: a translation change then cannot turn this red on its own.
+		static readonly string Best = VDF.GUI.App.Lang["Results.Row.Best"];
 
 		static DuplicateItemVM Item(TimeSpan? duration = null, int frameSizeInt = 0, long size = 0,
 				bool bestDuration = false, bool bestFrameSize = false, bool bestSize = false) => new() {

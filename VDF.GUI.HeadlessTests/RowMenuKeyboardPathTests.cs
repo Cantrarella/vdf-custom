@@ -95,9 +95,12 @@ public class RowMenuKeyboardPathTests {
 
 			Choose(item("Compare values with the best"));
 
-			// What resting the pointer on each metric in turn would have shown.
-			Assert.Equal("BEST", best.SizeDiff);
-			Assert.Equal("BEST", best.FrameSizeDiff);
+			// What resting the pointer on each metric in turn would have shown. The badge
+			// text comes from the locale, so the test asks the locale instead of repeating
+			// the literal: a translation change then cannot turn this red on its own.
+			string bestBadge = VDF.GUI.App.Lang["Results.Row.Best"];
+			Assert.Equal(bestBadge, best.SizeDiff);
+			Assert.Equal(bestBadge, best.FrameSizeDiff);
 			Assert.StartsWith("-", row.Item.SizeDiff);
 			Assert.StartsWith("-", row.Item.FrameSizeDiff);
 			Assert.Null(row.Item.DurationDiff); // the group agrees on it: nothing to show

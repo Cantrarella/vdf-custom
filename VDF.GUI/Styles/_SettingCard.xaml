@@ -6,12 +6,16 @@
        setup page. Both group their options the same way, so the two pages cannot
        drift apart: one card style, one row template, one hover surface. -->
 
-  <!-- One card per section: a white surface with the hairline border, rows separated
-       by hairlines inside it. The page behind is a step darker, so the cards read as
-       cards. -->
+  <!-- One card per section: the mockup's card surface with its hairline edge, rows
+       separated by the same hairline inside it. The page behind is a step darker, so
+       the cards read as cards.
+       Both colors come from the palette, not from the theme's container brushes: the
+       theme's container border is roughly three times the mockup's line and turns the
+       card into a heavy frame around every section, which is the one thing about this
+       page that read as cheap. -->
   <Style Selector="Border.setcard">
-    <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
-    <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <!-- The mockup's .card radius (the r-lg token), not the theme's smaller default:
          the cards are the page's main shapes and read as sheets at this size. -->
@@ -24,7 +28,7 @@
        (mockup .card-head: 17px 20px). Rows inside the card carry their own padding. -->
   <Style Selector="Border.cardhead">
     <Setter Property="Padding" Value="20,17" />
-    <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
   </Style>
   <Style Selector="TextBlock.cardtitle">
@@ -68,7 +72,7 @@
                                 ContentTemplate="{TemplateBinding ContentTemplate}" />
             </Grid>
           </Border>
-          <Border Height="1" Background="{actipro:ThemeResource Container3BorderBrush}"
+          <Border Height="1" Background="{DynamicResource VdfCardLineBrush}"
                   IsVisible="{TemplateBinding ShowSeparator}" />
         </StackPanel>
       </ControlTemplate>

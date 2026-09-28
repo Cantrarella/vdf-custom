@@ -107,6 +107,16 @@
                          as a frame. (The frame the results page used to show was the list
                          control's own outline: #CCCED3, more than three times this strong.) -->
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E4EDF5" />
+                    <!-- The rail's own surface (the mockup's rail token): white at 74% over the
+                         page bg, flattened to an opaque tone here. The cards sit on the page,
+                         the rail sits beside it, so the two must not be the same white. -->
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#FBFDFF" />
+                    <!-- Inset tracks and wells on the rail (the mockup's surface-sunken). -->
+                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#EEF6FD" />
+                    <!-- The selected rail entry and the open settings child (the mockup's
+                         accent-soft token). Keeping it on the palette stops these two from
+                         borrowing the theme's own accent container, which is a step darker. -->
+                    <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#EAF5FF" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
                          are 3.3 to 4.4:1, so the light theme dims less. -->
@@ -199,6 +209,9 @@
                     <SolidColorBrush x:Key="VdfPageBrush" Color="#0D1621" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#16212E" />
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#293542" />
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#121C28" />
+                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#101A25" />
+                    <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#2C3A48" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>
@@ -311,6 +324,9 @@
                     <SolidColorBrush x:Key="VdfPageBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#B4B8C0" />
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#000000" />
+                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#000000" />
+                    <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#16303F" />
                 </ResourceDictionary>
                 <!-- High contrast on light, the counterpart of the above. -->
                 <ResourceDictionary x:Key="{x:Static utils:VdfThemes.HighContrastLight}">
@@ -405,6 +421,9 @@
                     <SolidColorBrush x:Key="VdfPageBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#4A4F5A" />
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#EAF5FF" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
