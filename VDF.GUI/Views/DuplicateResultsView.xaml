@@ -85,9 +85,11 @@
       <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="9" />
-      <Setter Property="Padding" Value="9,2" />
+      <!-- mockup .btn-ghost.btn-sm: 6px 11px and 12.5px. The row's own buttons were
+           9x2 at 12px, a size the mockup does not use anywhere. -->
+      <Setter Property="Padding" Value="11,6" />
       <Setter Property="MinWidth" Value="0" />
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontSize" Value="12.5" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.fileact:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -99,10 +101,13 @@
     </Style>
     <!-- AI-matched group strip (mockup .callout). Amber, not the mockup's red: in this
          build red means "this will be deleted", and this strip is the opposite advice. -->
+    <!-- mockup .callout: 12px in from the card's sides, 10px under it, 13px 11px inside,
+         and the r-sm radius. It hangs straight off the group head, so its own top margin
+         is 0 — the head's bottom edge is the only gap it needs. -->
     <Style Selector="Border.callout">
-      <Setter Property="Margin" Value="12,10,12,8" />
-      <Setter Property="Padding" Value="11,9" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Margin" Value="12,0,12,10" />
+      <Setter Property="Padding" Value="13,11" />
+      <Setter Property="CornerRadius" Value="11" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Background" Value="{DynamicResource VdfWarnSoftBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfWarnBorderBrush}" />
@@ -1117,10 +1122,13 @@
                 <!-- The mockup's checkbox is 20x20 and rounded; what matters is that
                      checked reads as "will be deleted", so its a11y name says exactly
                      that rather than repeating the file name. -->
+                <!-- The 13px gap is the mockup's .file gap: the box, then the preview.
+                     It was 10px, which is not a gap the mockup uses between two parts
+                     of a row. -->
                 <CheckBox
                     DockPanel.Dock="Left"
                     Width="24"
-                    Margin="0,0,10,0"
+                    Margin="0,0,13,0"
                     VerticalAlignment="Center"
                     IsChecked="{Binding Item.Checked}">
                   <AutomationProperties.Name>
@@ -1515,15 +1523,18 @@
     <!-- ======== Floating action dock (mockup .dock). It shares the list's grid row and
          pins itself to the bottom, so it hovers over the last rows instead of taking
          height from the list: checking items must not resize the rows being read. ======== -->
+    <!-- Mockup .dock: 32px from the page's own edges and 22px off the bottom, the r-xl
+         radius (26px), and its padding 13px 16px 13px 22px — the wider inset on the left
+         is what keeps the sentence off the curve. It was 28px/16px at radius 16. -->
     <Border
         Grid.Row="4"
         IsVisible="{Binding !!DuplicatesCheckedCounter}"
         VerticalAlignment="Bottom"
         HorizontalAlignment="Stretch"
         MaxWidth="1016"
-        Margin="28,0,28,16"
-        Padding="18,12"
-        CornerRadius="16"
+        Margin="32,0,32,22"
+        Padding="22,13,16,13"
+        CornerRadius="26"
         Background="{DynamicResource VdfCardBrush}"
         BorderBrush="{DynamicResource VdfMutedBorderBrush}"
         BorderThickness="1"

@@ -26,7 +26,9 @@
          shadow: a shadow under the current one would read as a glow, not depth. -->
     <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
     <Setter Property="Padding" Value="0,6" />
-    <Setter Property="Margin" Value="0,0,0,18" />
+    <!-- The mockup's .stack gap (14px), which is the distance between two cards. It was
+         18px, so every page stacked its cards 4px further apart than the mockup drew. -->
+    <Setter Property="Margin" Value="0,0,0,14" />
   </Style>
 
   <!-- Card header: title + optional description on the left, an action on the right
@@ -66,9 +68,11 @@
                   CornerRadius="12">
             <Grid ColumnDefinitions="*,Auto">
               <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="2" VerticalAlignment="Center">
-                <TextBlock FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
+                <!-- mockup .row-name (13.5px/550) and .row-note (12px): the row's own
+                     two sizes, a step below the card title above it. -->
+                <TextBlock FontSize="13.5" FontWeight="550" TextWrapping="Wrap"
                            Text="{TemplateBinding Title}" />
-                <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" MaxWidth="470"
+                <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" MaxWidth="470"
                            HorizontalAlignment="Left"
                            Text="{TemplateBinding Description}"
                            IsVisible="{TemplateBinding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

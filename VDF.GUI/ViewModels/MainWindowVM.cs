@@ -192,8 +192,18 @@ namespace VDF.GUI.ViewModels {
 		int _ScanProgressValue;
 		public int ScanProgressValue {
 			get => _ScanProgressValue;
-			set => this.RaiseAndSetIfChanged(ref _ScanProgressValue, value);
+			set {
+				this.RaiseAndSetIfChanged(ref _ScanProgressValue, value);
+				this.RaisePropertyChanged(nameof(ScanProgressPercent));
+			}
 		}
+		/// <summary>The scan's own figure for the ring and its centre label (mockup
+		/// .ring-pct). Derived from the position and its maximum, so the two cannot
+		/// disagree about how far the run has got.</summary>
+		public int ScanProgressPercent =>
+			_ScanProgressMaxValue > 0
+				? (int)Math.Clamp(Math.Round(100d * _ScanProgressValue / _ScanProgressMaxValue), 0d, 100d)
+				: 0;
 		bool _IsBusy;
 		public bool IsBusy {
 			get => _IsBusy;
@@ -250,7 +260,10 @@ namespace VDF.GUI.ViewModels {
 		int _ScanProgressMaxValue = 100;
 		public int ScanProgressMaxValue {
 			get => _ScanProgressMaxValue;
-			set => this.RaiseAndSetIfChanged(ref _ScanProgressMaxValue, value);
+			set {
+				this.RaiseAndSetIfChanged(ref _ScanProgressMaxValue, value);
+				this.RaisePropertyChanged(nameof(ScanProgressPercent));
+			}
 		}
 		/// <summary>Per-drive rows of the Scanning state (mockup .drives); rows exist only while the analysis phase reports drive data.</summary>
 		public ScanDrivesPresenter ScanDrives { get; } = new(() => App.Lang["Scan.FilesPerSec"]);

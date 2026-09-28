@@ -38,7 +38,10 @@
        window behind it was the page tint; with the window wearing the card surface that
        frame would be a line inside its own colour. -->
   <Style Selector="Border.dlgbody">
-    <Setter Property="Padding" Value="22,18,22,20" />
+    <!-- mockup .modal: 24px down either side, 22px above and below (its head is
+         22px 24px 14px and its foot 0 24px 22px; one body padding stands in for both).
+         It was 22px/18px/20px, which is not a measure the mockup uses. -->
+    <Setter Property="Padding" Value="24,22,24,22" />
   </Style>
 
   <Style Selector="TextBlock.dlgtitle">

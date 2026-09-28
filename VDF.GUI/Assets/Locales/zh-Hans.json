@@ -824,6 +824,8 @@
 	"Scan.FilesUnit": "个文件",
 	"Scan.FilesPerSec": "文件/秒",
 	"Scan.Left": "剩余",
+	"Scan.Metric.Elapsed": "已用时",
+	"Scan.Metric.Remaining": "预计剩余",
 	"Settings.SearchPlaceholder": "搜索所有设置…",
 	"Settings.SearchResults": "搜索结果",
 	"Settings.NoResults": "没有匹配的设置。",

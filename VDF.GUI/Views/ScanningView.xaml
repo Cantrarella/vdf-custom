@@ -5,161 +5,308 @@
     xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
     xmlns:data="clr-namespace:VDF.GUI.Data;assembly=VDF.GUI"
     xmlns:local="clr-namespace:VDF.GUI;assembly=VDF.GUI"
+    xmlns:views="clr-namespace:VDF.GUI.Views;assembly=VDF.GUI"
     xmlns:vm="clr-namespace:VDF.GUI.ViewModels;assembly=VDF.GUI"
     x:DataType="vm:MainWindowVM">
 
-  <!-- Mockup .scancard: centered 780px column; counts + remaining top-right,
-       elapsed + current file directly under the bar, bordered trust note.
-       The log tail lives OUTSIDE the card and stretches with the window so long
-       paths and remediation hints are not clipped to 780px (#836). -->
+  <UserControl.Resources>
+    <views:ScanRingArcConverter x:Key="RingArc" />
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- mockup .metric: one of the three figures under the current file. surface-soft
+         on the card, radius 16, padding 13px 15px. -->
+    <Style Selector="Border.metric">
+      <Setter Property="Background" Value="{DynamicResource VdfMutedSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="Padding" Value="15,13" />
+    </Style>
+    <Style Selector="TextBlock.metricval">
+      <Setter Property="FontSize" Value="19" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="LetterSpacing" Value="-0.5" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
+    </Style>
+    <Style Selector="TextBlock.metriclbl">
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
+    </Style>
+    <!-- mockup .ring-pct / .ring-lbl: the ring's own centre -->
+    <Style Selector="TextBlock.ringpct">
+      <Setter Property="FontSize" Value="32" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="LetterSpacing" Value="-1.2" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.ringlbl">
+      <Setter Property="FontSize" Value="11.5" />
+      <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
+      <Setter Property="Margin" Value="0,-2,0,0" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <!-- mockup .now-file: the file being read, monospace because two paths are told
+         apart character by character -->
+    <Style Selector="Border.nowfile">
+      <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfVerdictBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+    <Style Selector="TextBlock.nowfile">
+      <Setter Property="FontFamily" Value="Cascadia Mono,Consolas,monospace" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+      <Setter Property="TextTrimming" Value="PrefixCharacterEllipsis" />
+    </Style>
+    <!-- mockup .btn-ghost.btn-sm; the mockup's only red on this page is the word
+         "取消扫描", which is a label in red ink rather than a red button. -->
+    <Style Selector="Button.scanact">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="11,6" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
+    </Style>
+    <Style Selector="Button.scanact:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+    </Style>
+    <!-- The mockup's .btn-ghost:hover lifts the label to the page's main ink, and the
+         contrast suite needs it to: the muted ink it rests at is 4.39:1 on the hover
+         surface, a hair under the 4.5 a 12.5px label needs. -->
+    <Style Selector="Button.scanact:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
+    </Style>
+    <Style Selector="Button.scanact.stop">
+      <Setter Property="Foreground" Value="{DynamicResource VdfDangerBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfDangerBrush}" />
+    </Style>
+    <Style Selector="Button.scanact.stop:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfDangerBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Mockup page 3: one card holding the ring beside the run's own numbers, with the
+       reassurance line across its foot. Width follows the mockup's .wrap (32px gutters,
+       1080px measure) instead of the narrower 780px column this page used to centre
+       itself in, which left the card floating in the middle of a wide page.
+       The per-drive rows and the log tail live outside the card and stretch with the
+       window, so long paths and remediation hints are not clipped to 1080px (#836). -->
   <Grid RowDefinitions="Auto,*">
-    <StackPanel
+    <Border
         Grid.Row="0"
-        Width="780"
-        MaxWidth="780"
+        Classes="setcard"
         Margin="32,44,32,0"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Top">
+        MaxWidth="1080">
 
-      <!-- header row -->
-      <DockPanel LastChildFill="False" Margin="0,0,0,6">
-        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="12">
-          <TextBlock FontSize="19" FontWeight="SemiBold" VerticalAlignment="Center"
-                     Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Title]}" />
-          <Border CornerRadius="10" Padding="10,2" VerticalAlignment="Center"
-                  Background="{DynamicResource VdfAccentSoftBrush}"
-                  IsVisible="{Binding ScanStageText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-            <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding ScanStageText}" />
-          </Border>
-        </StackPanel>
-        <TextBlock DockPanel.Dock="Right" FontSize="13.5" Opacity="{DynamicResource VdfTextDim80Opacity}" VerticalAlignment="Center">
-          <Run Text="{Binding ScanProgressCount, Mode=OneWay}" />
-          <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.FilesUnit]}" />
-          <Run Text="· ~" /><Run Text="{Binding RemainingTime, Mode=OneWay}" />
-          <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Left]}" />
-        </TextBlock>
-      </DockPanel>
+      <StackPanel>
+        <!-- ===== mockup .scan-hero: ring on the left, the run on the right, 34px
+                  between them, 32px 30px around both ===== -->
+        <Grid ColumnDefinitions="168,*" Margin="30,32">
 
-      <ProgressBar
-          Height="10"
-          CornerRadius="5"
-          AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Title]}"
-          Maximum="{Binding ScanProgressMaxValue, Mode=OneWay}"
-          Value="{Binding ScanProgressValue, Mode=OneWay}" />
+          <!-- mockup .ring: a 168px box holding an r=70 circle 12px thick. The track is
+               the sunken tone; the filled arc is the palette's own accent gradient and
+               carries a round cap so a part-filled ring ends in a dome. -->
+          <Grid Grid.Column="0" Width="168" Height="168">
+            <Ellipse
+                Width="140"
+                Height="140"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Fill="Transparent"
+                Stroke="{DynamicResource VdfSliderTrackBrush}"
+                StrokeThickness="12" />
+            <Path
+                Stroke="{DynamicResource VdfSliderFillBrush}"
+                StrokeLineCap="Round"
+                StrokeThickness="12">
+              <Path.Data>
+                <MultiBinding Converter="{StaticResource RingArc}">
+                  <Binding Path="ScanProgressValue" />
+                  <Binding Path="ScanProgressMaxValue" />
+                </MultiBinding>
+              </Path.Data>
+            </Path>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+              <TextBlock
+                  Classes="ringpct"
+                  AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Title]}"
+                  Text="{Binding ScanProgressPercent, StringFormat=\{0\}%}" />
+              <TextBlock Classes="ringlbl" Text="{Binding ScanStageText}" />
+            </StackPanel>
+          </Grid>
 
-      <!-- elapsed + current file (mockup .scanmeta) -->
-      <StackPanel Orientation="Horizontal" Spacing="18" Margin="0,6,0,0">
-        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}">
-          <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Stats.ElapsedTime]}" />
-          <Run Text="{Binding TimeElapsed, Mode=OneWay}" />
-        </TextBlock>
-        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" MaxWidth="520"
-                   FontFamily="Cascadia Mono,Consolas,monospace"
-                   TextTrimming="PrefixCharacterEllipsis"
-                   Text="{Binding ScanCurrentFile}" />
-      </StackPanel>
+          <!-- ===== mockup .scan-now ===== -->
+          <StackPanel
+              Grid.Column="1"
+              Margin="34,0,0,0"
+              VerticalAlignment="Center">
 
-      <!-- per-drive rows (mockup .drives): label + type chip | byte-weighted bar | files stat.
-           Present only while the analysis phase reports drive data; compare phases carry none. -->
-      <ItemsControl
-          Margin="0,26,0,0"
-          AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Scan.Drives]}"
-          IsVisible="{Binding ScanDrives.HasRows}"
-          ItemsSource="{Binding ScanDrives.Rows}">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <StackPanel Spacing="12" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="data:ScanDriveRow">
-            <Grid ColumnDefinitions="200,*,150">
-              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <TextBlock FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"
-                           Text="{Binding Root}" />
-                <Border CornerRadius="4" Padding="6,1" VerticalAlignment="Center"
-                        BorderBrush="{DynamicResource VdfCardLineBrush}"
-                        BorderThickness="1"
-                        IsVisible="{Binding HasType}">
-                  <TextBlock FontSize="10.5" FontWeight="Bold" LetterSpacing="0.6" Opacity="{DynamicResource VdfTextFaintOpacity}"
-                             Text="{Binding TypeLabel}" />
-                </Border>
-              </StackPanel>
-              <ProgressBar Grid.Column="1" Height="7" CornerRadius="3.5" Margin="14,0"
-                           AutomationProperties.Name="{Binding Root}"
-                           VerticalAlignment="Center"
-                           Maximum="1"
-                           Value="{Binding Fraction, Mode=OneWay}" />
-              <TextBlock Grid.Column="2" FontSize="12" Opacity="{DynamicResource VdfTextDim80Opacity}"
-                         VerticalAlignment="Center" TextAlignment="Right"
-                         Text="{Binding Stat}" />
+            <TextBlock FontSize="16" FontWeight="640" Margin="0,0,0,6">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0} {1} {2}">
+                  <Binding Source="{x:Static local:App.Lang}" Path="[Scan.Title]" />
+                  <Binding Path="ScanProgressCount" />
+                  <Binding Source="{x:Static local:App.Lang}" Path="[Scan.FilesUnit]" />
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+
+            <Border Classes="nowfile" MaxWidth="560" IsVisible="{Binding ScanCurrentFile, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+              <TextBlock Classes="nowfile" Text="{Binding ScanCurrentFile}" />
+            </Border>
+
+            <!-- mockup .metrics: three figures on the card's own soft surface.
+                 The mockup's are "已发现重复组 / 预计可释放 / 文件 每秒"; the first two
+                 are only known once the run is over, and printing the previous run's
+                 figures during a new one is a lie, so this page shows the three things
+                 a running scan actually knows: how long it has been going, how long it
+                 expects to take, and how fast it is reading. -->
+            <Grid ColumnDefinitions="*,*,*" Margin="0,14,0,16">
+              <Border Grid.Column="0" Classes="metric" Margin="0,0,12,0">
+                <StackPanel>
+                  <TextBlock Classes="metricval" Text="{Binding TimeElapsed, Mode=OneWay}" />
+                  <TextBlock Classes="metriclbl" Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Metric.Elapsed]}" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Classes="metric" Margin="0,0,12,0">
+                <StackPanel>
+                  <TextBlock Classes="metricval" Text="{Binding RemainingTime, Mode=OneWay}" />
+                  <TextBlock Classes="metriclbl" Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Metric.Remaining]}" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="2" Classes="metric">
+                <StackPanel>
+                  <!-- Nothing to show until a drive has been sampled twice: a rate needs
+                       two readings, and the mockup's own figures are measured, not
+                       guessed. -->
+                  <TextBlock Classes="metricval" Text="{Binding ScanDrives.TotalRateText, TargetNullValue=—}" />
+                  <TextBlock Classes="metriclbl" Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.FilesPerSec]}" />
+                </StackPanel>
+              </Border>
             </Grid>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
 
-      <!-- actions + bordered trust note -->
-      <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,26,0,0">
-        <Button
-            x:Name="PauseButton"
-            FontSize="13" Padding="16,7" VerticalAlignment="Center"
-            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Pause]}"
-            Command="{Binding PauseScanCommand}"
-            IsVisible="{Binding !IsPaused}">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <TextBlock Text="⏸" FontSize="12" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Pause]}" />
+            <!-- mockup's two commands: pause / resume, and cancelling in red ink -->
+            <StackPanel Orientation="Horizontal" Spacing="9">
+              <Button
+                  Classes="scanact"
+                  AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Pause]}"
+                  Command="{Binding PauseScanCommand}"
+                  IsVisible="{Binding !IsPaused}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock FontSize="12" VerticalAlignment="Center" Text="⏸" />
+                  <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Pause]}" />
+                </StackPanel>
+              </Button>
+              <Button
+                  Classes="scanact"
+                  AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Resume]}"
+                  Command="{Binding ResumeScanCommand}"
+                  IsVisible="{Binding IsPaused}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock FontSize="12" VerticalAlignment="Center" Text="▶" />
+                  <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Resume]}" />
+                </StackPanel>
+              </Button>
+              <Button
+                  Classes="scanact stop"
+                  AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Stop]}"
+                  Command="{Binding StopScanCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock FontSize="12" VerticalAlignment="Center" Text="⏹" />
+                  <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Stop]}" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
           </StackPanel>
-        </Button>
-        <Button
-            x:Name="ResumeButton"
-            FontSize="13" Padding="16,7" VerticalAlignment="Center"
-            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Resume]}"
-            Command="{Binding ResumeScanCommand}"
-            IsVisible="{Binding IsPaused}">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <TextBlock Text="▶" FontSize="12" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Resume]}" />
-          </StackPanel>
-        </Button>
-        <Button
-            FontSize="13" Padding="16,7" VerticalAlignment="Center"
-            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Stop]}"
-            Command="{Binding StopScanCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <TextBlock Text="⏹" FontSize="12" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Stop]}" />
-          </StackPanel>
-        </Button>
-        <Border CornerRadius="8" Padding="14,7"
-                BorderBrush="{DynamicResource VdfCardLineBrush}"
-                BorderThickness="1">
-          <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextMutedOpacity}" VerticalAlignment="Center"
-                     Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.PauseNote]}" />
+        </Grid>
+
+        <!-- mockup .note: the line across the card's foot -->
+        <Border
+            Padding="20,12"
+            BorderBrush="{DynamicResource VdfCardLineBrush}"
+            BorderThickness="0,1,0,0">
+          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextMutedOpacity}">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="{}{0} {1} · {2}">
+                <Binding Source="{x:Static local:App.Lang}" Path="[Scan.Left]" />
+                <Binding Path="RemainingTime" />
+                <Binding Source="{x:Static local:App.Lang}" Path="[Scan.PauseNote]" />
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
         </Border>
       </StackPanel>
+    </Border>
 
-    </StackPanel>
-
-    <!-- last few log lines (mockup .logtail): full window width, hover for the
-         complete message (#836) -->
+    <!-- ===== below the card: per-drive rows, then the log tail ===== -->
     <Border Grid.Row="1" Margin="32,26,32,24" Padding="0,12,0,0"
             VerticalAlignment="Top"
             BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="0,1,0,0">
-      <ItemsControl ItemsSource="{Binding LogTail}"
-                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tab.Log]}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="data:LogTailRow">
-            <TextBlock FontSize="11.5" Opacity="{DynamicResource VdfTextFaintOpacity}" Margin="0,1.5"
-                       TextTrimming="CharacterEllipsis" Text="{Binding Display}">
-              <ToolTip.Tip>
-                <TextBlock MaxWidth="800" TextWrapping="Wrap" Text="{Binding Tooltip}" />
-              </ToolTip.Tip>
-            </TextBlock>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+      <StackPanel>
+        <!-- per-drive rows (mockup .drives): label + type chip | byte-weighted bar |
+             files stat. Present only while the analysis phase reports drive data;
+             compare phases carry none. -->
+        <ItemsControl
+            Margin="0,0,0,14"
+            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Scan.Drives]}"
+            IsVisible="{Binding ScanDrives.HasRows}"
+            ItemsSource="{Binding ScanDrives.Rows}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="12" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="data:ScanDriveRow">
+              <Grid ColumnDefinitions="200,*,150">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                  <TextBlock FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"
+                             Text="{Binding Root}" />
+                  <Border CornerRadius="4" Padding="6,1" VerticalAlignment="Center"
+                          BorderBrush="{DynamicResource VdfCardLineBrush}"
+                          BorderThickness="1"
+                          IsVisible="{Binding HasType}">
+                    <TextBlock FontSize="10.5" FontWeight="Bold" LetterSpacing="0.6" Opacity="{DynamicResource VdfTextFaintOpacity}"
+                               Text="{Binding TypeLabel}" />
+                  </Border>
+                </StackPanel>
+                <ProgressBar Grid.Column="1" Height="7" CornerRadius="3.5" Margin="14,0"
+                             AutomationProperties.Name="{Binding Root}"
+                             VerticalAlignment="Center"
+                             Maximum="1"
+                             Value="{Binding Fraction, Mode=OneWay}" />
+                <TextBlock Grid.Column="2" FontSize="12" Opacity="{DynamicResource VdfTextDim80Opacity}"
+                           VerticalAlignment="Center" TextAlignment="Right"
+                           Text="{Binding Stat}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- last few log lines (mockup .logtail): full window width, hover for the
+             complete message (#836) -->
+        <ItemsControl ItemsSource="{Binding LogTail}"
+                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tab.Log]}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="data:LogTailRow">
+              <TextBlock FontSize="11.5" Opacity="{DynamicResource VdfTextFaintOpacity}" Margin="0,1.5"
+                         TextTrimming="CharacterEllipsis" Text="{Binding Display}">
+                <ToolTip.Tip>
+                  <TextBlock MaxWidth="800" TextWrapping="Wrap" Text="{Binding Tooltip}" />
+                </ToolTip.Tip>
+              </TextBlock>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
     </Border>
   </Grid>
 </UserControl>

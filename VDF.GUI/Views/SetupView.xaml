@@ -74,7 +74,10 @@
   <!-- Mockup page 1: scan bar, then one card per group of options in a single column.
        The two-column split it replaces put folders and options side by side, which is
        not what the approved mockup shows. -->
-  <Grid RowDefinitions="Auto,Auto,*,Auto">
+  <!-- Mockup .wrap: 32px gutters and the 1080px measure, the same numbers the results
+       page uses. The cards used to sit 24px in, which is 8px narrower than the page the
+       mockup drew and put this page's edges out of line with every other one. -->
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="32,2,32,0" MaxWidth="1080">
 
     <!-- "no duplicates found": shown after a completed scan that matched nothing, so
          returning to this screen is distinguishable from the never-scanned state -->
@@ -82,7 +85,7 @@
         Grid.Row="0"
         CornerRadius="8"
         Padding="12,8"
-        Margin="24,14,24,0"
+        Margin="0,14,0,0"
         Background="{DynamicResource VdfGoodSoftBrush}"
         BorderBrush="{DynamicResource VdfGoodBorderBrush}"
         BorderThickness="1"
@@ -112,7 +115,7 @@
     </Border>
 
     <!-- ===== scan bar ===== -->
-    <Border Grid.Row="1" Classes="scanbar" Margin="24,14,24,0">
+    <Border Grid.Row="1" Classes="scanbar" Margin="0,14,0,0">
       <DockPanel LastChildFill="True">
         <StackPanel
             DockPanel.Dock="Right"
@@ -167,7 +170,7 @@
 
     <!-- ===== the three option cards ===== -->
     <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
-      <StackPanel Margin="24,14,24,20">
+      <StackPanel Margin="0,14,0,20">
 
         <!-- 扫描目录 -->
         <Border Classes="setcard">
@@ -395,7 +398,7 @@
 
     <!-- window-wide status line -->
     <Border Grid.Row="3"
-            Padding="24,6"
+            Padding="32,6"
             BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="0,1,0,0">
       <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" Text="{Binding DatabaseInfoText}" />

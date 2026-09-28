@@ -92,7 +92,7 @@
              difference - its settings page starts straight at the first group title. The
              text block stays for search mode, which spans every section and so has no
              single name to carry. -->
-        <DockPanel Grid.Row="0" LastChildFill="False" Margin="30,0,30,6">
+        <DockPanel Grid.Row="0" LastChildFill="False" Margin="32,0,32,6">
           <TextBlock x:Name="HeaderTitle" DockPanel.Dock="Left" IsVisible="False"
                      FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
@@ -102,7 +102,7 @@
         </DockPanel>
 
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-          <StackPanel x:Name="SectionsHost" Margin="30,0,18,30">
+          <StackPanel x:Name="SectionsHost" Margin="32,0,32,30">
 
             <TextBlock x:Name="NoResultsText" Margin="0,24,0,0" FontSize="13" Opacity="{DynamicResource VdfTextMutedOpacity}" IsVisible="False"
                        Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.NoResults]}" />

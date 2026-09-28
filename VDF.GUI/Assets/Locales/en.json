@@ -824,6 +824,8 @@
 	"Scan.FilesUnit": "files",
 	"Scan.FilesPerSec": "files/s",
 	"Scan.Left": "left",
+	"Scan.Metric.Elapsed": "Elapsed",
+	"Scan.Metric.Remaining": "Estimated left",
 	"Settings.SearchPlaceholder": "Search all settings…",
 	"Settings.SearchResults": "Search results",
 	"Settings.NoResults": "No settings match your search.",

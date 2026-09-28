@@ -79,6 +79,16 @@ namespace VDF.GUI.Data {
 			private set => this.RaiseAndSetIfChanged(ref hasRows, value);
 		}
 
+		/// <summary>Every drive's rate added together, as the mockup's third metric
+		/// ("文件 / 秒"). The rows each carry their own rate because a fast SSD and a slow
+		/// HDD are read at different speeds; the headline number is the machine's, so it
+		/// sums them. Null until a drive has been sampled twice — a rate needs two
+		/// readings, and inventing one would print a number the run never measured.</summary>
+		public string? TotalRateText => totalRate == null
+			? null
+			: $"{Math.Round(totalRate.Value):N0} {filesPerSecondUnit()}";
+		double? totalRate;
+
 		public void Update(DriveProgress[]? drives, DateTime utcNow) {
 			if (drives == null || drives.Length == 0) {
 				Clear();
@@ -98,12 +108,25 @@ namespace VDF.GUI.Data {
 					? $"{drive.DoneFiles:N0} / {drive.TotalFiles:N0}"
 					: $"{drive.DoneFiles:N0} / {drive.TotalFiles:N0} · {Math.Round(rate.Value):N0} {filesPerSecondUnit()}";
 			}
+			double sum = 0d;
+			bool any = false;
+			foreach (RateState state in rates.Values)
+				if (state.Rate != null) {
+					sum += state.Rate.Value;
+					any = true;
+				}
+			if (any != (totalRate != null) || (any && Math.Abs(sum - totalRate!.Value) > 0.05)) {
+				totalRate = any ? sum : null;
+				this.RaisePropertyChanged(nameof(TotalRateText));
+			}
 			HasRows = true;
 		}
 
 		public void Clear() {
 			Rows.Clear();
 			rates.Clear();
+			totalRate = null;
+			this.RaisePropertyChanged(nameof(TotalRateText));
 			HasRows = false;
 		}
 

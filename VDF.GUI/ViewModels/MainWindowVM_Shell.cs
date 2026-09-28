@@ -98,9 +98,14 @@ namespace VDF.GUI.ViewModels {
 		/// only — the mockup hides the count with the labels (.nav-item .dot) — so it
 		/// doubles as the "is there anything to count" test while expanded.</summary>
 		public bool ShowRailCountBadge => ShowRailLabels && Duplicates.Count > 0;
-		/// <summary>The rail's two widths: 216px expanded, 74px collapsed — the width
-		/// the rail had before the mockup restyle, kept at the user's request.</summary>
-		public GridLength RailColumnWidth => new(IsRailCollapsed ? 74 : 216);
+		/// <summary>The rail's two widths: 248px expanded, 74px collapsed — both the
+		/// mockup's own numbers (.app --rail-w and .app.rail-min --rail-w), which the
+		/// restyle had left 32px short of.
+		/// A double, not a GridLength: it is bound to the rail Border's Width. A GridLength
+		/// does not convert to a double, the binding silently failed, and the rail took its
+		/// width from its contents instead — measured at 210px on screen, whichever number
+		/// this property named.</summary>
+		public double RailColumnWidth => IsRailCollapsed ? 74 : 248;
 		public string RailToggleTooltip => App.Lang[IsRailCollapsed ? "Rail.Expand" : "Rail.Collapse"];
 		public ReactiveCommand<Unit, Unit> ToggleRailCommand => ReactiveCommand.Create(() => {
 			IsRailCollapsed = !IsRailCollapsed;
