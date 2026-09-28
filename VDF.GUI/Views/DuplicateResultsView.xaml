@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="VDF.GUI.Views.DuplicateResultsView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -45,7 +45,7 @@
       <Setter Property="AutomationProperties.Name" Value="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.ExpandGroup]}" />
     </Style>
     <Style Selector="Button.group-action:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{actipro:ThemeResource Container3BackgroundBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
     </Style>
     <!-- Row action pair (mockup .btn-ghost.btn-sm): outlined and quiet, because two of
          them now sit in every row. They brighten on hover instead of shouting. -->
@@ -225,7 +225,7 @@
     </Style>
     <!-- HDR chip: neutral bordered info chip; green when it wins a mixed group -->
     <Style Selector="Border.hdrchip">
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
       <Setter Property="Padding" Value="4,0" />
@@ -260,8 +260,8 @@
     <Style Selector="Border.searchbox">
       <Setter Property="CornerRadius" Value="11" />
       <Setter Property="Padding" Value="8,0,13,0" />
-      <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
     <Style Selector="Border.searchbox:focus-within">
@@ -271,7 +271,7 @@
     <Style Selector="Border.filtertrack">
       <Setter Property="CornerRadius" Value="11" />
       <Setter Property="Padding" Value="3" />
-      <Setter Property="Background" Value="{actipro:ThemeResource Container2BackgroundBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
     </Style>
     <Style Selector="Button.filteritem">
       <Setter Property="Background" Value="Transparent" />
@@ -302,7 +302,7 @@
          outlined and quiet, brightening on hover instead of shouting -->
     <Style Selector="Button.ghostsm">
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="9" />
       <Setter Property="Padding" Value="11,6" />
@@ -335,13 +335,9 @@
          card is drawn by consecutive list rows: the header, every member, the AI strip
          and the details panel. Each wears the card's own surface; a transparent body over
          a same-coloured page was what made a group read as a stray outline instead of a
-         panel. The card's panel look therefore comes from its own surface and hairline on
-         the page background, and not from the mockup's card shadow: a row lives inside a
-         virtualising list, which composites each item into its own bounds, so anything a
-         row casts outside itself is cut off. Measured, not assumed - an opaque shadow on
-         the closing row renders zero pixels in the gap under the card, and clearing
-         ClipToBounds on the row itself does not change that (the clip is in the theme's
-         row template). Re-adding a shadow here is wasted work. -->
+         panel. Because a row is composited into its own bounds, the card cannot cast one
+         shadow around its whole silhouette: only the closing row can (see
+         Border.cardseg.rowend), and the header does for a collapsed group. -->
     <Style Selector="Border.cardseg">
       <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
@@ -354,15 +350,25 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="20,20,0,0" />
       <Setter Property="Padding" Value="18,14" />
+      <Setter Property="Margin" Value="0,8,0,0" />
+      <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
     </Style>
     <!-- Whoever ends the group closes the card, and a collapsed group is nothing but its
-         header, which the builder flags the same way -->
+         header, which the builder flags the same way.
+         The closing segment carries the card's elevation: it is the one row that knows
+         the card ends here, so it is the one that can cast. It gets a uniform 1px
+         thickness, because a box shadow is not drawn on a border of uneven thickness,
+         and 14px of its own margin below it, because the shadow is clipped at the row it
+         is drawn in - the space has to exist inside the row for the shadow to land in. -->
     <Style Selector="Border.cardseg.rowend">
-      <Setter Property="BorderThickness" Value="1,0,1,1" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="0,0,20,20" />
+      <Setter Property="Margin" Value="0,0,0,14" />
+      <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
     </Style>
     <Style Selector="Border.cardtop.rowend">
       <Setter Property="CornerRadius" Value="20" />
+      <Setter Property="Margin" Value="0,8,0,14" />
     </Style>
     <!-- mockup .file.marked: checked means marked for deletion. The prototype tints
          those rows blue and keeps red for the "will be deleted" label. -->
@@ -389,8 +395,8 @@
       <Setter Property="Padding" Value="7,2" />
       <Setter Property="CornerRadius" Value="6" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
-      <Setter Property="Background" Value="{actipro:ThemeResource Container2BackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
     </Style>
     <Style Selector="Border.aitag TextBlock">
       <Setter Property="FontSize" Value="10.5" />
@@ -416,8 +422,8 @@
       <Setter Property="Margin" Value="0,0,0,14" />
       <Setter Property="Padding" Value="16,14" />
       <Setter Property="CornerRadius" Value="16" />
-      <Setter Property="Background" Value="{actipro:ThemeResource Container2BackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
   </UserControl.Styles>
@@ -494,8 +500,8 @@
         Margin="0,12,0,0"
         Padding="10,6"
         CornerRadius="11"
-        Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
-        BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+        Background="{DynamicResource VdfAccentSoftBrush}"
+        BorderBrush="{DynamicResource VdfCardLineBrush}"
         BorderThickness="1"
         IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=!ResultsHintDismissed}">
       <DockPanel LastChildFill="True">
@@ -675,7 +681,7 @@
               IsChecked="{Binding ResultsBestFirst}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.BestFirst]}"
               ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.BestFirstTip]}" />
-          <Border Width="1" Height="20" Margin="10,0" Background="{actipro:ThemeResource Container3BorderBrush}" />
+          <Border Width="1" Height="20" Margin="10,0" Background="{DynamicResource VdfCardLineBrush}" />
           <TextBlock x:Name="TypeLabel" Margin="0,0,4,0" VerticalAlignment="Center" FontSize="12"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.Type]}" />
           <ComboBox
@@ -729,7 +735,7 @@
               Margin="6,0,0,0"
               IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsCompactRows}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.CompactRows]}" />
-          <Border Width="1" Height="20" Margin="10,0" Background="{actipro:ThemeResource Container3BorderBrush}" />
+          <Border Width="1" Height="20" Margin="10,0" Background="{DynamicResource VdfCardLineBrush}" />
           <Button x:Name="AutoSelectButton" FontSize="12" Padding="10,3" CornerRadius="12"
                   AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.AutoSelect]}">
             <Button.Content>
@@ -1419,8 +1425,8 @@
           <Panel>
             <Border Classes="cardseg" Classes.rowend="{Binding IsGroupEnd}" />
             <Border Classes="detailsrow" Margin="36,2,16,6" Padding="14,8" CornerRadius="8"
-                    Background="{actipro:ThemeResource Container2BackgroundBrush}"
-                    BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                    Background="{DynamicResource VdfSunkenBrush}"
+                    BorderBrush="{DynamicResource VdfCardLineBrush}"
                     BorderThickness="1">
             <DockPanel LastChildFill="True">
               <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="16,0,0,0">
@@ -1476,7 +1482,7 @@
         Margin="28,0,28,16"
         Padding="18,10"
         CornerRadius="16"
-        Background="{actipro:ThemeResource Container1BackgroundBrush}"
+        Background="{DynamicResource VdfCardBrush}"
         BorderBrush="{DynamicResource VdfMutedBorderBrush}"
         BorderThickness="1"
         BoxShadow="0 8 22 0 #26003050">
@@ -1584,7 +1590,7 @@
     <Border
         Grid.Row="5"
         Padding="10,4"
-        BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+        BorderBrush="{DynamicResource VdfCardLineBrush}"
         BorderThickness="0,1,0,0">
       <DockPanel LastChildFill="False">
         <StackPanel Orientation="Horizontal" Spacing="16">

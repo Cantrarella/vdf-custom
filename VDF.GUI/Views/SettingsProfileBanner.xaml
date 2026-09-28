@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="VDF.GUI.Views.SettingsProfileBanner"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -20,7 +20,7 @@
       </Grid>
     </Border>
     <Border CornerRadius="8" Padding="14,9" Margin="0,12,0,6" BorderThickness="1"
-            Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
+            Background="{DynamicResource VdfAccentSoftBrush}"
             BorderBrush="{actipro:ThemeResource ControlForegroundBrushSoftAccent}"
             IsVisible="{Binding !ActiveScanProfileIsManaged}">
       <Grid ColumnDefinitions="Auto,*">

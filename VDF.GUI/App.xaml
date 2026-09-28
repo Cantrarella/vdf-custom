@@ -100,12 +100,14 @@
                          card surface itself (its surface token). They used to be the same
                          white, so a card was readable only by its outline, which read as a
                          frame around the group rather than as a panel. -->
-                    <SolidColorBrush x:Key="VdfPageBrush" Color="#F4FAFF" />
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#EEF5FC" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#FFFFFF" />
                     <!-- The hairline along a card's edge: the mockup's own line token (#E4EDF5),
-                         which is about 8% darker than the page and reads as an edge rather than
-                         as a frame. (The frame the results page used to show was the list
-                         control's own outline: #CCCED3, more than three times this strong.) -->
+                         which reads as an edge rather than as a frame. (The frame the results
+                         page used to show was the list control's own outline: #CCCED3, more
+                         than three times this strong.) It is kept light on purpose: the card
+                         is separated from the page by the elevation shadow, so this line has
+                         only to close the shape. -->
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E4EDF5" />
                     <!-- The rail's own surface (the mockup's rail token): white at 74% over the
                          page bg, flattened to an opaque tone here. The cards sit on the page,
@@ -135,6 +137,10 @@
                     <x:Double x:Key="VdfTextDim55Opacity">0.55</x:Double>
                     <!-- Placeholder text in an empty field: the theme's own look. -->
                     <x:Double x:Key="VdfPlaceholderOpacity">0.67</x:Double>
+                    <!-- A card sits on the page and lifts off it (the mockup's Elevation):
+                         a tight contact shadow under the edge, then a wide soft one for
+                         depth. Two parts, because one alone reads as a blur. -->
+                    <BoxShadows x:Key="VdfCardShadow">0 2 6 0 #0D103C64, 0 14 32 -18 #3D103C64</BoxShadows>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="VdfGoodBrush" Color="#45B878" />
@@ -227,6 +233,9 @@
                     <x:Double x:Key="VdfTextDim55Opacity">0.55</x:Double>
                     <!-- Placeholder text in an empty field: the theme's own look. -->
                     <x:Double x:Key="VdfPlaceholderOpacity">0.67</x:Double>
+                    <!-- Dark surfaces swallow a soft shadow, so the dark theme lifts the
+                         card with more opacity and a longer falloff instead. -->
+                    <BoxShadows x:Key="VdfCardShadow">0 2 8 0 #59000000, 0 18 40 -20 #A6000000</BoxShadows>
                 </ResourceDictionary>
                 <!-- High contrast on dark. Held to 7:1 for text (4.5:1 large text and icons) by the contrast guard: no dimmed text at all, tones light enough for the darkest and the tinted surfaces alike, and outlines one can see. -->
                 <ResourceDictionary x:Key="{x:Static utils:VdfThemes.HighContrastDark}">
@@ -327,6 +336,9 @@
                     <SolidColorBrush x:Key="VdfRailBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfSunkenBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#16303F" />
+                    <!-- High contrast reads shapes, not depth: no shadow here, the card
+                         outline does the separating. -->
+                    <BoxShadows x:Key="VdfCardShadow">0 0 0 0 #00000000</BoxShadows>
                 </ResourceDictionary>
                 <!-- High contrast on light, the counterpart of the above. -->
                 <ResourceDictionary x:Key="{x:Static utils:VdfThemes.HighContrastLight}">
@@ -424,6 +436,8 @@
                     <SolidColorBrush x:Key="VdfRailBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="VdfSunkenBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#EAF5FF" />
+                    <!-- No shadow: the outline separates the card here. -->
+                    <BoxShadows x:Key="VdfCardShadow">0 0 0 0 #00000000</BoxShadows>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>

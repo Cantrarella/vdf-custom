@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:Settings="clr-namespace:VDF.GUI.Data;assembly=VDF.GUI"
@@ -25,7 +25,7 @@
 				</TabItem.Header>
 				<Border
 				Padding="12"
-				Background="{actipro:ThemeResource Container1BackgroundBrush}"
+				Background="{DynamicResource VdfCardBrush}"
 				BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
 				BorderThickness="1"
 				CornerRadius="6">
@@ -59,7 +59,7 @@
 				</TabItem.Header>
 				<Border
 				Padding="12"
-				Background="{actipro:ThemeResource Container1BackgroundBrush}"
+				Background="{DynamicResource VdfCardBrush}"
 				BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
 				BorderThickness="1"
 				MinHeight="300"
@@ -101,7 +101,7 @@
 				</TabItem.Header>
 				<Border
 				Padding="12"
-				Background="{actipro:ThemeResource Container1BackgroundBrush}"
+				Background="{DynamicResource VdfCardBrush}"
 				BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
 				BorderThickness="1"
 				MinHeight="300"
@@ -128,7 +128,7 @@
 		<Border
 		Grid.Row="1"
 		Padding="10"
-		Background="{actipro:ThemeResource Container1BackgroundBrush}"
+		Background="{DynamicResource VdfCardBrush}"
 		BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
 		BorderThickness="1"
 		CornerRadius="6">

@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
         xmlns:vm="clr-namespace:VDF.GUI.ViewModels"
@@ -61,8 +61,8 @@
     </StackPanel>
 
     <Border Padding="4"
-            Background="{actipro:ThemeResource Container1BackgroundBrush}"
-            BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+            Background="{DynamicResource VdfCardBrush}"
+            BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="1"
             CornerRadius="8">
       <!-- The header row scrolls sideways with the table; the list scrolls down on its own. -->

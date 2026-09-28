@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="VDF.GUI.RelocateFilesDialog"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -101,8 +101,8 @@
             RowDefinitions="Auto,*">
             <Border
                 Padding="8,4"
-                Background="{actipro:ThemeResource Container2BackgroundBrush}"
-                BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                Background="{DynamicResource VdfSunkenBrush}"
+                BorderBrush="{DynamicResource VdfCardLineBrush}"
                 BorderThickness="0,0,0,1">
                 <Grid ColumnDefinitions="56,2*,2*,*,*">
                     <TextBlock FontSize="11" FontWeight="SemiBold" Opacity="{DynamicResource VdfTextSoftOpacity}" Text="{Binding Source={x:Static app:App.Lang}, Path=[Apply]}" />

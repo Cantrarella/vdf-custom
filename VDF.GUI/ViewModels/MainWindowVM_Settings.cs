@@ -132,7 +132,11 @@ namespace VDF.GUI.ViewModels {
 				await MessageBoxService.Show(App.Lang["Message.OpenHwAccelInfoFailed"]);
 			}
 		});
-		public ReactiveCommand<Unit, Unit> AddIncludesToListCommand => ReactiveCommand.CreateFromTask(async () => {
+		public ReactiveCommand<Unit, Unit> AddIncludesToListCommand => ReactiveCommand.CreateFromTask(AddIncludesToScanListAsync);
+
+		/// <summary>Picks one or more folders and adds them to the scan list. Shared by
+		/// the folder card's own button and the rail's "scan folders" entry.</summary>
+		internal async Task AddIncludesToScanListAsync() {
 			var result = await Utils.PickerDialogUtils.OpenDialogPicker(
 				new FolderPickerOpenOptions() {
 					AllowMultiple = true,
@@ -145,7 +149,7 @@ namespace VDF.GUI.ViewModels {
 				if (!SettingsFile.Instance.Includes.Contains(item))
 					SettingsFile.Instance.Includes.Add(item);
 			}
-		});
+		}
 		public ReactiveCommand<Unit, Unit> AddFilePathContainsTextToListCommand => ReactiveCommand.CreateFromTask(async () => {
 			var result = await InputBoxService.Show("New Entry");
 			if (string.IsNullOrEmpty(result)) return;

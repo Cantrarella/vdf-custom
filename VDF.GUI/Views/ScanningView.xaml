@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="VDF.GUI.Views.ScanningView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,7 +27,7 @@
           <TextBlock FontSize="19" FontWeight="SemiBold" VerticalAlignment="Center"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.Title]}" />
           <Border CornerRadius="10" Padding="10,2" VerticalAlignment="Center"
-                  Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
+                  Background="{DynamicResource VdfAccentSoftBrush}"
                   IsVisible="{Binding ScanStageText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
             <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding ScanStageText}" />
           </Border>
@@ -78,7 +78,7 @@
                 <TextBlock FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"
                            Text="{Binding Root}" />
                 <Border CornerRadius="4" Padding="6,1" VerticalAlignment="Center"
-                        BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                        BorderBrush="{DynamicResource VdfCardLineBrush}"
                         BorderThickness="1"
                         IsVisible="{Binding HasType}">
                   <TextBlock FontSize="10.5" FontWeight="Bold" LetterSpacing="0.6" Opacity="{DynamicResource VdfTextFaintOpacity}"
@@ -132,7 +132,7 @@
           </StackPanel>
         </Button>
         <Border CornerRadius="8" Padding="14,7"
-                BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                BorderBrush="{DynamicResource VdfCardLineBrush}"
                 BorderThickness="1">
           <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextMutedOpacity}" VerticalAlignment="Center"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.PauseNote]}" />
@@ -145,7 +145,7 @@
          complete message (#836) -->
     <Border Grid.Row="1" Margin="32,26,32,24" Padding="0,12,0,0"
             VerticalAlignment="Top"
-            BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+            BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="0,1,0,0">
       <ItemsControl ItemsSource="{Binding LogTail}"
                     AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tab.Log]}">

@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="VDF.GUI.Views.ThumbnailComparer"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -51,7 +51,7 @@
         </Style>
         <!-- keycap hint (mockup .kbd) -->
         <Style Selector="Border.kbd">
-            <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container4BorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
             <Setter Property="BorderThickness" Value="1,1,1,2" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Padding" Value="6,2" />
@@ -65,7 +65,7 @@
         </Style>
         <!-- metadata chips (mockup .mchip) -->
         <Style Selector="Border.mchip">
-            <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container4BorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="9,3" />
@@ -127,7 +127,7 @@
             <Setter Property="FontSize" Value="11" />
         </Style>
         <Style Selector="Border.hint-bar">
-            <Setter Property="Background" Value="{actipro:ThemeResource Container2BackgroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Padding" Value="8,3" />
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -203,8 +203,8 @@
             <Border
                 Grid.Row="1"
                 Padding="20,10"
-                Background="{actipro:ThemeResource Container2BackgroundBrush}"
-                BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                Background="{DynamicResource VdfSunkenBrush}"
+                BorderBrush="{DynamicResource VdfCardLineBrush}"
                 BorderThickness="0,0,0,1">
                 <DockPanel LastChildFill="False">
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
@@ -215,7 +215,7 @@
                                    IsVisible="{Binding PairInfoText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                    Text="{Binding PairInfoText}" />
                         <Border CornerRadius="6" Padding="9,2" VerticalAlignment="Center"
-                                Background="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}"
+                                Background="{DynamicResource VdfAccentSoftBrush}"
                                 IsVisible="{Binding HasSimilarity}">
                             <TextBlock FontSize="12.5" FontWeight="SemiBold" Text="{Binding SimilarityText}" />
                         </Border>
@@ -256,8 +256,8 @@
                             Background="{Binding IsLeftBest, Converter={StaticResource WinnerPaneBackgroundConverter}}">
                         <Grid RowDefinitions="*,Auto,Auto,Auto,Auto">
                             <Border Grid.Row="0" CornerRadius="8" ClipToBounds="True"
-                                    Background="{actipro:ThemeResource Container1BackgroundBrush}"
-                                    BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                                    Background="{DynamicResource VdfCardBrush}"
+                                    BorderBrush="{DynamicResource VdfCardLineBrush}"
                                     BorderThickness="1">
                                 <Grid>
                                     <data:ZoomPanPresenter
@@ -284,7 +284,7 @@
                                             ToolTip.Tip="{Binding Source={x:Static app:App.Lang}, Path=[ThumbnailComparerDialog.PrevFrame]}">
                                         <TextBlock FontSize="10" Text="&#9664;" />
                                     </Button>
-                                    <Border MinWidth="30" VerticalAlignment="Center" Background="{actipro:ThemeResource Container1BackgroundBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
+                                    <Border MinWidth="30" VerticalAlignment="Center" Background="{DynamicResource VdfCardBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
                                         <TextBlock HorizontalAlignment="Center" FontSize="11" FontWeight="SemiBold" Text="{Binding StepA}" />
                                     </Border>
                                     <Button AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[A11y.Comparer.NextFrameLeft]}" Classes="offset-btn" Command="{Binding StepAPlusCommand}"
@@ -367,15 +367,15 @@
                         </Grid>
                     </Border>
 
-                    <Border Grid.Column="1" Background="{actipro:ThemeResource Container3BorderBrush}" />
+                    <Border Grid.Column="1" Background="{DynamicResource VdfCardLineBrush}" />
 
                     <!-- right pane: challenger -->
                     <Border Grid.Column="2" Padding="20,14"
                             Background="{Binding IsRightBest, Converter={StaticResource WinnerPaneBackgroundConverter}}">
                         <Grid RowDefinitions="*,Auto,Auto,Auto,Auto">
                             <Border Grid.Row="0" CornerRadius="8" ClipToBounds="True"
-                                    Background="{actipro:ThemeResource Container1BackgroundBrush}"
-                                    BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                                    Background="{DynamicResource VdfCardBrush}"
+                                    BorderBrush="{DynamicResource VdfCardLineBrush}"
                                     BorderThickness="1">
                                 <Grid>
                                     <data:ZoomPanPresenter
@@ -401,7 +401,7 @@
                                             ToolTip.Tip="{Binding Source={x:Static app:App.Lang}, Path=[ThumbnailComparerDialog.PrevFrame]}">
                                         <TextBlock FontSize="10" Text="&#9664;" />
                                     </Button>
-                                    <Border MinWidth="30" VerticalAlignment="Center" Background="{actipro:ThemeResource Container1BackgroundBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
+                                    <Border MinWidth="30" VerticalAlignment="Center" Background="{DynamicResource VdfCardBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
                                         <TextBlock HorizontalAlignment="Center" FontSize="11" FontWeight="SemiBold" Text="{Binding StepB}" />
                                     </Border>
                                     <Button AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[A11y.Comparer.NextFrameRight]}" Classes="offset-btn" Command="{Binding StepBPlusCommand}"
@@ -489,7 +489,7 @@
                         Grid.Row="0"
                         Margin="0,0,0,6"
                         Padding="10,6"
-                        Background="{actipro:ThemeResource Container2BackgroundBrush}"
+                        Background="{DynamicResource VdfSunkenBrush}"
                         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="6"
@@ -518,7 +518,7 @@
                             <Button AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[A11y.Comparer.PrevFrameLeft]}" Classes="offset-btn" Command="{Binding StepAMinusCommand}">
                                 <TextBlock FontSize="10" Text="&#9664;" />
                             </Button>
-                            <Border MinWidth="36" Background="{actipro:ThemeResource Container1BackgroundBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
+                            <Border MinWidth="36" Background="{DynamicResource VdfCardBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" Text="{Binding StepA}" />
                             </Border>
                             <Button AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[A11y.Comparer.NextFrameLeft]}" Classes="offset-btn" Command="{Binding StepAPlusCommand}">
@@ -529,7 +529,7 @@
                             <Button AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[A11y.Comparer.PrevFrameRight]}" Classes="offset-btn" Command="{Binding StepBMinusCommand}">
                                 <TextBlock FontSize="10" Text="&#9664;" />
                             </Button>
-                            <Border MinWidth="36" Background="{actipro:ThemeResource Container1BackgroundBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
+                            <Border MinWidth="36" Background="{DynamicResource VdfCardBrush}" BorderBrush="{actipro:ThemeResource Container1BorderBrush}" BorderThickness="1" CornerRadius="3" Padding="4,2">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" Text="{Binding StepB}" />
                             </Border>
                             <Button AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[A11y.Comparer.NextFrameRight]}" Classes="offset-btn" Command="{Binding StepBPlusCommand}">
@@ -542,7 +542,7 @@
 
                     <Border
                         Grid.Row="1"
-                        Background="{actipro:ThemeResource Container1BackgroundBrush}"
+                        Background="{DynamicResource VdfCardBrush}"
                         BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="6"
@@ -691,8 +691,8 @@
             <Border
                 Grid.Row="3"
                 Padding="20,10"
-                Background="{actipro:ThemeResource Container2BackgroundBrush}"
-                BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                Background="{DynamicResource VdfSunkenBrush}"
+                BorderBrush="{DynamicResource VdfCardLineBrush}"
                 BorderThickness="0,1,0,0">
                 <DockPanel LastChildFill="False">
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="10">
@@ -765,8 +765,8 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Padding="28,20"
-                    Background="{actipro:ThemeResource Container1BackgroundBrush}"
-                    BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                    Background="{DynamicResource VdfCardBrush}"
+                    BorderBrush="{DynamicResource VdfCardLineBrush}"
                     BorderThickness="1"
                     CornerRadius="10">
                 <StackPanel Spacing="8">

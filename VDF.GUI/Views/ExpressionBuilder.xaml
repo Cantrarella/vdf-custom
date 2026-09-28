@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="VDF.GUI.Views.ExpressionBuilder"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,8 +27,8 @@
         <!--  available properties reference  -->
         <Border
             Padding="12"
-            Background="{actipro:ThemeResource Container1BackgroundBrush}"
-            BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+            Background="{DynamicResource VdfCardBrush}"
+            BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="1"
             CornerRadius="8">
             <ScrollViewer Height="280" VerticalScrollBarVisibility="Auto">

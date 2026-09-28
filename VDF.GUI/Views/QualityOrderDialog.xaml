@@ -1,4 +1,4 @@
-<!-- Dialog for selecting the order of quality criteria -->
+﻿<!-- Dialog for selecting the order of quality criteria -->
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
@@ -22,8 +22,8 @@
                    Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.CheckHint]}"
                    TextWrapping="Wrap" />
         <Border Padding="6"
-                Background="{actipro:ThemeResource Container1BackgroundBrush}"
-                BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                Background="{DynamicResource VdfCardBrush}"
+                BorderBrush="{DynamicResource VdfCardLineBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
             <ListBox AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Title]}" x:Name="CriteriaListBox"

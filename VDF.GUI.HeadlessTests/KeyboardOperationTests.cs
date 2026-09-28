@@ -15,6 +15,7 @@
 //
 
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Headless;
 using Avalonia.Input;
@@ -260,8 +261,10 @@ public class KeyboardOperationTests {
 		bool before = Data.SettingsFile.Instance.ShowBitrateColumn;
 		try {
 			// Column visibility used to live only in the column header's right-click menu,
-			// and a header strip cannot take keyboard focus.
-			var bitrate = view.GetVisualDescendants().OfType<CheckBox>()
+			// and a header strip cannot take keyboard focus. The switches are chips now
+			// (ToggleButton, mockup .chip-tog) rather than check boxes, so the test looks
+			// for the base class instead of the old control.
+			var bitrate = view.GetVisualDescendants().OfType<ToggleButton>()
 				.Single(c => c.IsEffectivelyVisible && Avalonia.Automation.AutomationProperties.GetName(c) == "Bitrate");
 			bitrate.Focus(NavigationMethod.Tab);
 			HeadlessUi.Pump();

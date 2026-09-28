@@ -1,4 +1,4 @@
-// /*
+﻿// /*
 //     Copyright (C) 2026 0x90d
 //     This file is part of VideoDuplicateFinder
 //     VideoDuplicateFinder is free software: you can redistribute it and/or modify
@@ -86,6 +86,9 @@ namespace VDF.GUI.ViewModels {
 				this.RaisePropertyChanged(nameof(RailColumnWidth));
 				this.RaisePropertyChanged(nameof(ShowRailLabels));
 				this.RaisePropertyChanged(nameof(RailToggleTooltip));
+				// The settings children fall away with the labels: they are labels too,
+				// and left behind they would sit in the icon strip as a column of dots.
+				this.RaisePropertyChanged(nameof(ShowRailSettingsChildren));
 			}
 		}
 
@@ -100,10 +103,13 @@ namespace VDF.GUI.ViewModels {
 
 		// ---------- rail: navigation ----------
 
-		/// <summary>Lands on the scanner without naming one of its two screens: which one
-		/// shows follows from whether a scan has produced anything.</summary>
-		public ReactiveCommand<Unit, Unit> ShowRailScannerCommand => ReactiveCommand.Create(() => {
+		/// <summary>The rail entry named after the scan folders: it opens the folder
+		/// picker straight away, on top of the scanner screen. Landing on the scanner
+		/// alone was invisible whenever the scanner was already showing, which made the
+		/// entry read as a dead link.</summary>
+		public ReactiveCommand<Unit, Unit> ShowRailScannerCommand => ReactiveCommand.CreateFromTask(async () => {
 			ActiveShellView = ShellView.Main;
+			await AddIncludesToScanListAsync();
 		});
 
 		/// <summary>Which scanner screen the rail last asked for: null while the data

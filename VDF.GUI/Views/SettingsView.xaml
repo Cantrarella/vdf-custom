@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="VDF.GUI.Views.SettingsView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -20,14 +20,47 @@
     <Style Selector="TextBlock.subcaption">
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="0.6" />
       <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
-      <Setter Property="Margin" Value="0,22,0,2" />
+      <!-- mockup .sec-title: 22px above, 10px below, and it stands OUTSIDE its card. A
+           title inside the card sat on the card's own edge and left the cards with
+           nothing to tell them apart. -->
+      <Setter Property="Margin" Value="0,20,0,8" />
+      <Setter Property="Padding" Value="4,0,0,0" />
+    </Style>
+
+    <!-- mockup .chip.chip-tog: a switch that reads as a tag. Used for the result columns,
+         which sit in a flow rather than in a fixed grid of boxes. -->
+    <Style Selector="ToggleButton.colchip">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,8,6" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Name="ChipSurface" CornerRadius="9" Padding="11,5"
+                  Background="{DynamicResource VdfSunkenBrush}"
+                  BorderBrush="{DynamicResource VdfCardLineBrush}"
+                  BorderThickness="1">
+            <ContentPresenter Content="{TemplateBinding Content}" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ToggleButton.colchip:pointerover /template/ Border#ChipSurface">
+      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.colchip:checked /template/ Border#ChipSurface">
+      <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfAccentTextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.colchip:checked /template/ ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
     </Style>
 
     <!-- shortcut capture box: themed here, its colors used to be hard-coded for dark in code
          (light gray text, white border: 1.7:1 on the light theme) -->
     <Style Selector="views|HotKeyBox">
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container4BorderBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
     </Style>
     <Style Selector="views|HotKeyBox:focus">
       <Setter Property="BorderBrush" Value="{actipro:ThemeResource ControlBackgroundBrushEmphasizedAccent}" />
@@ -50,9 +83,13 @@
       <Grid RowDefinitions="Auto,*" Margin="30,22,30,0" MaxWidth="760"
             HorizontalAlignment="Left">
 
-        <!-- header: section title + search box -->
+        <!-- header: the search box only. The section's name is already in the topbar and
+             on the rail's own entry; printing it again here was the mockup's one visible
+             difference - its settings page starts straight at the first group title. The
+             text block stays for search mode, which spans every section and so has no
+             single name to carry. -->
         <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,6">
-          <TextBlock x:Name="HeaderTitle" DockPanel.Dock="Left"
+          <TextBlock x:Name="HeaderTitle" DockPanel.Dock="Left" IsVisible="False"
                      FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
           <TextBox x:Name="SearchBox" DockPanel.Dock="Right" Width="220" VerticalAlignment="Center"
@@ -476,7 +513,7 @@
             </Border>
 
             <!-- ═══════════════ RESULTS & DATABASE ═══════════════ -->
-            <Border Classes="setcard" IsVisible="False">
+            <Border IsVisible="False">
               <StackPanel Tag="Database">
                 <TextBlock Classes="sectioncaption" IsVisible="False"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}" />
@@ -484,145 +521,168 @@
                 <TextBlock Classes="subcaption"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.ResultsList]}" />
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.GeneratePreviewImages]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.GeneratePreviewImagesTooltip]}">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=GeneratePreviewThumbnails}" />
-                </views:SettingRow>
+                <!-- One card per group of options, its title above it (mockup
+                     .sec-title + .card). This used to be one card per section with the
+                     group titles inside it: the title sat on the card's own edge, and
+                     nothing told one card from the next. -->
+                <Border Classes="setcard">
+                  <StackPanel>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.GeneratePreviewImages]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.GeneratePreviewImagesTooltip]}">
+                      <ToggleSwitch Classes="plain"
+                                    IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=GeneratePreviewThumbnails}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ThumbnailMaxWidth]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ThumbnailMaxWidthTooltip]}">
-                  <NumericUpDown Classes="stepper" Minimum="48" Maximum="960" Increment="48"
-                                 Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ThumbnailMaxWidth}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ThumbnailMaxWidth]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ThumbnailMaxWidthTooltip]}">
+                      <NumericUpDown Classes="stepper" Minimum="48" Maximum="960" Increment="48"
+                                     Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ThumbnailMaxWidth}" />
+                    </views:SettingRow>
 
-                <!-- The same switches as the column header's right-click menu, which has no
-                     keyboard access: a header strip cannot take focus. Each box carries its own
-                     name, or the row would hand its title to the first one. -->
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.Columns.Title]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.Columns.Desc]}"
-                    SearchTags="columns preview duration resolution size date bitrate format audio languages subtitles match similarity">
-                  <UniformGrid Columns="2" ColumnSpacing="14" RowSpacing="2">
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Preview]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Preview]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowThumbnailColumn}" />
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.DurationRes]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.DurationRes]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowDurationColumn}" />
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.SizeDate]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.SizeDate]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowSizeDateColumn}" />
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Bitrate]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Bitrate]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowBitrateColumn}" />
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.FormatAudio]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.FormatAudio]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowFormatColumn}" />
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Languages]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Languages]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowLanguagesColumn}" />
-                    <CheckBox Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Match]}"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Match]}"
-                              IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowSimilarityColumn}" />
-                  </UniformGrid>
-                </views:SettingRow>
+                    <!-- The same switches as the column header's right-click menu, which has no
+                         keyboard access: a header strip cannot take focus. Each box carries its own
+                         name, or the row would hand its title to the first one. -->
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.Columns.Title]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.Columns.Desc]}"
+                        SearchTags="columns preview duration resolution size date bitrate format audio languages subtitles match similarity">
+                      <!-- mockup .taglist: the switches flow and wrap instead of sitting in
+                           a fixed two-column grid, which made this the busiest row on the
+                           page. Checked reads as the mockup's soft accent chip. -->
+                      <WrapPanel Width="372" Margin="0,0,0,-6">
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Preview]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Preview]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowThumbnailColumn}" />
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.DurationRes]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.DurationRes]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowDurationColumn}" />
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.SizeDate]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.SizeDate]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowSizeDateColumn}" />
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Bitrate]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Bitrate]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowBitrateColumn}" />
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.FormatAudio]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.FormatAudio]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowFormatColumn}" />
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Languages]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Languages]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowLanguagesColumn}" />
+                        <ToggleButton Classes="colchip"
+                                      Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Match]}"
+                                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Match]}"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowSimilarityColumn}" />
+                      </WrapPanel>
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.DateModified.Title]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.DateModified.Desc]}"
-                    SearchTags="date modified created time copied downloaded oldest newest">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsShowDateModified}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.DateModified.Title]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.DateModified.Desc]}"
+                        SearchTags="date modified created time copied downloaded oldest newest">
+                      <ToggleSwitch Classes="plain"
+                                    IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsShowDateModified}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPreset]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPresetTooltip]}"
-                    SearchTags="preset selection">
-                  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <ToggleSwitch Classes="plain" VerticalAlignment="Center"
-                                  IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AutoApplySelectionPresetEnabled}" />
-                    <ComboBox MinWidth="180" MaxWidth="260" VerticalAlignment="Center"
-                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPresetPlaceholder]}"
-                              PlaceholderText="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPresetPlaceholder]}"
-                              IsEnabled="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AutoApplySelectionPresetEnabled}"
-                              ItemsSource="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=CustomSelectionPresets}"
-                              SelectedItem="{Binding SelectedAutoApplyPreset, Mode=TwoWay}">
-                      <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="Settings:CustomSelectionPreset">
-                          <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                      </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPreset]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPresetTooltip]}"
+                        SearchTags="preset selection">
+                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                                      IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AutoApplySelectionPresetEnabled}" />
+                        <ComboBox MinWidth="180" MaxWidth="260" VerticalAlignment="Center"
+                                  AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPresetPlaceholder]}"
+                                  PlaceholderText="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoApplySelectionPresetPlaceholder]}"
+                                  IsEnabled="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AutoApplySelectionPresetEnabled}"
+                                  ItemsSource="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=CustomSelectionPresets}"
+                                  SelectedItem="{Binding SelectedAutoApplyPreset, Mode=TwoWay}">
+                          <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="Settings:CustomSelectionPreset">
+                              <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                          </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                  </views:SettingRow>
+
+                  <views:SettingRow
+                      Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.SaveResultsOnExit]}"
+                      Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.SaveResultsOnExitTooltip]}">
+                    <ToggleSwitch Classes="plain"
+                                  IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AskToSaveResultsOnExit}" />
+                  </views:SettingRow>
+
+                  <views:SettingRow
+                      Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoBackupScanResults]}"
+                      Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoBackupScanResultsTooltip]}">
+                    <ToggleSwitch Classes="plain"
+                                  IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=BackupAfterListChanged}" />
+                  </views:SettingRow>
+
                   </StackPanel>
-                </views:SettingRow>
-
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.SaveResultsOnExit]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.SaveResultsOnExitTooltip]}">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AskToSaveResultsOnExit}" />
-                </views:SettingRow>
-
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoBackupScanResults]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoBackupScanResultsTooltip]}">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=BackupAfterListChanged}" />
-                </views:SettingRow>
+                </Border>
 
                 <TextBlock Classes="subcaption"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Database]}" />
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.RememberDeletedContent]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.RememberDeletedContentTooltip]}"
-                    SearchTags="tombstone ghost already deleted">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=RememberDeletedContent}" />
-                </views:SettingRow>
+                <Border Classes="setcard">
+                  <StackPanel>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.RememberDeletedContent]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.RememberDeletedContentTooltip]}"
+                        SearchTags="tombstone ghost already deleted">
+                      <ToggleSwitch Classes="plain"
+                                    IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=RememberDeletedContent}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoCheckDeletedContentMatches]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoCheckDeletedContentMatchesTooltip]}"
-                    IsEnabled="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=RememberDeletedContent}">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AutoCheckDeletedContentMatches}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoCheckDeletedContentMatches]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.AutoCheckDeletedContentMatchesTooltip]}"
+                        IsEnabled="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=RememberDeletedContent}">
+                      <ToggleSwitch Classes="plain"
+                                    IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AutoCheckDeletedContentMatches}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstEntireDatabase]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstEntireDatabaseTooltip]}">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ScanAgainstEntireDatabase}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstEntireDatabase]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstEntireDatabaseTooltip]}">
+                      <ToggleSwitch Classes="plain"
+                                    IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ScanAgainstEntireDatabase}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstNonExistingFiles]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstNonExistingFilesTooltip]}"
-                    SearchTags="missing offline">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=IncludeNonExistingFiles}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstNonExistingFiles]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.ScanAgainstNonExistingFilesTooltip]}"
+                        SearchTags="missing offline">
+                      <ToggleSwitch Classes="plain"
+                                    IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=IncludeNonExistingFiles}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.CustomDatabaseFolder]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.CustomDatabaseFolderTooltip]}"
-                    SearchTags="database folder location">
-                  <TextBox Width="220"
-                           Text="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=CustomDatabaseFolder}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.CustomDatabaseFolder]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.CustomDatabaseFolderTooltip]}"
+                        SearchTags="database folder location">
+                      <TextBox Width="220"
+                               Text="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=CustomDatabaseFolder}" />
+                    </views:SettingRow>
 
-                <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.DatabaseCheckpointInterval]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.DatabaseCheckpointIntervalTooltip]}"
-                    SearchTags="checkpoint autosave crash">
-                  <NumericUpDown Classes="stepper" Minimum="0" Maximum="60" Increment="1" FormatString="0"
-                                 Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=DatabaseCheckpointIntervalMinutes}" />
-                </views:SettingRow>
+                    <views:SettingRow
+                        Title="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.DatabaseCheckpointInterval]}"
+                        Description="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.DatabaseCheckpointIntervalTooltip]}"
+                        SearchTags="checkpoint autosave crash">
+                      <NumericUpDown Classes="stepper" Minimum="0" Maximum="60" Increment="1" FormatString="0"
+                                     Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=DatabaseCheckpointIntervalMinutes}" />
+                    </views:SettingRow>
+                  </StackPanel>
+                </Border>
               </StackPanel>
             </Border>
 
@@ -797,7 +857,7 @@
     <!-- window-wide status line (mockup .statusline) -->
     <Border Grid.Row="1"
             Padding="24,6"
-            BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+            BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="0,1,0,0">
       <DockPanel LastChildFill="False">
         <TextBlock DockPanel.Dock="Left" FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" VerticalAlignment="Center"

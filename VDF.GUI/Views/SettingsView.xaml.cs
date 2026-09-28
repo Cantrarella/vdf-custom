@@ -1,4 +1,4 @@
-// /*
+﻿// /*
 //     Copyright (C) 2026 0x90d
 //     This file is part of VideoDuplicateFinder
 //     VideoDuplicateFinder is free software: you can redistribute it and/or modify
@@ -205,9 +205,13 @@ namespace VDF.GUI.Views {
 			}
 
 			this.FindControl<TextBlock>("NoResultsText")!.IsVisible = searching && result.VisibleSections.Count == 0;
-			this.FindControl<TextBlock>("HeaderTitle")!.Text = searching
+			// The section's name lives in the topbar, so the page only titles itself
+			// during a search, which has no single section to name.
+			var headerTitle = this.FindControl<TextBlock>("HeaderTitle")!;
+			headerTitle.Text = searching
 				? App.Lang["Settings.SearchResults"]
 				: sections.FirstOrDefault(s => s.Id == selectedSectionId)?.Label;
+			headerTitle.IsVisible = searching;
 
 			// The topbar titles the page, so the page reports which section it is on. A
 			// search spans every section, so during one there is no single section to name.

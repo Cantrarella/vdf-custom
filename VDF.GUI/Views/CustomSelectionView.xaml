@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="VDF.GUI.Views.CustomSelectionView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -21,8 +21,8 @@
 
     <Window.Styles>
         <Style Selector="Border.card">
-            <Setter Property="Background" Value="{actipro:ThemeResource Container1BackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="14,12" />
@@ -50,7 +50,7 @@
             <Setter Property="MaxHeight" Value="140" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
         </Style>
     </Window.Styles>
 

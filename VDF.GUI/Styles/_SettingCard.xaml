@@ -20,8 +20,13 @@
     <!-- The mockup's .card radius (the r-lg token), not the theme's smaller default:
          the cards are the page's main shapes and read as sheets at this size. -->
     <Setter Property="CornerRadius" Value="20" />
+    <!-- Elevation, not decoration. The card lifts off the page, and the two part
+         shadow is what says so (see VdfCardShadow); the hairline edge alone is too
+         faint against a page this light. Nothing about a card's state adds a second
+         shadow: a shadow under the current one would read as a glow, not depth. -->
+    <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
     <Setter Property="Padding" Value="0,6" />
-    <Setter Property="Margin" Value="0,0,0,14" />
+    <Setter Property="Margin" Value="0,0,0,18" />
   </Style>
 
   <!-- Card header: title + optional description on the left, an action on the right

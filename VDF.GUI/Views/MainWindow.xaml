@@ -25,7 +25,8 @@
     MinHeight="450"
     d:DesignHeight="750"
     d:DesignWidth="900"
-    BorderBrush="{actipro:ThemeResource ButtonForegroundBrush}"
+    Background="{DynamicResource VdfRailBrush}"
+    BorderBrush="{DynamicResource VdfCardLineBrush}"
     BorderThickness="1"
     ExtendClientAreaToDecorationsHint="True"
     FontSize="14"
@@ -69,7 +70,7 @@
             <Setter Property="Opacity" Value="{DynamicResource VdfTextSecondaryOpacity}" />
         </Style>
         <Style Selector="Button#PART_MinimizeButton:pointerover, Button#PART_RestoreButton:pointerover">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
             <Setter Property="Opacity" Value="1" />
         </Style>
         <Style Selector="Button#PART_CloseButton:pointerover">
@@ -120,7 +121,7 @@
              commands a border so they do not read as part of the title. -->
         <Style Selector="Button.navlink">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="{actipro:ThemeResource Container3BorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="9" />
             <Setter Property="Padding" Value="11,6" />
@@ -199,7 +200,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
         <Style Selector="Button.railbrand:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+            <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
         </Style>
         <!-- Settings children: indented, one size down (mockup .nav-sub-item). The 22px
              left padding is where the mockup's ::before dot sits; the 14px gap after it
@@ -284,7 +285,9 @@
     <!-- Wraps everything, so that it is an ancestor of whatever has keyboard focus: the one
          place a screen reader is sure to hear an announcement from (see AnnouncerHost). -->
     <ctl:AnnouncerHost x:Name="Announcer">
-    <Border BorderBrush="{DynamicResource SystemControlBackgroundChromeMediumBrush}" BorderThickness="2">
+    <!-- The window's own edge, in the palette's hairline rather than the theme's chrome
+         grey: a neutral grey frame around a blue-tinted dark UI reads as a leftover. -->
+    <Border BorderBrush="{DynamicResource VdfCardLineBrush}" BorderThickness="2">
         <Grid>
             <controls:ExperimentalAcrylicBorder
                 x:Name="ExperimentalAcrylicBorderBackgroundWhite"
@@ -377,7 +380,7 @@
                             DockPanel.Dock="Bottom"
                             Margin="0,6,0,0"
                             Padding="0,12,0,0"
-                            BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
+                            BorderBrush="{DynamicResource VdfCardLineBrush}"
                             BorderThickness="0,1,0,0">
                             <Border
                                 Margin="4,10,4,4"
@@ -457,8 +460,8 @@
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Path
                                         Stretch="Uniform"
-                                            Width="18"
-                                            Height="18"
+                                            Width="15"
+                                            Height="15"
                                             VerticalAlignment="Center"
                                             Data="M4 11a7 7 0 1 0 14 0a7 7 0 1 0-14 0M16 16L20 20"
                                             Fill="Transparent"
@@ -483,8 +486,8 @@
                                         <Path
                                         Stretch="Uniform"
                                             DockPanel.Dock="Left"
-                                            Width="18"
-                                            Height="18"
+                                            Width="15"
+                                            Height="15"
                                             VerticalAlignment="Center"
                                             Data="M5 4h14a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM5 14h14a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z"
                                             Fill="Transparent"
@@ -528,8 +531,8 @@
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Path
                                         Stretch="Uniform"
-                                            Width="18"
-                                            Height="18"
+                                            Width="15"
+                                            Height="15"
                                             VerticalAlignment="Center"
                                             Data="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"
                                             Fill="Transparent"
@@ -552,8 +555,8 @@
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Path
                                         Stretch="Uniform"
-                                            Width="18"
-                                            Height="18"
+                                            Width="15"
+                                            Height="15"
                                             VerticalAlignment="Center"
                                             Data="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M6 6l12 12"
                                             Fill="Transparent"
@@ -580,8 +583,8 @@
                                         <Path
                                         Stretch="Uniform"
                                             DockPanel.Dock="Left"
-                                            Width="18"
-                                            Height="18"
+                                            Width="15"
+                                            Height="15"
                                             VerticalAlignment="Center"
                                             Data="M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3L5.6 5.6"
                                             Fill="Transparent"
@@ -848,7 +851,7 @@
                                 </Grid.IsVisible>
                                 <!-- Curtain: fades the view underneath and swallows its input;
                                      kept as a sibling so the panel itself stays fully opaque. -->
-                                <Border Background="{actipro:ThemeResource Container1BackgroundBrush}" Opacity="{DynamicResource VdfTextDim85Opacity}" />
+                                <Border Background="{DynamicResource VdfPageBrush}" Opacity="{DynamicResource VdfTextDim85Opacity}" />
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <ProgressBar
                                         Height="10"
