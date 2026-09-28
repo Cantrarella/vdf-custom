@@ -17,10 +17,11 @@
     d:DesignWidth="800"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <!-- 弹窗主体：统一 14px 外边距，底部一排按钮用 dlgprimary / dlgghost。 -->
+    <Grid Margin="14" RowDefinitions="Auto,Auto,*,Auto">
         <!--  Mode selector  -->
         <StackPanel
-            Margin="10,10,0,0"
+            Margin="0"
             Orientation="Horizontal"
             Spacing="16">
             <RadioButton Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.ModePrefix]}" IsChecked="{Binding IsModePrefix}" />
@@ -30,7 +31,7 @@
         <!--  Mode A  -->
         <Grid
             Grid.Row="1"
-            Margin="10,12,0,8"
+            Margin="0,12,0,8"
             IsVisible="{Binding IsModePrefix}"
             RowDefinitions="Auto,Auto">
             <Grid Margin="0,0,0,8" ColumnDefinitions="Auto,*,Auto">
@@ -44,6 +45,7 @@
                     Text="{Binding OldPrefix}" />
                 <Button
                     Grid.Column="2"
+                    Classes="dlgghost"
                     Command="{Binding BrowseOldPrefix}"
                     Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.FolderPicker]}" />
             </Grid>
@@ -58,6 +60,7 @@
                     Text="{Binding NewPrefix}" />
                 <Button
                     Grid.Column="2"
+                    Classes="dlgghost"
                     Command="{Binding BrowseNewPrefix}"
                     Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.FolderPicker]}" />
             </Grid>
@@ -66,7 +69,7 @@
         <!--  Mode B  -->
         <Grid
             Grid.Row="1"
-            Margin="10,12,0,8"
+            Margin="0,12,0,8"
             IsVisible="{Binding IsModeRescan}"
             RowDefinitions="Auto,Auto,Auto">
             <TextBlock FontWeight="Bold" Text="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.ScanFolders]}" />
@@ -78,9 +81,10 @@
                 <StackPanel Grid.Row="1" Orientation="Horizontal">
                     <Button
                         Margin="8,0"
+                        Classes="dlgghost"
                         Command="{Binding AddScanRoot}"
                         Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.AddEllipsis]}" />
-                    <Button Command="{Binding RemoveScanRoot}" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Remove]}" />
+                    <Button Classes="dlgghost" Command="{Binding RemoveScanRoot}" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Remove]}" />
                 </StackPanel>
             </Grid>
 
@@ -97,7 +101,7 @@
         <!--  Preview list: header strip + virtualized rows (shared column layout)  -->
         <Grid
             Grid.Row="2"
-            Margin="10,12,0,12"
+            Margin="0,12,0,12"
             RowDefinitions="Auto,*">
             <Border
                 Padding="8,4"
@@ -142,19 +146,20 @@
         <!--  Buttons  -->
         <StackPanel
             Grid.Row="3"
-            Margin="0,0,10,10"
+            Margin="0"
             HorizontalAlignment="Right"
             Orientation="Horizontal"
             Spacing="8">
             <TextBlock VerticalAlignment="Center" Text="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.NoteNoPath]}" />
-            <Button Command="{Binding CheckAllResults}" Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.CheckAll]}" />
-            <Button Command="{Binding UncheckAllResults}" Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.UncheckAll]}" />
-            <Button Command="{Binding BuildPreview}" Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.CreatePreview]}" />
+            <Button Classes="dlgghost" Command="{Binding CheckAllResults}" Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.CheckAll]}" />
+            <Button Classes="dlgghost" Command="{Binding UncheckAllResults}" Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.UncheckAll]}" />
+            <Button Classes="dlgghost" Command="{Binding BuildPreview}" Content="{Binding Source={x:Static app:App.Lang}, Path=[RelocateFilesDialog.CreatePreview]}" />
             <Button
+                Classes="dlgprimary"
                 Command="{Binding Apply}"
                 Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Apply]}"
                 IsEnabled="{Binding CanApply}" />
-            <Button Command="{Binding Cancel}" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Cancel]}" />
+            <Button Classes="dlgghost" Command="{Binding Cancel}" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Cancel]}" />
         </StackPanel>
 
         <!--  Loading Indicator  -->

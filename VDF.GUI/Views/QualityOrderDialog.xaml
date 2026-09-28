@@ -14,18 +14,15 @@
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Title]}">
-    <StackPanel Margin="16" Spacing="12">
-        <TextBlock Opacity="{DynamicResource VdfTextDim80Opacity}"
-                   Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Description]}"
-                   TextWrapping="Wrap" />
-        <TextBlock Opacity="{DynamicResource VdfTextDim80Opacity}"
-                   Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.CheckHint]}"
-                   TextWrapping="Wrap" />
-        <Border Padding="6"
-                Background="{DynamicResource VdfCardBrush}"
-                BorderBrush="{DynamicResource VdfCardLineBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
+    <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方：窗口底色是全局 Window 规则给的页面色，
+         内容装在一张 dlgcard 里，主/次按钮用 dlgprimary / dlgghost。 -->
+    <Border Classes="dlgcard" Margin="14">
+    <StackPanel Spacing="12">
+        <TextBlock Classes="dlgtext"
+                   Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Description]}" />
+        <TextBlock Classes="dlghint"
+                   Text="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.CheckHint]}" />
+        <Border Classes="dlglist">
             <ListBox AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Title]}" x:Name="CriteriaListBox"
                      Height="300"
                      Background="Transparent"
@@ -56,24 +53,26 @@
             </ListBox>
         </Border>
         <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
-            <Button Content="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.BtnMoveUp]}"
+            <Button Classes="dlgghost"
+                    Content="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.BtnMoveUp]}"
                     Command="{Binding MoveUpCommand}"
                     CommandParameter="{Binding ElementName=CriteriaListBox, Path=SelectedIndex}" />
             <Button Grid.Column="1"
+                    Classes="dlgghost"
                     Content="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.BtnMoveDown]}"
                     Command="{Binding MoveDownCommand}"
                     CommandParameter="{Binding ElementName=CriteriaListBox, Path=SelectedIndex}" />
             <Button Grid.Column="3"
-                    Classes="accent"
+                    Classes="dlgprimary"
                     Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.OK]}"
-                    MinWidth="90"
                     IsDefault="True"
                     Click="Ok_Click" />
             <Button Grid.Column="4"
+                    Classes="dlgghost"
                     Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Cancel]}"
-                    MinWidth="90"
                     IsCancel="True"
                     Click="Cancel_Click" />
         </Grid>
     </StackPanel>
+    </Border>
 </Window>

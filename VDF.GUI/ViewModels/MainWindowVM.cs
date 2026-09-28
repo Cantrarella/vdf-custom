@@ -498,6 +498,9 @@ namespace VDF.GUI.ViewModels {
 		}
 
 		void Duplicates_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
+			// The rail's counter appears with the first group: the badge is hidden when
+			// the list is empty, and that is a property of the count, not of the badge.
+			this.RaisePropertyChanged(nameof(ShowRailCountBadge));
 			if (e.OldItems != null) {
 				foreach (INotifyPropertyChanged item in e.OldItems) {
 					item.PropertyChanged -= DuplicateItemVM_PropertyChanged;

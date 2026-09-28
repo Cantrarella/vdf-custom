@@ -19,18 +19,19 @@
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
+    <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方，窗口底色由全局 Window 规则给。 -->
+    <Border Classes="dlgcard" Margin="14">
     <Grid
-        Margin="16"
         RowDefinitions="Auto,Auto,Auto,Auto"
         RowSpacing="12">
 
         <!--  available properties reference  -->
         <Border
             Padding="12"
-            Background="{DynamicResource VdfCardBrush}"
+            Background="{DynamicResource VdfSunkenBrush}"
             BorderBrush="{DynamicResource VdfCardLineBrush}"
             BorderThickness="1"
-            CornerRadius="8">
+            CornerRadius="12">
             <ScrollViewer Height="280" VerticalScrollBarVisibility="Auto">
                 <SelectableTextBlock
                     FontFamily="Consolas, Menlo, monospace"
@@ -78,10 +79,12 @@
             </ComboBox>
             <Button
                 Grid.Column="2"
+                Classes="dlgghost"
                 Command="{Binding SavePresetCommand}"
                 Content="{Binding Source={x:Static local:App.Lang}, Path=[Preset.Save]}" />
             <Button
                 Grid.Column="3"
+                Classes="dlgghost"
                 Command="{Binding DeletePresetCommand}"
                 Content="{Binding Source={x:Static local:App.Lang}, Path=[Preset.Delete]}" />
         </Grid>
@@ -93,16 +96,16 @@
             Orientation="Horizontal"
             Spacing="8">
             <Button
-                MinWidth="100"
-                Classes="accent"
+                Classes="dlgprimary"
                 Command="{Binding OKCommand}"
                 Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.OK]}"
                 IsDefault="True" />
             <Button
-                MinWidth="100"
+                Classes="dlgghost"
                 Command="{Binding CancelCommand}"
                 Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Cancel]}"
                 IsCancel="True" />
         </StackPanel>
     </Grid>
+    </Border>
 </Window>

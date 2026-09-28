@@ -80,15 +80,19 @@
          scanner's page uses, so the two pages are one surface rather than a tinted one
          and a neutral one. -->
     <Border Grid.Row="0" Background="{DynamicResource VdfPageBrush}">
-      <Grid RowDefinitions="Auto,*" Margin="30,22,30,0" MaxWidth="760"
-            HorizontalAlignment="Left">
+      <!-- The horizontal insets sit INSIDE the scroll area, so the scroll bar ends up on
+           the page's own edge exactly like the scan page's, instead of standing 42px in
+           from it over the cards' shadow. The column is no longer capped at 760 either:
+           with the rail collapsed the page has the room, and the cap left a wide empty
+           strip down its right side. -->
+      <Grid RowDefinitions="Auto,*" Margin="0,22,0,0">
 
         <!-- header: the search box only. The section's name is already in the topbar and
              on the rail's own entry; printing it again here was the mockup's one visible
              difference - its settings page starts straight at the first group title. The
              text block stays for search mode, which spans every section and so has no
              single name to carry. -->
-        <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,6">
+        <DockPanel Grid.Row="0" LastChildFill="False" Margin="30,0,30,6">
           <TextBlock x:Name="HeaderTitle" DockPanel.Dock="Left" IsVisible="False"
                      FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
@@ -98,7 +102,7 @@
         </DockPanel>
 
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-          <StackPanel x:Name="SectionsHost" Margin="0,0,12,30">
+          <StackPanel x:Name="SectionsHost" Margin="30,0,18,30">
 
             <TextBlock x:Name="NoResultsText" Margin="0,24,0,0" FontSize="13" Opacity="{DynamicResource VdfTextMutedOpacity}" IsVisible="False"
                        Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.NoResults]}" />

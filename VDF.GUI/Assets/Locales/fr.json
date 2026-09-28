@@ -1,4 +1,4 @@
-{
+﻿{
 	"App.Title": "Video Duplicate Finder - Multiplateforme",
 	"MainWindow.Menu.About": "À propos",
 	"About.Title": "À propos de Video Duplicate Finder",
@@ -183,6 +183,7 @@
 	"Dialog.SaveToFile": "Enregistrer dans un fichier",
 	"ExpressionBuilder.Title": "Constructeur d'expressions",
 	"ExpressionBuilder.ExpressionLabel": "Expression :",
+	"InputBox.CurrentFile": "Fichier actuel :",
 	"MainWindow.Busy.PleaseWait": "Veuillez patienter",
 	"MainWindow.Command.Rescan": "Relancer l'analyse",
 	"MainWindow.ContextMenu.CompareFullsizeThumbnails": "Comparer les miniatures en taille réelle",
@@ -720,6 +721,7 @@
 	"Results.Action.Hint": "La suppression demande confirmation et affiche l'espace libéré.",
 	"Results.Dock.Selected": "Sélectionnés",
 	"Results.Dock.WillFree": "libère",
+	"Results.Dock.CheckedItemsHeading": "Éléments cochés",
 	"Setup.Welcome.Title": "Nouveau ici ?",
 	"Setup.Welcome.Text": "Ajoutez les dossiers à vérifier, choisissez quoi chercher, appuyez sur Analyser. C'est tout le flux.",
 	"Setup.Welcome.Dismiss": "Ne plus afficher",

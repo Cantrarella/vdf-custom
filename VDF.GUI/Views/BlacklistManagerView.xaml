@@ -12,11 +12,13 @@
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterOwner"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Title]}">
-    <DockPanel Margin="16">
+    <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方（卡片 + dlgprimary/dlgghost + dlglist），
+         窗口底色由全局 Window 规则给。 -->
+    <Border Classes="dlgcard" Margin="14">
+    <DockPanel>
         <TextBlock DockPanel.Dock="Top"
-                   Opacity="{DynamicResource VdfTextDim80Opacity}"
+                   Classes="dlghint"
                    Text="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Description]}"
-                   TextWrapping="Wrap"
                    Margin="0,0,0,8" />
         <TextBlock DockPanel.Dock="Top"
                    Text="{Binding GroupCountText}"
@@ -40,26 +42,25 @@
 
         <!-- Action buttons -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
-            <Button Content="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.UnmarkSelected]}"
+            <Button Classes="dlgghost"
+                    Content="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.UnmarkSelected]}"
                     Command="{Binding UnmarkSelectedCommand}"
                     CommandParameter="{Binding ElementName=EntriesListBox, Path=SelectedItems}" />
-            <Button Content="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.PruneMissing]}"
+            <Button Classes="dlgghost"
+                    Content="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.PruneMissing]}"
                     ToolTip.Tip="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.PruneMissingTooltip]}"
                     Command="{Binding PruneMissingFilesCommand}" />
-            <Button Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.ClearAll]}"
+            <Button Classes="dlgghost"
+                    Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.ClearAll]}"
                     Command="{Binding ClearAllCommand}" />
-            <Button Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Close]}"
-                    MinWidth="90"
+            <Button Classes="dlgprimary"
+                    Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Close]}"
                     IsCancel="True"
                     Click="Close_Click" />
         </StackPanel>
 
         <!-- Entries list -->
-        <Border Padding="4"
-                Background="{DynamicResource VdfCardBrush}"
-                BorderBrush="{DynamicResource VdfCardLineBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
+        <Border Classes="dlglist">
             <ListBox AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Title]}" x:Name="EntriesListBox"
                      Background="Transparent"
                      ItemsSource="{Binding Entries}"
@@ -82,4 +83,5 @@
             </ListBox>
         </Border>
     </DockPanel>
+    </Border>
 </Window>

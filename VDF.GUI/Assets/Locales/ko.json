@@ -1,4 +1,4 @@
-{
+﻿{
 	"App.Title": "Video Duplicate Finder - 크로스플랫폼",
 	"MainWindow.Menu.About": "About",
 	"About.Title": "About Video Duplicate Finder",
@@ -183,6 +183,7 @@
 	"Dialog.SaveToFile": "파일로 저장",
 	"ExpressionBuilder.Title": "식 작성기",
 	"ExpressionBuilder.ExpressionLabel": "식:",
+	"InputBox.CurrentFile": "현재 파일:",
 	"Preset.Label": "프리셋:",
 	"Preset.Save": "프리셋 저장",
 	"Preset.Delete": "프리셋 삭제",
@@ -720,6 +721,7 @@
 	"Results.Action.Hint": "삭제 시 확인을 요청하며 확보되는 공간을 표시합니다.",
 	"Results.Dock.Selected": "선택됨",
 	"Results.Dock.WillFree": "확보",
+	"Results.Dock.CheckedItemsHeading": "선택한 항목",
 	"Setup.Welcome.Title": "처음이신가요?",
 	"Setup.Welcome.Text": "확인할 폴더를 추가하고, 찾을 항목을 선택한 뒤 스캔을 누르세요. 그게 전부입니다.",
 	"Setup.Welcome.Dismiss": "다시 표시 안 함",

@@ -335,9 +335,15 @@
          card is drawn by consecutive list rows: the header, every member, the AI strip
          and the details panel. Each wears the card's own surface; a transparent body over
          a same-coloured page was what made a group read as a stray outline instead of a
-         panel. Because a row is composited into its own bounds, the card cannot cast one
-         shadow around its whole silhouette: only the closing row can (see
-         Border.cardseg.rowend), and the header does for a collapsed group. -->
+         panel. The card's panel look therefore comes from its own surface and hairline on
+         the page background, and not from the mockup's card shadow: a row lives inside a
+         virtualising list, which composites each item into its own bounds, so anything a
+         row casts outside itself is cut off. Measured, not assumed.
+         A closing row CAN be made to cast (uniform 1px border + 14px of its own bottom
+         margin as the landing strip — both were tried on 2026-09-28), but the user read
+         the result as a shadow under one item inside the card and asked for it off: a
+         card whose middle rows are flat and whose last row lifts does not read as one
+         panel either. Re-adding a shadow here is wasted work. -->
     <Style Selector="Border.cardseg">
       <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
@@ -350,25 +356,15 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="20,20,0,0" />
       <Setter Property="Padding" Value="18,14" />
-      <Setter Property="Margin" Value="0,8,0,0" />
-      <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
     </Style>
     <!-- Whoever ends the group closes the card, and a collapsed group is nothing but its
-         header, which the builder flags the same way.
-         The closing segment carries the card's elevation: it is the one row that knows
-         the card ends here, so it is the one that can cast. It gets a uniform 1px
-         thickness, because a box shadow is not drawn on a border of uneven thickness,
-         and 14px of its own margin below it, because the shadow is clipped at the row it
-         is drawn in - the space has to exist inside the row for the shadow to land in. -->
+         header, which the builder flags the same way -->
     <Style Selector="Border.cardseg.rowend">
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderThickness" Value="1,0,1,1" />
       <Setter Property="CornerRadius" Value="0,0,20,20" />
-      <Setter Property="Margin" Value="0,0,0,14" />
-      <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
     </Style>
     <Style Selector="Border.cardtop.rowend">
       <Setter Property="CornerRadius" Value="20" />
-      <Setter Property="Margin" Value="0,8,0,14" />
     </Style>
     <!-- mockup .file.marked: checked means marked for deletion. The prototype tints
          those rows blue and keeps red for the "will be deleted" label. -->
@@ -1538,49 +1534,30 @@
               </MenuFlyout>
             </Button.Flyout>
           </Button>
-          <Button FontSize="12.5" Padding="14,5"
-                  AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Remove]}">
-            <Button.Content>
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Remove]}" />
-                <TextBlock Text="▾" FontSize="10" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button.Content>
-            <Button.Flyout>
-              <MenuFlyout>
-                <MenuItem
-                    Command="{Binding RemoveCheckedItemsFromListCommand}"
-                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.RemoveFromListOnly]}" />
-                <MenuItem
-                    Command="{Binding RemoveCheckedItemsFromListAndBlacklistCommand}"
-                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.RemoveFromListAndExclude]}" />
-                <Separator />
-                <MenuItem
-                    Command="{Binding CreateSymbolLinksForCheckedItemsCommand}"
-                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.RemoveFromListAndSymbolLinks]}"
-                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.SymbolLinkTooltip]}" />
-                <MenuItem
-                    Command="{Binding CreateSymbolLinksForCheckedItemsAndBlacklistCommand}"
-                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.RemoveFromListSymbolLinksExclude]}" />
-                <MenuItem
-                    Command="{Binding CreateHardLinksForCheckedItemsCommand}"
-                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.RemoveFromListAndHardLinks]}"
-                    ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.HardLinkTooltip]}" />
-                <MenuItem
-                    Command="{Binding CreateHardLinksForCheckedItemsAndBlacklistCommand}"
-                    Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.RemoveFromListHardLinksExclude]}" />
-              </MenuFlyout>
-            </Button.Flyout>
-          </Button>
+          <!-- The "remove from list" dropdown used to sit here, between delete and
+               clear-selection. At this window width the dock's own row came out wider
+               than the list, and the theme clipped whatever fell past the edge - the
+               hint at the right was the casualty. The dropdown was the widest thing in
+               the row and the least used (the user asked for it gone); its six actions
+               moved to the ⋯ menu's "checked items" section, which has the room and is
+               already where the infrequent commands live. -->
           <Button
               FontSize="12.5"
               Padding="14,5"
               Command="{Binding ClearCheckedItemsCommand}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.ClearSelection]}" />
         </StackPanel>
-        <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="12"
-                   Margin="16,0,0,0" Opacity="{DynamicResource VdfTextFaintOpacity}"
-                   Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Hint]}" />
+        <!-- Ellipsised rather than clipped: on a narrow window the hint is the first
+             thing to give way, and half a sentence is worse than a shortened one. -->
+        <TextBlock
+            DockPanel.Dock="Right"
+            VerticalAlignment="Center"
+            FontSize="12"
+            MaxWidth="300"
+            Margin="16,0,0,0"
+            Opacity="{DynamicResource VdfTextFaintOpacity}"
+            Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Hint]}"
+            TextTrimming="CharacterEllipsis" />
       </DockPanel>
     </Border>
 

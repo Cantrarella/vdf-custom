@@ -85,6 +85,7 @@ namespace VDF.GUI.ViewModels {
 				this.RaiseAndSetIfChanged(ref _IsRailCollapsed, value);
 				this.RaisePropertyChanged(nameof(RailColumnWidth));
 				this.RaisePropertyChanged(nameof(ShowRailLabels));
+				this.RaisePropertyChanged(nameof(ShowRailCountBadge));
 				this.RaisePropertyChanged(nameof(RailToggleTooltip));
 				// The settings children fall away with the labels: they are labels too,
 				// and left behind they would sit in the icon strip as a column of dots.
@@ -93,6 +94,10 @@ namespace VDF.GUI.ViewModels {
 		}
 
 		public bool ShowRailLabels => !IsRailCollapsed;
+		/// <summary>The group counter next to "查重结果". Collapsed, the rail shows icons
+		/// only — the mockup hides the count with the labels (.nav-item .dot) — so it
+		/// doubles as the "is there anything to count" test while expanded.</summary>
+		public bool ShowRailCountBadge => ShowRailLabels && Duplicates.Count > 0;
 		/// <summary>The rail's two widths: 216px expanded, 74px collapsed — the width
 		/// the rail had before the mockup restyle, kept at the user's request.</summary>
 		public GridLength RailColumnWidth => new(IsRailCollapsed ? 74 : 216);

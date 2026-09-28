@@ -1,4 +1,4 @@
-{
+﻿{
 	"App.Title": "Video Duplicate Finder - Cross-platform",
 	"MainWindow.Menu.About": "About",
 	"About.Title": "About Video Duplicate Finder",
@@ -183,6 +183,7 @@
 	"Dialog.SaveToFile": "Save To File",
 	"ExpressionBuilder.Title": "Expression Builder",
 	"ExpressionBuilder.ExpressionLabel": "Expression:",
+	"InputBox.CurrentFile": "Current file:",
 	"Preset.Label": "Preset:",
 	"Preset.Save": "Save Preset",
 	"Preset.Delete": "Delete Preset",
@@ -735,6 +736,7 @@
 	"Results.Action.Hint": "Delete asks for confirmation and shows what gets freed.",
 	"Results.Dock.Selected": "Selected",
 	"Results.Dock.WillFree": "frees",
+	"Results.Dock.CheckedItemsHeading": "Checked items",
 	"Setup.Welcome.Title": "New here?",
 	"Setup.Welcome.Text": "Add the folders you want to check, pick what to look for, press Scan. That's the whole workflow.",
 	"Setup.Welcome.Dismiss": "Don't show again",

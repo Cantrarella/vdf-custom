@@ -278,21 +278,21 @@
             Grid.Row="2"
             ColumnDefinitions="Auto,Auto,*,Auto,Auto"
             ColumnSpacing="8">
-            <Button Command="{Binding SaveCommand}" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.SaveToFile]}" />
+            <Button Classes="dlgghost" Command="{Binding SaveCommand}" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.SaveToFile]}" />
             <Button
                 Grid.Column="1"
+                Classes="dlgghost"
                 Command="{Binding LoadCommand}"
                 Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.LoadFromFile]}" />
             <Button
                 Grid.Column="3"
-                MinWidth="100"
-                Classes="accent"
+                Classes="dlgprimary"
                 Command="{Binding SelectCommand}"
                 Content="{Binding Source={x:Static app:App.Lang}, Path=[CustomSelection.Select]}"
                 IsDefault="True" />
             <Button
                 Grid.Column="4"
-                MinWidth="100"
+                Classes="dlgghost"
                 Command="{Binding CancelCommand}"
                 Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Close]}"
                 IsCancel="True" />

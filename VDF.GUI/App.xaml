@@ -96,6 +96,11 @@
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
                     </LinearGradientBrush>
+                    <!-- Ink ON the brand tile. The tile keeps the light gradient in every theme
+                         (the mockup does the same), so its glyph has to stay the dark accent in
+                         every theme too. It used to be VdfAccentTextBrush, which is pale in the
+                         dark themes: a pale-blue glyph on a pale-blue tile, invisible. -->
+                    <SolidColorBrush x:Key="VdfBrandMarkInkBrush" Color="#17587F" />
                     <!-- The page the cards sit on (the mockup's page-bg token) and the
                          card surface itself (its surface token). They used to be the same
                          white, so a card was readable only by its outline, which read as a
@@ -212,6 +217,11 @@
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
                     </LinearGradientBrush>
+                    <!-- Ink ON the brand tile. The tile keeps the light gradient in every theme
+                         (the mockup does the same), so its glyph has to stay the dark accent in
+                         every theme too. It used to be VdfAccentTextBrush, which is pale in the
+                         dark themes: a pale-blue glyph on a pale-blue tile, invisible. -->
+                    <SolidColorBrush x:Key="VdfBrandMarkInkBrush" Color="#17587F" />
                     <SolidColorBrush x:Key="VdfPageBrush" Color="#0D1621" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#16212E" />
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#293542" />
@@ -288,6 +298,11 @@
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
                     </LinearGradientBrush>
+                    <!-- Ink ON the brand tile. The tile keeps the light gradient in every theme
+                         (the mockup does the same), so its glyph has to stay the dark accent in
+                         every theme too. It used to be VdfAccentTextBrush, which is pale in the
+                         dark themes: a pale-blue glyph on a pale-blue tile, invisible. -->
+                    <SolidColorBrush x:Key="VdfBrandMarkInkBrush" Color="#17587F" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>
@@ -390,6 +405,11 @@
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
                     </LinearGradientBrush>
+                    <!-- Ink ON the brand tile. The tile keeps the light gradient in every theme
+                         (the mockup does the same), so its glyph has to stay the dark accent in
+                         every theme too. It used to be VdfAccentTextBrush, which is pale in the
+                         dark themes: a pale-blue glyph on a pale-blue tile, invisible. -->
+                    <SolidColorBrush x:Key="VdfBrandMarkInkBrush" Color="#17587F" />
                     <x:Double x:Key="VdfTextFaintOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">1</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">1</x:Double>

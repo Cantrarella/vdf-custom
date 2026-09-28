@@ -1,4 +1,4 @@
-{
+﻿{
 	"App.Title": "Video Duplicate Finder - Multiplataforma",
 	"MainWindow.Menu.About": "Acerca de",
 	"About.Title": "Acerca de Video Duplicate Finder",
@@ -183,6 +183,7 @@
 	"Dialog.SaveToFile": "Guardar en archivo",
 	"ExpressionBuilder.Title": "Constructor de expresiones",
 	"ExpressionBuilder.ExpressionLabel": "Expresión:",
+	"InputBox.CurrentFile": "Archivo actual:",
 	"MainWindow.Busy.PleaseWait": "Por favor espera",
 	"MainWindow.Command.Rescan": "Volver a escanear",
 	"MainWindow.ContextMenu.CompareFullsizeThumbnails": "Comparar miniaturas a tamaño completo",
@@ -720,6 +721,7 @@
 	"Results.Action.Hint": "Eliminar pide confirmación y muestra el espacio que se libera.",
 	"Results.Dock.Selected": "Seleccionados",
 	"Results.Dock.WillFree": "libera",
+	"Results.Dock.CheckedItemsHeading": "Elementos marcados",
 	"Setup.Welcome.Title": "¿Nuevo aquí?",
 	"Setup.Welcome.Text": "Añade las carpetas a comprobar, elige qué buscar y pulsa Escanear. Ese es todo el flujo.",
 	"Setup.Welcome.Dismiss": "No mostrar de nuevo",

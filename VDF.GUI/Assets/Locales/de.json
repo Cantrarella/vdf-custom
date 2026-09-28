@@ -1,4 +1,4 @@
-{
+﻿{
 	"App.Title": "Video Duplicate Finder - Plattformübergreifend",
 	"MainWindow.Menu.About": "Über",
 	"About.Title": "Über Video Duplicate Finder",
@@ -183,6 +183,7 @@
 	"Dialog.SaveToFile": "In Datei speichern",
 	"ExpressionBuilder.Title": "Ausdrucksgenerator",
 	"ExpressionBuilder.ExpressionLabel": "Ausdruck:",
+	"InputBox.CurrentFile": "Aktuelle Datei:",
 	"MainWindow.Busy.PleaseWait": "Bitte warten",
 	"MainWindow.Command.Rescan": "Neu scannen",
 	"MainWindow.ContextMenu.CompareFullsizeThumbnails": "Vollgroße Thumbnails vergleichen",
@@ -720,6 +721,7 @@
 	"Results.Action.Hint": "Löschen fragt nach Bestätigung und zeigt den freiwerdenden Speicher.",
 	"Results.Dock.Selected": "Ausgewählt",
 	"Results.Dock.WillFree": "gibt frei",
+	"Results.Dock.CheckedItemsHeading": "Markierte Elemente",
 	"Setup.Welcome.Title": "Neu hier?",
 	"Setup.Welcome.Text": "Ordner hinzufügen, auswählen wonach gesucht wird, Scannen drücken. Das ist der ganze Ablauf.",
 	"Setup.Welcome.Dismiss": "Nicht mehr anzeigen",

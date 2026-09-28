@@ -6,63 +6,57 @@
     CanResize="False"
     SizeToContent="Height"
     WindowStartupLocation="CenterOwner">
-    <StackPanel Margin="24" Spacing="14">
-        <StackPanel
-            HorizontalAlignment="Center"
-            Orientation="Horizontal"
-            Spacing="16">
-            <Image
-                Width="60"
-                Height="60"
-                VerticalAlignment="Center"
-                Source="/Assets/Linux/icon.png" />
-            <StackPanel VerticalAlignment="Center" Spacing="3">
-                <TextBlock
-                    FontSize="20"
-                    FontWeight="Bold"
-                    Text="Video Duplicate Finder" />
-                <TextBlock
-                    x:Name="VersionText"
-                    FontSize="13"
-                    Opacity="{DynamicResource VdfTextDim80Opacity}" />
+    <!-- The card, the page tint and the buttons come from Styles/_Dialogs.xaml. The rule
+         under the header is the palette's hairline now: it was the theme's chrome grey,
+         which is a third colour next to the card's own edge. -->
+    <Border Classes="dlgcard" Margin="14">
+        <StackPanel Spacing="16">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="16">
+                <Image
+                    Width="60"
+                    Height="60"
+                    VerticalAlignment="Center"
+                    Source="/Assets/Linux/icon.png" />
+                <StackPanel VerticalAlignment="Center" Spacing="3">
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Text="Video Duplicate Finder" />
+                    <TextBlock
+                        x:Name="VersionText"
+                        FontSize="13"
+                        Opacity="{DynamicResource VdfTextDim80Opacity}" />
+                </StackPanel>
             </StackPanel>
+
+            <Border Height="1" Background="{DynamicResource VdfCardLineBrush}" />
+
+            <TextBlock
+                x:Name="EnvText"
+                Classes="dlghint"
+                FontSize="12"
+                TextWrapping="Wrap" />
+
+            <TextBlock
+                x:Name="LicenseText"
+                Classes="dlghint"
+                FontSize="12"
+                TextWrapping="Wrap" />
+
+            <WrapPanel HorizontalAlignment="Center">
+                <Button x:Name="ProjectPageButton" Classes="dlgghost" Margin="4" />
+                <Button x:Name="LatestReleaseButton" Classes="dlgghost" Margin="4" />
+                <Button x:Name="CopyButton" Classes="dlgghost" Margin="4" />
+                <Button
+                    x:Name="OkButton"
+                    Classes="dlgprimary"
+                    Margin="4"
+                    Click="OnOk"
+                    IsDefault="True" />
+            </WrapPanel>
         </StackPanel>
-
-        <Border
-            Height="1"
-            Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}" />
-
-        <TextBlock
-            x:Name="EnvText"
-            FontSize="12"
-            Opacity="{DynamicResource VdfTextDim80Opacity}"
-            TextWrapping="Wrap" />
-
-        <TextBlock
-            x:Name="LicenseText"
-            FontSize="12"
-            Opacity="{DynamicResource VdfTextDim80Opacity}"
-            TextWrapping="Wrap" />
-
-        <WrapPanel HorizontalAlignment="Center">
-            <Button
-                x:Name="ProjectPageButton"
-                Margin="4"
-                Click="OnProjectPage" />
-            <Button
-                x:Name="LatestReleaseButton"
-                Margin="4"
-                Click="OnLatestRelease" />
-            <Button
-                x:Name="CopyButton"
-                Margin="4"
-                Click="OnCopy" />
-            <Button
-                x:Name="OkButton"
-                Margin="4"
-                MinWidth="80"
-                Click="OnOk"
-                IsDefault="True" />
-        </WrapPanel>
-    </StackPanel>
+    </Border>
 </Window>

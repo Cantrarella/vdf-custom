@@ -1,0 +1,113 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui">
+
+  <!-- ===== The dialogs =====
+       Every window that is not MainWindow: the message box, the input box, About, the
+       blacklist manager, the custom selection, the database viewer, the thumbnail
+       comparer, the relocate/expression/quality dialogs. They used to come up in the
+       theme's neutral chrome - a plain white sheet in the light theme and a grey one in
+       the dark - so the program looked like two programs. They all take the palette's
+       page tint, and their bodies are built from the same card and button recipes the
+       pages use.
+       MainWindow keeps its own frame: it sets Background and BorderBrush locally, and a
+       local value outranks a style, so the one Window rule below only reaches the rest. -->
+
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource VdfPageBrush}" />
+    <Setter Property="FontSize" Value="13.5" />
+  </Style>
+
+  <!-- The dialog's body: one card, the surface and elevation the settings cards wear, so a
+       dialog reads as belonging to the page behind it. -->
+  <Style Selector="Border.dlgcard">
+    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="16" />
+    <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
+    <Setter Property="Padding" Value="20" />
+  </Style>
+  <Style Selector="TextBlock.dlgtitle">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.dlgtext">
+    <Setter Property="FontSize" Value="13.5" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <Style Selector="TextBlock.dlghint">
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+  <!-- A heading inside a dialog body (the section names in the blacklist manager). -->
+  <Style Selector="TextBlock.dlgsection">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="0.6" />
+    <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
+  </Style>
+
+  <!-- The affirmative action: the same soft-accent fill with the accent ink the pages'
+       main CTA uses (see SetupView's 开始扫描). The fill has to be re-applied under the
+       pointer and while pressed, because the theme paints its own hover colour over the
+       presenter otherwise - the same reason Button.solid exists in _Buttons.xaml.
+       The ink needs the same treatment: the theme also puts a foreground on the
+       presenter, which outranks the one on the button, and the label came out the
+       theme's dim grey instead of the palette's accent. -->
+  <Style Selector="Button.dlgprimary">
+    <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Padding" Value="18,7" />
+    <Setter Property="MinWidth" Value="96" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="550" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.dlgprimary /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  </Style>
+  <Style Selector="Button.dlgprimary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  </Style>
+  <Style Selector="Button.dlgprimary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  </Style>
+
+  <!-- The other choices: the mockup's ghost button, a card surface with the hairline edge,
+       so the safe answer does not compete with the affirmative one. -->
+  <Style Selector="Button.dlgghost">
+    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Padding" Value="18,7" />
+    <Setter Property="MinWidth" Value="96" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Text fields, lists and tables inside a dialog take the card surface: the theme gives
+       them the chrome grey, which is the one thing that still looked foreign on a tinted
+       dialog. -->
+  <Style Selector="TextBox.dlgfield">
+    <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Padding" Value="10,7" />
+  </Style>
+  <Style Selector="ListBox.dlglist">
+    <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="4" />
+  </Style>
+</Styles>

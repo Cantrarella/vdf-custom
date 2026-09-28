@@ -26,9 +26,9 @@
 				<Border
 				Padding="12"
 				Background="{DynamicResource VdfCardBrush}"
-				BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
+				BorderBrush="{DynamicResource VdfCardLineBrush}"
 				BorderThickness="1"
-				CornerRadius="6">
+				CornerRadius="12">
 					<StackPanel>
 						<TextBlock Margin="0,5" TextWrapping="Wrap" Text="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.Description]}" />
 						<RadioButton
@@ -60,15 +60,15 @@
 				<Border
 				Padding="12"
 				Background="{DynamicResource VdfCardBrush}"
-				BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
+				BorderBrush="{DynamicResource VdfCardLineBrush}"
 				BorderThickness="1"
 				MinHeight="300"
 				MinWidth="600"
-				CornerRadius="6">
+				CornerRadius="12">
 					<StackPanel Spacing="8">
 						<TextBlock FontWeight="SemiBold" Text="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.FoldersTitle]}" />
 						<TextBlock
-						Foreground="{actipro:ThemeResource ControlBackgroundBrushSolidWarning}"
+						Foreground="{DynamicResource VdfWarnBrush}"
 						Text="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.FoldersHint]}"
 						TextWrapping="Wrap" />
 						<Grid RowDefinitions="Auto,*,Auto" RowSpacing="6" ColumnSpacing="8">
@@ -86,7 +86,7 @@
 							<TextBlock
 							Grid.Row="2"
 							Margin="4,6,0,0"
-							Foreground="{actipro:ThemeResource ControlBackgroundBrushSolidWarning}"
+							Foreground="{DynamicResource VdfWarnBrush}"
 							Text="{Binding Source={x:Static app:App.Lang}, Path=[MainWindow.Settings.DragDropHint]}" />
 						</Grid>
 					</StackPanel>
@@ -102,11 +102,11 @@
 				<Border
 				Padding="12"
 				Background="{DynamicResource VdfCardBrush}"
-				BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
+				BorderBrush="{DynamicResource VdfCardLineBrush}"
 				BorderThickness="1"
 				MinHeight="300"
 				MinWidth="600"
-				CornerRadius="6">
+				CornerRadius="12">
 					<StackPanel Spacing="6">
 						<TextBlock FontWeight="SemiBold" Text="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.BasicSettingsTitle]}" />
 						<CheckBox
@@ -129,15 +129,15 @@
 		Grid.Row="1"
 		Padding="10"
 		Background="{DynamicResource VdfCardBrush}"
-		BorderBrush="{actipro:ThemeResource Container1BorderBrush}"
+		BorderBrush="{DynamicResource VdfCardLineBrush}"
 		BorderThickness="1"
-		CornerRadius="6">
+		CornerRadius="12">
 			<Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
-				<Button x:Name="ButtonBack" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Back]}" Click="Back_Click" />
+				<Button x:Name="ButtonBack" Classes="dlgghost" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Back]}" Click="Back_Click" />
 				<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-					<Button x:Name="ButtonSkip" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Skip]}" Click="Skip_Click" />
-					<Button x:Name="ButtonNext" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Next]}" Click="Next_Click" />
-					<Button x:Name="ButtonFinish" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.OK]}" Click="Finish_Click" />
+					<Button x:Name="ButtonSkip" Classes="dlgghost" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Skip]}" Click="Skip_Click" />
+					<Button x:Name="ButtonNext" Classes="dlgprimary" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.Next]}" Click="Next_Click" />
+					<Button x:Name="ButtonFinish" Classes="dlgprimary" Content="{Binding Source={x:Static app:App.Lang}, Path=[Dialog.OK]}" Click="Finish_Click" />
 				</StackPanel>
 			</Grid>
 		</Border>

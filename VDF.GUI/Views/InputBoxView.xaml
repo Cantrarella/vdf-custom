@@ -13,53 +13,50 @@
     CanResize="false"
     SizeToContent="Height"
     WindowStartupLocation="CenterOwner">
-    <StackPanel Margin="16" Spacing="12">
-        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-        <StackPanel IsVisible="{Binding HasReadOnlyInfo}">
-            <TextBlock
-                FontSize="11"
-                Opacity="{DynamicResource VdfTextMutedOpacity}"
-                Text="Current file:" />
-            <SelectableTextBlock
-                Margin="0,2,0,0"
-                Text="{Binding ReadOnlyInfo}"
-                TextWrapping="Wrap" />
+    <!-- The dialog's card and its buttons come from Styles/_Dialogs.xaml, the same recipes
+         the pages use; the window's own tint is set there too. -->
+    <Border Classes="dlgcard" Margin="14">
+        <StackPanel Spacing="14">
+            <TextBlock Classes="dlgtext" Text="{Binding Message}" TextWrapping="Wrap" />
+            <StackPanel IsVisible="{Binding HasReadOnlyInfo}" Spacing="2">
+                <TextBlock Classes="dlghint" Text="{Binding Source={x:Static local:App.Lang}, Path=[InputBox.CurrentFile]}" />
+                <SelectableTextBlock Text="{Binding ReadOnlyInfo}" TextWrapping="Wrap" />
+            </StackPanel>
+            <TextBox
+                x:Name="TextBoxInput"
+                Classes="dlgfield"
+                Text="{Binding Input}"
+                TextWrapping="Wrap"
+                PlaceholderText="{Binding WaterMark}" />
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Classes="dlgprimary"
+                    Command="{Binding OKCommand}"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.OK]}"
+                    IsDefault="{Binding HasOKButton}"
+                    IsVisible="{Binding HasOKButton}" />
+                <Button
+                    Classes="dlgprimary"
+                    Command="{Binding YesCommand}"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Yes]}"
+                    IsDefault="{Binding HasYesButton}"
+                    IsVisible="{Binding HasYesButton}" />
+                <Button
+                    Classes="dlgghost"
+                    Command="{Binding NoCommand}"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.No]}"
+                    IsCancel="{Binding HasNoButton}"
+                    IsVisible="{Binding HasNoButton}" />
+                <Button
+                    Classes="dlgghost"
+                    Command="{Binding CancelCommand}"
+                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Cancel]}"
+                    IsCancel="{Binding HasCancelButton}"
+                    IsVisible="{Binding HasCancelButton}" />
+            </StackPanel>
         </StackPanel>
-        <TextBox
-            x:Name="TextBoxInput"
-            Text="{Binding Input}"
-            TextWrapping="Wrap"
-            PlaceholderText="{Binding WaterMark}" />
-        <StackPanel
-            HorizontalAlignment="Right"
-            Orientation="Horizontal"
-            Spacing="8">
-            <Button
-                MinWidth="100"
-                Classes="accent"
-                Command="{Binding OKCommand}"
-                Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.OK]}"
-                IsDefault="{Binding HasOKButton}"
-                IsVisible="{Binding HasOKButton}" />
-            <Button
-                MinWidth="100"
-                Classes="accent"
-                Command="{Binding YesCommand}"
-                Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Yes]}"
-                IsDefault="{Binding HasYesButton}"
-                IsVisible="{Binding HasYesButton}" />
-            <Button
-                MinWidth="100"
-                Command="{Binding NoCommand}"
-                Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.No]}"
-                IsCancel="{Binding HasNoButton}"
-                IsVisible="{Binding HasNoButton}" />
-            <Button
-                MinWidth="100"
-                Command="{Binding CancelCommand}"
-                Content="{Binding Source={x:Static local:App.Lang}, Path=[Dialog.Cancel]}"
-                IsCancel="{Binding HasCancelButton}"
-                IsVisible="{Binding HasCancelButton}" />
-        </StackPanel>
-    </StackPanel>
+    </Border>
 </Window>
