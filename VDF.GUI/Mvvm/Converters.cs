@@ -29,6 +29,17 @@ namespace VDF.GUI.Mvvm {
 
 		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => !(bool)value!;
 	}
+	/// <summary>
+	/// Lights up the element whose value matches the parameter: the rail's settings
+	/// entries each compare their own section id against the one that is showing.
+	/// </summary>
+	public sealed class StringEqualsConverter : IValueConverter {
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+			string.Equals(value as string, parameter as string, StringComparison.Ordinal);
+
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+			throw new NotSupportedException();
+	}
 	static class ExtraShortDateTimeFormater {
 		static readonly string FormatString;
 		public static string DateToString(DateTime value) => String.Format(FormatString, value);

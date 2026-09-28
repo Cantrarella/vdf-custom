@@ -104,9 +104,13 @@ namespace VDF.GUI.ViewModels {
 	public partial class MainWindowVM : ReactiveObject {
 
 		// ---------- state switching ----------
-		public bool IsSetupState => !IsScanning && Duplicates.Count == 0;
+		// The scanner has two screens and normally the data picks between them: no results
+		// means the setup page. The rail has an entry per screen, and an entry that the
+		// data overrules is an entry that appears to do nothing, so a pick from the rail
+		// wins until the next scan starts (which drops it again, see IsScanning).
+		public bool IsSetupState => !IsScanning && (Duplicates.Count == 0 || railScannerScreenIsSetup == true);
 		public bool IsScanningState => IsScanning;
-		public bool IsReviewState => !IsScanning && Duplicates.Count > 0;
+		public bool IsReviewState => !IsScanning && Duplicates.Count > 0 && railScannerScreenIsSetup != true;
 
 		void RaiseScannerStateChanged() {
 			this.RaisePropertyChanged(nameof(IsSetupState));

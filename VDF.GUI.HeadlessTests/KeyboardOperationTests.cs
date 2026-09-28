@@ -156,65 +156,94 @@ public class KeyboardOperationTests {
 		}
 	});
 
+	// The settings sections, in the order the rail lists them. The rail is the only list:
+	// the page itself is a single column, and it shows whichever section it is asked for.
 	static readonly string[] SettingsSections = [
-		"Scanning", "Matching", "PartialClips", "Directories", "Files", "Database",
-		"Processing", "Schedule", "Appearance", "Shortcuts", "Test"
+		"Scanning", "Matching", "PartialClips", "Files", "Database", "Processing", "Appearance"
 	];
 
+	/// <summary>Which section cards are on screen, in document order. A section is a
+	/// <c>Border.setcard</c> wrapping the panel that carries the id (see BuildIndex), and
+	/// the card is what the page shows or hides - the panel inside it stays "visible".</summary>
 	static string VisibleSection(SettingsView view) =>
-		string.Join(",", view.FindControl<StackPanel>("SectionsHost")!.Children.OfType<StackPanel>()
-			.Where(p => p.IsVisible && p.Tag is string).Select(p => (string)p.Tag!));
+		string.Join(",", view.FindControl<StackPanel>("SectionsHost")!.Children
+			.Select(child => (Card: child, Panel: child as StackPanel ?? (child as Border)?.Child as StackPanel))
+			.Where(x => x.Card.IsVisible && x.Panel?.Tag is string)
+			.Select(x => (string)x.Panel!.Tag!));
+
+	static List<Button> RailSections(MainWindow window) =>
+		window.GetVisualDescendants().OfType<Button>().Where(b => b.Classes.Contains("railsub")).ToList();
 
 	[Fact]
-	public Task Settings_EverySection_IsReachableWithTabAndArrowKeys() => HeadlessUi.Run(() => {
-		var view = new SettingsView { DataContext = new MainWindowVM() };
-		var window = HeadlessUi.Show(view);
-
-		// The section list is the first thing on the page, so the first Tab lands in it.
-		Press(window, PhysicalKey.Tab);
-		var focused = window.FocusManager!.GetFocusedElement() as Control;
-		Assert.True(focused?.FindAncestorOfType<ListBox>(includeSelf: true)?.Name == "NavList",
-			$"first Tab stop is {focused?.GetType().Name ?? "nothing"}, not the settings section list");
-
-		var visited = new List<string> { VisibleSection(view) };
-		for (int i = 1; i < SettingsSections.Length; i++) {
-			Press(window, PhysicalKey.ArrowDown);
-			visited.Add(VisibleSection(view));
-		}
-
-		// The nav used to be eleven Borders with a PointerPressed handler: no focus, no
-		// keys, ten of the eleven sections unreachable without a mouse.
-		Assert.Equal(SettingsSections, visited);
-		window.Close();
-	});
-
-	[Fact]
-	public Task Settings_SectionList_TellsAScreenReaderWhatIsSelected() => HeadlessUi.Run(() => {
-		var view = new SettingsView { DataContext = new MainWindowVM() };
-		var window = HeadlessUi.Show(view);
-
-		var nav = PeerTree.Walk(window).Where(n => n.Type == Avalonia.Automation.Peers.AutomationControlType.ListItem
-			&& n.Owner?.FindAncestorOfType<ListBox>()?.Name == "NavList").ToList();
-
-		Assert.Equal(SettingsSections.Length, nav.Count);
-		Assert.Equal("Scanning", nav[0].Name);
-		Assert.All(nav, n => Assert.Null(PeerTree.NameProblem(n.Name)));
-		Assert.True(((ListBoxItem)nav[0].Owner!).IsSelected);
-		window.Close();
-	});
-
-	[Fact]
-	public Task Settings_Searching_DeselectsTheSection_AndPickingOneEndsTheSearch() => HeadlessUi.Run(() => {
+	public Task Settings_EverySection_ComesUpWhenItIsAskedFor() => HeadlessUi.Run(() => {
 		var vm = new MainWindowVM();
 		var view = new SettingsView { DataContext = vm };
 		var window = HeadlessUi.Show(view);
-		var nav = view.FindControl<ListBox>("NavList")!;
+
+		// What the rail's entries do: name a section, and the page shows it. The page used
+		// to have a nav list of its own; with that gone, the switch is the whole contract
+		// between the rail and the page, so it is what the test holds on to.
+		foreach (string section in SettingsSections) {
+			vm.SettingsSection = section;
+			HeadlessUi.Pump();
+			Assert.Equal(section, VisibleSection(view));
+		}
+		window.Close();
+	});
+
+	[Fact]
+	public Task Settings_Rail_ListsEverySectionOnce() => HeadlessUi.Run(() => {
+		var (window, vm) = HeadlessUi.Shell();
+		vm.IsRailSettingsExpanded = true;
+		HeadlessUi.Pump();
+		try {
+			var subs = RailSections(window);
+			Assert.Equal(SettingsSections, subs.Select(b => (string?)b.CommandParameter ?? "").ToArray());
+		}
+		finally {
+			vm.IsRailSettingsExpanded = false;
+			HeadlessUi.Pump();
+		}
+	});
+
+	[Fact]
+	public Task Settings_Rail_TellsAScreenReaderWhatEachEntryIs() => HeadlessUi.Run(() => {
+		var (window, vm) = HeadlessUi.Shell();
+		vm.IsRailSettingsExpanded = true;
+		HeadlessUi.Pump();
+		try {
+			// The entries' own content is a dot and a label, so nothing about them names
+			// the button: without an explicit name a screen reader announces the panel
+			// type it happens to be built from.
+			var announced = PeerTree.Walk(window)
+				.Where(n => n.Owner is Button b && b.Classes.Contains("railsub"))
+				.Select(n => n.Name).ToList();
+
+			Assert.Equal(SettingsSections.Length, announced.Count);
+			Assert.All(announced, name => {
+				Assert.False(string.IsNullOrWhiteSpace(name), "a rail entry announces nothing");
+				Assert.Null(PeerTree.NameProblem(name));
+			});
+			Assert.Equal(announced.Count, announced.Distinct().Count());
+		}
+		finally {
+			vm.IsRailSettingsExpanded = false;
+			HeadlessUi.Pump();
+		}
+	});
+
+	[Fact]
+	public Task Settings_Searching_NamesNoSection_AndPickingOneEndsTheSearch() => HeadlessUi.Run(() => {
+		var vm = new MainWindowVM();
+		var view = new SettingsView { DataContext = vm };
+		var window = HeadlessUi.Show(view);
 
 		vm.SettingsSearchQuery = "dark";
 		HeadlessUi.Pump();
-		Assert.Null(nav.SelectedItem);
+		// A search spans every section, so there is no one section for the topbar to name.
+		Assert.Null(vm.SettingsSection);
 
-		nav.SelectedIndex = 8; // Appearance
+		vm.SettingsSection = "Appearance"; // what the rail's entry does
 		HeadlessUi.Pump();
 		Assert.True(string.IsNullOrEmpty(vm.SettingsSearchQuery));
 		Assert.Equal("Appearance", VisibleSection(view));
@@ -223,9 +252,10 @@ public class KeyboardOperationTests {
 
 	[Fact]
 	public Task Settings_ResultColumns_CanBeSwitchedWithoutAMouse() => HeadlessUi.Run(() => {
-		var view = new SettingsView { DataContext = new MainWindowVM() };
+		var vm = new MainWindowVM();
+		var view = new SettingsView { DataContext = vm };
 		var window = HeadlessUi.Show(view);
-		view.FindControl<ListBox>("NavList")!.SelectedIndex = 5; // Results & database
+		vm.SettingsSection = "Database"; // Results & database
 		HeadlessUi.Pump();
 		bool before = Data.SettingsFile.Instance.ShowBitrateColumn;
 		try {

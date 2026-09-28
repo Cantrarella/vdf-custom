@@ -54,11 +54,20 @@ namespace VDF.GUI.ViewModels {
 		public bool ShowNavLog => NavLinks.Log;
 		public bool ShowNavSettings => NavLinks.Settings;
 
+		/// <summary>The rail has an entry per scanner screen, so the highlight has to say
+		/// which of the two is showing - both are lit by "the scanner is showing" alone.</summary>
+		public bool IsRailScanSetupActive => IsShellMainVisible && IsSetupState;
+		public bool IsRailResultsActive => IsShellMainVisible && IsReviewState;
+
 		void RaiseShellNavChanged() {
 			this.RaisePropertyChanged(nameof(ShowNavNewScan));
 			this.RaisePropertyChanged(nameof(ShowNavBackToResults));
 			this.RaisePropertyChanged(nameof(ShowNavLog));
 			this.RaisePropertyChanged(nameof(ShowNavSettings));
+			// Also raised by the scanner state: which of its two screens is up is half of
+			// what the rail's highlight depends on.
+			this.RaisePropertyChanged(nameof(IsRailScanSetupActive));
+			this.RaisePropertyChanged(nameof(IsRailResultsActive));
 		}
 
 		public ReactiveCommand<string, Unit> ShowShellViewCommand => ReactiveCommand.Create<string>(view => {
@@ -91,25 +100,77 @@ namespace VDF.GUI.ViewModels {
 
 		// ---------- rail: navigation ----------
 
-		/// <summary>"Scan setup" and "Results" both land on the scanner: which of the two
-		/// screens it shows (setup or results) follows from whether a scan has produced
-		/// anything, so a second entry could not point anywhere else.</summary>
+		/// <summary>Lands on the scanner without naming one of its two screens: which one
+		/// shows follows from whether a scan has produced anything.</summary>
 		public ReactiveCommand<Unit, Unit> ShowRailScannerCommand => ReactiveCommand.Create(() => {
 			ActiveShellView = ShellView.Main;
 		});
 
-		/// <summary>Lands on the settings page. The page carries the section list itself -
-		/// it is the app's original settings nav, eleven sections wide and reachable from
-		/// the keyboard - so the rail opens the page instead of repeating a shorter copy of
-		/// that list beside it.</summary>
-		public ReactiveCommand<Unit, Unit> ShowRailSettingsCommand => ReactiveCommand.Create(() => {
+		/// <summary>Which scanner screen the rail last asked for: null while the data
+		/// decides (no results means the setup page), true/false once the rail named one.
+		/// Without this the rail's two scanner entries both landed on whichever screen the
+		/// data happened to favour, which made them read as duplicates of each other.</summary>
+		bool? railScannerScreenIsSetup;
+
+		/// <summary>"Scan setup": the folder list and the scan options, whatever the last
+		/// scan left behind.</summary>
+		public ReactiveCommand<Unit, Unit> ShowRailScanSetupCommand => ReactiveCommand.Create(() => {
+			railScannerScreenIsSetup = true;
+			ActiveShellView = ShellView.Main;
+			RaiseScannerStateChanged();
+		});
+
+		/// <summary>"Results": the groups the last scan found. With nothing to show there
+		/// is no results screen to land on, so the setup page stays.</summary>
+		public ReactiveCommand<Unit, Unit> ShowRailResultsCommand => ReactiveCommand.Create(() => {
+			railScannerScreenIsSetup = false;
+			ActiveShellView = ShellView.Main;
+			RaiseScannerStateChanged();
+		});
+
+		/// <summary>A scan starts: the rail's pick is dropped so the results of that scan
+		/// come up on their own when it finishes.</summary>
+		internal void ClearRailScannerScreen() => railScannerScreenIsSetup = null;
+
+		// ---------- rail: settings group ----------
+
+		bool _IsRailSettingsExpanded;
+		/// <summary>The settings group's fold state (mockup .nav-parent + .nav-sub).</summary>
+		public bool IsRailSettingsExpanded {
+			get => _IsRailSettingsExpanded;
+			set {
+				this.RaiseAndSetIfChanged(ref _IsRailSettingsExpanded, value);
+				this.RaisePropertyChanged(nameof(ShowRailSettingsChildren));
+			}
+		}
+
+		public bool ShowRailSettingsChildren => IsRailSettingsExpanded && !IsRailCollapsed;
+
+		/// <summary>The mockup's .nav-parent: from a collapsed rail or from another page it
+		/// opens the group and lands on the settings page; on the settings page itself it
+		/// is the fold/unfold toggle it looks like.</summary>
+		public ReactiveCommand<Unit, Unit> ToggleRailSettingsCommand => ReactiveCommand.Create(() => {
+			bool wasCollapsed = IsRailCollapsed;
+			IsRailCollapsed = false;
+			bool onSettings = ActiveShellView == ShellView.Settings;
+			IsRailSettingsExpanded = wasCollapsed || !onSettings || !IsRailSettingsExpanded;
+			if (!onSettings)
+				ActiveShellView = ShellView.Settings;
+		});
+
+		/// <summary>A section of the settings page, picked from the rail. The page is the
+		/// one that knows how to show a section, so this only names it; the page listens
+		/// on <see cref="SettingsSection"/> and switches.</summary>
+		public ReactiveCommand<string, Unit> ShowSettingsSectionCommand => ReactiveCommand.Create<string>(section => {
 			ActiveShellView = ShellView.Settings;
+			SettingsSection = section;
 		});
 
 		string? _SettingsSection;
-		/// <summary>The settings section on screen. The page is the writer: it is the one
-		/// that knows which entry its nav has selected, and a search spanning every section
-		/// clears this instead. The topbar reads it so the header names what is showing.</summary>
+		/// <summary>The settings section on screen. The page is the usual writer: it is the
+		/// one that knows which section it has selected, and a search spanning every section
+		/// clears this instead. The rail writes it too, to name the section it wants. The
+		/// topbar reads it so the header names what is showing.</summary>
 		public string? SettingsSection {
 			get => _SettingsSection;
 			set {

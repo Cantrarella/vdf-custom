@@ -10,53 +10,6 @@
     x:DataType="vm:MainWindowVM">
 
   <UserControl.Styles>
-    <!-- left nav items: a ListBox, so the sections can be reached and switched from the
-         keyboard (Tab into the list, arrow keys between sections) and a screen reader
-         announces "Matching, 2 of 11, selected". The item template is our own, so the look
-         is exactly the mockup's .navitem and nothing of the theme's list styling shows. -->
-    <Style Selector="ListBox.settingsnav">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="Padding" Value="0" />
-    </Style>
-    <Style Selector="ListBox.settingsnav ListBoxItem">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="CornerRadius" Value="7" />
-      <Setter Property="Padding" Value="14,8" />
-      <Setter Property="Margin" Value="0,0,0,2" />
-      <Setter Property="MinHeight" Value="0" />
-      <Setter Property="Cursor" Value="Hand" />
-      <Setter Property="FontSize" Value="13.5" />
-      <Setter Property="FontWeight" Value="Normal" />
-      <Setter Property="Template">
-        <ControlTemplate>
-          <Border Background="{TemplateBinding Background}"
-                  CornerRadius="{TemplateBinding CornerRadius}"
-                  Padding="{TemplateBinding Padding}">
-            <!-- Deliberately NOT named PART_ContentPresenter: the theme's selection and
-                 hover styles address that part by name (as style triggers, which outrank
-                 anything set in a template) and painted their own highlight and text
-                 color into the item. -->
-            <ContentPresenter x:Name="NavContent"
-                              Opacity="{DynamicResource VdfTextDim75Opacity}"
-                              Content="{TemplateBinding Content}"
-                              ContentTemplate="{TemplateBinding ContentTemplate}" />
-          </Border>
-        </ControlTemplate>
-      </Setter>
-    </Style>
-    <Style Selector="ListBox.settingsnav ListBoxItem:pointerover">
-      <Setter Property="Background" Value="{actipro:ThemeResource Container3BackgroundBrush}" />
-    </Style>
-    <Style Selector="ListBox.settingsnav ListBoxItem:selected">
-      <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
-    </Style>
-    <Style Selector="ListBox.settingsnav ListBoxItem:selected /template/ ContentPresenter#NavContent">
-      <Setter Property="Opacity" Value="1" />
-    </Style>
-
     <!-- captions: section names in search mode, subsection groups in normal mode -->
     <Style Selector="TextBlock.sectioncaption">
       <Setter Property="FontSize" Value="12" />
@@ -85,31 +38,15 @@
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto" IsEnabled="{Binding !IsScanning}">
-    <Grid Grid.Row="0" ColumnDefinitions="210,*">
-
-      <!-- ===== left nav (mockup .set-nav) ===== -->
-      <Border Grid.Column="0"
-              Background="{actipro:ThemeResource Container2BackgroundBrush}"
-              BorderBrush="{actipro:ThemeResource Container3BorderBrush}"
-              BorderThickness="0,0,1,0"
-              Padding="10,14">
-        <ListBox x:Name="NavList" Classes="settingsnav"
-                 AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Tab.Settings]}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 SelectionChanged="OnNavSelectionChanged">
-          <ListBoxItem Tag="Scanning" Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
-          <ListBoxItem Tag="Matching" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.Matching]}" />
-          <ListBoxItem Tag="PartialClips" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.PartialClips]}" />
-          <ListBoxItem Tag="Files" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}" />
-          <ListBoxItem Tag="Database" Content="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}" />
-          <ListBoxItem Tag="Processing" Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Processing]}" />
-          <ListBoxItem Tag="Appearance" Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Appearance]}" />
-        </ListBox>
-      </Border>
-
-      <!-- ===== main column (mockup .set-main) ===== -->
-      <!-- The tinted page the cards sit on (the mockup's page background). -->
-      <Border Grid.Column="1" Background="{actipro:ThemeResource Container2BackgroundBrush}">
+    <!-- ===== main column (mockup .set-main) ===== -->
+    <!-- The section list lives in the rail (mockup .nav-parent + .nav-sub-item), so this
+         page is one column: the section title and the search box on top, the cards under
+         them. It used to repeat that list down its own left edge, which showed the same
+         seven sections twice. -->
+    <!-- The tinted page the cards sit on — the mockup's page-bg token, the same one the
+         scanner's page uses, so the two pages are one surface rather than a tinted one
+         and a neutral one. -->
+    <Border Grid.Row="0" Background="{DynamicResource VdfPageBrush}">
       <Grid RowDefinitions="Auto,*" Margin="30,22,30,0" MaxWidth="760"
             HorizontalAlignment="Left">
 
@@ -855,8 +792,7 @@
           </StackPanel>
         </ScrollViewer>
       </Grid>
-      </Border>
-    </Grid>
+    </Border>
 
     <!-- window-wide status line (mockup .statusline) -->
     <Border Grid.Row="1"

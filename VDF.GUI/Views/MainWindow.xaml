@@ -1,4 +1,4 @@
-<Window
+﻿<Window
     x:Class="VDF.GUI.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -45,6 +45,7 @@
         <mvvm:SimilarityToFormattedConverter x:Key="SimilarityToFormattedConverter" />
         <mvvm:MetricDisplayConverter x:Key="MetricDisplayConverter" />
         <mvvm:ShowSkeletonConverter x:Key="ShowSkeletonConverter" />
+        <mvvm:StringEqualsConverter x:Key="StringEqualsConverter" />
     </Window.Resources>
     <Window.Styles>
         <!-- ===== Window caption buttons (the window's own top-right corner) =====
@@ -195,6 +196,55 @@
         <Style Selector="Button.railbrand:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
         </Style>
+        <!-- Settings children: indented, one size down (mockup .nav-sub-item). The 22px
+             left padding is where the mockup's ::before dot sits; the 14px gap after it
+             lands the label on the mockup's 40px. -->
+        <Style Selector="Button.railsub">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Padding" Value="22,7,10,7" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
+        </Style>
+        <Style Selector="Button.railsub:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+        </Style>
+        <Style Selector="Button.railsub:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <!-- The section that is showing (mockup .nav-sub-item.active): the same soft accent
+             the rail's own entries light up with, and the dot takes the accent colour. -->
+        <Style Selector="Button.railsub.active /template/ ContentPresenter">
+            <Setter Property="Background" Value="{actipro:ThemeResource ControlBackgroundBrushSoftAccent}" />
+        </Style>
+        <Style Selector="Button.railsub.active">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+        </Style>
+        <Style Selector="Button.railsub.active Border.railsubdot">
+            <Setter Property="Background" Value="{DynamicResource VdfAccentTextBrush}" />
+        </Style>
+        <!-- Mockup .nav-sub-item::before: the 4px dot that marks these as children of
+             "设置" rather than top-level entries. -->
+        <Style Selector="Border.railsubdot">
+            <Setter Property="Width" Value="4" />
+            <Setter Property="Height" Value="4" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Background" Value="{actipro:ThemeResource Container3BorderBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <!-- The caret of the expandable "Settings" entry turns to point down while open. -->
+        <Style Selector="Button.railitem Path.caret">
+            <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+            <Setter Property="RenderTransform" Value="rotate(0deg)" />
+        </Style>
+        <Style Selector="Button.railitem.expanded Path.caret">
+            <Setter Property="RenderTransform" Value="rotate(90deg)" />
+        </Style>
         <!-- Theme segment (mockup .seg): a sunken track holding two halves, and the
              chosen half is the raised card — not an accent pill, which is what the
              mockup's .seg button.on shows. -->
@@ -331,6 +381,7 @@
                                         Grid.Column="0"
                                         Classes="railseg"
                                         Classes.on="{Binding IsLightTheme}"
+                                        AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Light]}"
                                         Command="{Binding SetThemeModeCommand}"
                                         CommandParameter="Light"
                                         ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Light]}">
@@ -353,6 +404,7 @@
                                         Grid.Column="1"
                                         Classes="railseg"
                                         Classes.on="{Binding IsDarkTheme}"
+                                        AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Dark]}"
                                         Command="{Binding SetThemeModeCommand}"
                                         CommandParameter="Dark"
                                         ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Theme.Dark]}">
@@ -388,8 +440,9 @@
                                 <!-- 扫描设置 -->
                                 <Button
                                     Classes="railitem"
-                                    Classes.active="{Binding IsShellMainVisible}"
-                                    Command="{Binding ShowRailScannerCommand}"
+                                    Classes.active="{Binding IsRailScanSetupActive}"
+                                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.ScanSettings]}"
+                                    Command="{Binding ShowRailScanSetupCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.ScanSettings]}">
                                     <StackPanel Orientation="Horizontal" Spacing="10">
                                         <Path
@@ -410,7 +463,9 @@
                                 <!-- 查重结果（组数徽标） -->
                                 <Button
                                     Classes="railitem"
-                                    Command="{Binding ShowRailScannerCommand}"
+                                    Classes.active="{Binding IsRailResultsActive}"
+                                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Results]}"
+                                    Command="{Binding ShowRailResultsCommand}"
                                     HorizontalContentAlignment="Stretch"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Results]}">
                                     <DockPanel>
@@ -455,6 +510,7 @@
                                 <!-- 扫描目录 -->
                                 <Button
                                     Classes="railitem"
+                                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Folders]}"
                                     Command="{Binding ShowRailScannerCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Folders]}">
                                     <StackPanel Orientation="Horizontal" Spacing="10">
@@ -477,6 +533,7 @@
                                 <!-- 忽略名单 -->
                                 <Button
                                     Classes="railitem"
+                                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Blacklist]}"
                                     Command="{Binding OpenBlacklistManagerCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Blacklist]}">
                                     <StackPanel Orientation="Horizontal" Spacing="10">
@@ -495,16 +552,19 @@
                                     </StackPanel>
                                 </Button>
 
-                                <!-- 设置：直接进设置页。分区由页面自己那栏切换——那是本程序原
-                                     有的设置导航，十一个分区、键盘可达；侧栏再放一份七项
-                                     的重复列表，既盖不全又和页内那栏打架。 -->
+                                <!-- 设置：点开列出分区（mockup .nav-parent）。分区列表就住在
+                                     这里——页内不再另开一栏，否则同一份列表会出现两次。 -->
                                 <Button
                                     Classes="railitem"
                                     Classes.active="{Binding IsShellSettingsVisible}"
-                                    Command="{Binding ShowRailSettingsCommand}"
+                                    Classes.expanded="{Binding IsRailSettingsExpanded}"
+                                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Settings]}"
+                                    Command="{Binding ToggleRailSettingsCommand}"
+                                    HorizontalContentAlignment="Stretch"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Settings]}">
-                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <DockPanel>
                                         <Path
+                                            DockPanel.Dock="Left"
                                             Width="17"
                                             Height="17"
                                             VerticalAlignment="Center"
@@ -512,12 +572,92 @@
                                             Fill="Transparent"
                                             StrokeLineCap="Round"
                                             StrokeThickness="1.7" />
+                                        <Path
+                                            Classes="caret"
+                                            DockPanel.Dock="Right"
+                                            Width="13"
+                                            Height="13"
+                                            VerticalAlignment="Center"
+                                            Data="M9 6l6 6-6 6"
+                                            Fill="Transparent"
+                                            IsVisible="{Binding ShowRailLabels}"
+                                            StrokeLineCap="Round"
+                                            StrokeJoin="Round"
+                                            StrokeThickness="2.4" />
                                         <TextBlock
+                                            Margin="10,0,0,0"
                                             VerticalAlignment="Center"
                                             IsVisible="{Binding ShowRailLabels}"
                                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Settings]}" />
-                                    </StackPanel>
+                                    </DockPanel>
                                 </Button>
+
+                                <!-- 设置子项：与设置页分区一一对应（mockup .nav-sub-item） -->
+                                <StackPanel IsVisible="{Binding ShowRailSettingsChildren}" Spacing="1">
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Scanning}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Scanning">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Scanning]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Matching}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.Matching]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Matching">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.Matching]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=PartialClips}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.PartialClips]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="PartialClips">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.PartialClips]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Files}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Files">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Database}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Database">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Sub.Results]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Processing}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Processing]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Processing">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Processing]}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="railsub"
+                                            Classes.active="{Binding SettingsSection, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Appearance}"
+                                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Appearance]}"
+                                            Command="{Binding ShowSettingsSectionCommand}" CommandParameter="Appearance">
+                                        <StackPanel Orientation="Horizontal" Spacing="14">
+                                            <Border Classes="railsubdot" />
+                                            <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.Appearance]}" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
 
                             </StackPanel>
                         </ScrollViewer>

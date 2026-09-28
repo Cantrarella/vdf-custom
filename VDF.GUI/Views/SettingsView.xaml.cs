@@ -27,31 +27,46 @@ using VDF.GUI.ViewModels;
 
 namespace VDF.GUI.Views {
 	/// <summary>
-	/// The settings page (redesign stage 3): left section nav, option rows with
-	/// always-visible descriptions, profile banner and cross-section search. All
-	/// filter DECISIONS live in <see cref="SettingsSearch"/>; this class only maps
-	/// them onto control visibility.
+	/// The settings page (redesign stage 3): option rows with always-visible descriptions,
+	/// phone-facing profiles and cross-section search. The section list is the rail's group
+	/// (mockup .nav-parent + .nav-sub-item); the page shows one section at a time and is
+	/// told which by <see cref="MainWindowVM.SettingsSection"/>. All filter DECISIONS live
+	/// in <see cref="SettingsSearch"/>; this class only maps them onto control visibility.
 	/// </summary>
 	public partial class SettingsView : UserControl {
 
-		sealed record SectionInfo(Control Panel, TextBlock? Caption, string Id, string Label);
+	sealed record SectionInfo(Control Panel, TextBlock? Caption, string Id, string Label);
 
-		readonly List<ListBoxItem> navItems = new();
-		ListBox navList = null!;
-		// Selection is also set from code (search mode clears it); only the user's own picks switch sections.
-		bool syncingNavSelection;
-		readonly List<SectionInfo> sections = new();
-		readonly List<TextBlock> subCaptions = new();
-		readonly List<SettingsSearchSection> searchSections = new();
-		readonly List<SettingsSearchRow> searchRows = new();
-		// The seconds floor/cap rows of the duration group, folded behind "more".
-		readonly HashSet<SettingRow> collapsedExtraRows = new();
-		bool durationMoreExpanded;
-		bool indexBuilt;
-		string selectedSectionId = "Scanning";
-		// A section that was asked for from outside before the index existed to select it from.
-		string? pendingSectionRequest;
-		MainWindowVM? vm;
+	/// <summary>
+	/// The page's sections, in the order the rail lists them (mockup .nav-sub-item). The
+	/// page has no nav of its own — the rail's group is the list — so this table is where a
+	/// section's id and label come from: the rail's entries write one of these ids into
+	/// <see cref="MainWindowVM.SettingsSection"/> to ask for a section, and the page header
+	/// and the search results show the label. The ids match the Tag on each section panel
+	/// in the XAML.
+	/// </summary>
+	static readonly (string Id, string LangKey)[] SectionOrder = [
+		("Scanning", "MainWindow.Settings.Scanning"),
+		("Matching", "Settings.Nav.Matching"),
+		("PartialClips", "Settings.Nav.PartialClips"),
+		("Files", "Settings.Nav.FilesFilters"),
+		("Database", "Settings.Sub.Results"),
+		("Processing", "MainWindow.Settings.Processing"),
+		("Appearance", "MainWindow.Settings.Appearance"),
+	];
+
+	readonly List<SectionInfo> sections = new();
+	readonly List<TextBlock> subCaptions = new();
+	readonly List<SettingsSearchSection> searchSections = new();
+	readonly List<SettingsSearchRow> searchRows = new();
+	// The seconds floor/cap rows of the duration group, folded behind "more".
+	readonly HashSet<SettingRow> collapsedExtraRows = new();
+	bool durationMoreExpanded;
+	bool indexBuilt;
+	string selectedSectionId = SectionOrder[0].Id;
+	// A section that was asked for from outside before the index existed to select it from.
+	string? pendingSectionRequest;
+	MainWindowVM? vm;
 
 		public SettingsView() {
 			AvaloniaXamlLoader.Load(this);
@@ -102,10 +117,10 @@ namespace VDF.GUI.Views {
 			SelectSection(sectionId);
 		}
 
-		/// <summary>Picks a section the way the user's own click does: drop a running
-		/// search first, then let UpdateVisibility drive both the list and the panel.</summary>
+		/// <summary>Picks a section the way the rail's entry does: drop a running
+		/// search first, then let UpdateVisibility drive the cards.</summary>
 		void SelectSection(string sectionId) {
-			if (navItems.All(n => (string?)n.Tag != sectionId)) return;
+			if (SectionOrder.All(s => s.Id != sectionId)) return;
 			selectedSectionId = sectionId;
 			if (vm != null && SettingsSearch.IsSearching(vm.SettingsSearchQuery))
 				vm.SettingsSearchQuery = string.Empty;
@@ -116,9 +131,6 @@ namespace VDF.GUI.Views {
 			if (indexBuilt) return;
 			indexBuilt = true;
 
-			navList = this.FindControl<ListBox>("NavList")!;
-			navItems.AddRange(navList.Items.OfType<ListBoxItem>());
-
 			collapsedExtraRows.Add(this.FindControl<SettingRow>("RowDurationMin")!);
 			collapsedExtraRows.Add(this.FindControl<SettingRow>("RowDurationMax")!);
 
@@ -128,9 +140,11 @@ namespace VDF.GUI.Views {
 				StackPanel? panel = child as StackPanel ?? (child as Border)?.Child as StackPanel;
 				if (panel?.Tag is not string id) continue;
 				var caption = panel.Children.OfType<TextBlock>().FirstOrDefault(t => t.Classes.Contains("sectioncaption"));
-				string label = navItems.FirstOrDefault(n => (string?)n.Tag == id)?.Content as string ?? id;
+				string label = SectionOrder.FirstOrDefault(s => s.Id == id) is { LangKey: string key }
+					? App.Lang[key]
+					: id;
 				sections.Add(new SectionInfo(child, caption, id, label));
-				// The section itself is found by its nav label only; rows and tagged
+				// The section itself is found by its own label only; rows and tagged
 				// blocks carry their own text.
 				searchSections.Add(new SettingsSearchSection(id, label));
 
@@ -197,22 +211,9 @@ namespace VDF.GUI.Views {
 
 			// The topbar titles the page, so the page reports which section it is on. A
 			// search spans every section, so during one there is no single section to name.
+			// The rail reads it back to keep its own entry in step.
 			if (vm != null)
 				vm.SettingsSection = searching ? null : selectedSectionId;
-
-			// A search spans all sections, so none is the selected one while it runs.
-			syncingNavSelection = true;
-			navList.SelectedItem = searching ? null : navItems.FirstOrDefault(n => (string?)n.Tag == selectedSectionId);
-			syncingNavSelection = false;
-		}
-
-		void OnNavSelectionChanged(object? sender, SelectionChangedEventArgs e) {
-			if (syncingNavSelection || !indexBuilt) return;
-			if ((navList.SelectedItem as ListBoxItem)?.Tag is not string id) return;
-			selectedSectionId = id;
-			if (vm != null && SettingsSearch.IsSearching(vm.SettingsSearchQuery))
-				vm.SettingsSearchQuery = string.Empty; // triggers UpdateVisibility
-			UpdateVisibility();
 		}
 
 		void OnDurationMoreClick(object? sender, RoutedEventArgs e) {

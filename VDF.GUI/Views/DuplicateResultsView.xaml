@@ -86,6 +86,15 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Padding" Value="0" />
     </Style>
+    <!-- The list's scrollbar. The theme draws a full-strength grey thumb (#9FA3AD, about
+         7px) down the page edge — heavier than anything else on this page, and the card
+         hairlines next to it are #E4EDF5. Dimmed to a hint: the position stays readable
+         and the bar stops being a stripe down the side. The bare selector is deliberate —
+         the bar lives in the ListBox's own template, two templates deep, and neither
+         "ListBox.results /template/ ScrollBar" nor a descendant selector reached it. -->
+    <Style Selector="ScrollBar">
+      <Setter Property="Opacity" Value="0.4" />
+    </Style>
     <Style Selector="ListBox.results ListBoxItem">
       <Setter Property="Padding" Value="0" />
       <Setter Property="MinHeight" Value="0" />
@@ -1127,8 +1136,10 @@
                      the file name and its badges their full width. Keyed off the
                      ListBoxItem, whose bounds never change, so showing them cannot
                      flicker under the pointer. Opening the file needs no button — the
-                     preview is the target, as in the mockup — so the row carries the two
-                     icon actions the header has no equivalent of. -->
+                     preview is the target, as in the mockup — and the details panel
+                     needs none either: it was a second button of its own kind, so the
+                     row carries the single action a member has. The panel is still on the
+                     row's context menu for anyone who wants it. -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4"
                             Margin="10,0,0,0" VerticalAlignment="Center"
                             IsVisible="{Binding $parent[ListBoxItem].IsPointerOver}">
@@ -1142,23 +1153,40 @@
                     <PathIcon Width="14" Height="14"
                               Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
                   </Button>
-                  <!-- Tier-2 metadata: toggles the details panel under this row. Same
-                       shape as the reveal button above — one icon language for the row. -->
-                  <Button
-                      Classes="fileact"
-                      Padding="8,3"
-                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.DetailsTip]}"
-                      ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.DetailsTip]}"
-                      Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleItemDetailsCommand}"
-                      CommandParameter="{Binding Item}">
-                    <PathIcon Width="14" Height="14"
-                              Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-                  </Button>
                 </StackPanel>
                 <!-- The similarity chip is a value, not an action: it stays put whether or
                      not the pointer is on the row, so the numbers never jump. -->
+                <!-- mockup .keep-tag / .keep-reason: why this one would be kept, and
+                     every other state a member can be in. They belong on the same line as
+                     the similarity value: docked to the name line above they sat on a
+                     different baseline from the chip, which left the pair visibly
+                     staggered. -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6"
                             Margin="6,0,0,0" VerticalAlignment="Center">
+                  <Border Classes="keeptag" IsVisible="{Binding IsBest}"
+                          ToolTip.Tip="{Binding BestTooltip}">
+                    <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Best]}" />
+                  </Border>
+                  <Border Classes="keeptag" IsVisible="{Binding Item.ItemInfo.IsAiMatched}"
+                          ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.AiMatchedTooltip]}">
+                    <TextBlock Text="AI" />
+                  </Border>
+                  <Border IsVisible="{Binding Item.IsTombstone}"
+                          Background="{DynamicResource VdfTombBrush}"
+                          CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
+                          ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[DupList.AlreadyDeletedTooltip]}">
+                    <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[DupList.AlreadyDeleted]}"
+                               FontSize="10" FontWeight="Bold" Foreground="White" />
+                  </Border>
+                  <Border IsVisible="{Binding Item.IsOffline}"
+                          Background="{DynamicResource VdfMutedSoftBrush}"
+                          BorderBrush="{DynamicResource VdfMutedBorderBrush}" BorderThickness="1"
+                          CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
+                          ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[DupList.OfflineTooltip]}">
+                    <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[DupList.Offline]}"
+                               FontSize="10" FontWeight="Bold"
+                               Foreground="{DynamicResource VdfMutedBrush}" />
+                  </Border>
                   <Border
                       Classes="simchip"
                       Classes.mid="{Binding Item.ItemInfo.Similarity, Converter={StaticResource SimilarityTierConverter}, ConverterParameter=mid}"
@@ -1175,51 +1203,20 @@
                 </StackPanel>
                 <!-- mockup .file-info: name and badges on top, the facts underneath -->
                 <StackPanel Margin="0" VerticalAlignment="Center" Spacing="3">
-                  <DockPanel LastChildFill="True">
-                    <!-- mockup .keep-tag / .keep-reason: why this one would be kept, and
-                         every other state a member can be in -->
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6"
-                                Margin="8,0,0,0" VerticalAlignment="Center">
-                      <Border Classes="keeptag" IsVisible="{Binding IsBest}"
-                              ToolTip.Tip="{Binding BestTooltip}">
-                        <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Best]}" />
-                      </Border>
-                      <Border Classes="keeptag" IsVisible="{Binding Item.ItemInfo.IsAiMatched}"
-                              ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.AiMatchedTooltip]}">
-                        <TextBlock Text="AI" />
-                      </Border>
-                      <Border IsVisible="{Binding Item.IsTombstone}"
-                              Background="{DynamicResource VdfTombBrush}"
-                              CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
-                              ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[DupList.AlreadyDeletedTooltip]}">
-                        <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[DupList.AlreadyDeleted]}"
-                                   FontSize="10" FontWeight="Bold" Foreground="White" />
-                      </Border>
-                      <Border IsVisible="{Binding Item.IsOffline}"
-                              Background="{DynamicResource VdfMutedSoftBrush}"
-                              BorderBrush="{DynamicResource VdfMutedBorderBrush}" BorderThickness="1"
-                              CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
-                              ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[DupList.OfflineTooltip]}">
-                        <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[DupList.Offline]}"
-                                   FontSize="10" FontWeight="Bold"
-                                   Foreground="{DynamicResource VdfMutedBrush}" />
-                      </Border>
-                    </StackPanel>
-                    <!-- The name may wrap to a second line in comfortable mode before it
-                         trims: with a wide preview or a narrow window a single line cut
-                         long names down to a few characters (#854). Capped at two lines
-                         so pathological names can't blow up the row; the full name stays
-                         in the tooltip. -->
-                    <TextBlock
-                        FontSize="13.5"
-                        FontWeight="SemiBold"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        MaxLines="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsCompactRows, Converter={StaticResource FileNameMaxLinesConverter}}"
-                        TextTrimming="CharacterEllipsis"
-                        Text="{Binding Item.ItemInfo.Path, Converter={StaticResource FileNameConverter}}"
-                        ToolTip.Tip="{Binding Item.ItemInfo.Path, Converter={StaticResource FileNameConverter}}" />
-                  </DockPanel>
+                  <!-- The name may wrap to a second line in comfortable mode before it
+                       trims: with a wide preview or a narrow window a single line cut
+                       long names down to a few characters (#854). Capped at two lines
+                       so pathological names can't blow up the row; the full name stays
+                       in the tooltip. -->
+                  <TextBlock
+                      FontSize="13.5"
+                      FontWeight="SemiBold"
+                      HorizontalAlignment="Left"
+                      TextWrapping="Wrap"
+                      MaxLines="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsCompactRows, Converter={StaticResource FileNameMaxLinesConverter}}"
+                      TextTrimming="CharacterEllipsis"
+                      Text="{Binding Item.ItemInfo.Path, Converter={StaticResource FileNameConverter}}"
+                      ToolTip.Tip="{Binding Item.ItemInfo.Path, Converter={StaticResource FileNameConverter}}" />
                   <!-- mockup .file-specs. Same numbers the old six fixed-width columns
                        held, read left to right in one line; each block owns its leading
                        separator so switching a column off takes its dot with it. Hovering

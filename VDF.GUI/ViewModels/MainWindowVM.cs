@@ -121,6 +121,9 @@ namespace VDF.GUI.ViewModels {
 			get => _IsScanning;
 			set {
 				if (value == _IsScanning) return;
+				// A new scan decides for itself which screen follows it: the rail's pick
+				// (setup or results) is dropped, so the results come up when it finishes.
+				ClearRailScannerScreen();
 				this.RaiseAndSetIfChanged(ref _IsScanning, value);
 				RaiseScannerStateChanged();
 				// Back on the Setup screen (scan aborted/stopped with no results):
