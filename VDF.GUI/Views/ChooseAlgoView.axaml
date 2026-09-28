@@ -1,4 +1,9 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+﻿<!-- No caption (WindowDecorations=BorderOnly) *and* the client area extended over the
+     frame: without the second half, Windows paints an ~8px band above the client area of a
+     resizable window in the system's own border colour - pure white on a light Windows, which
+     is the blank strip that showed above every one of these dialogs in the dark theme. The
+     extended part is ours to paint, so the band becomes the window's own surface. -->
+<Window xmlns="https://github.com/avaloniaui"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:Settings="clr-namespace:VDF.GUI.Data;assembly=VDF.GUI"
@@ -12,6 +17,7 @@
 		MaxWidth="720"
 		WindowStartupLocation="CenterOwner"
 		WindowDecorations="BorderOnly"
+		ExtendClientAreaToDecorationsHint="True"
 		SizeToContent="WidthAndHeight"
 		Padding="20"
 		Title="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.Title]}">

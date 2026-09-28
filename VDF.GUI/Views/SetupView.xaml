@@ -58,6 +58,12 @@
       <Setter Property="CornerRadius" Value="3" />
       <Setter Property="Padding" Value="5,0" />
     </Style>
+    <!-- See the note on the button itself: the pressed state is the one state the theme
+         paints over the palette's own tint, so it is taken back here. -->
+    <Style Selector="Button#ScanButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    </Style>
     <Style Selector="Border.offchip TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
       <Setter Property="FontSize" Value="10" />
@@ -125,7 +131,10 @@
                that the palette's dark accent ink then sat on: the label came out near
                black on near black. The label carries its own foreground because a theme
                may set one on the button's content presenter and win over the button's
-               own. -->
+               own. While it is pressed the theme repaints the presenter with its own grey
+               (#EFEFF1), which the accent ink reads 4.43:1 on - a hair under the 4.5:1 a
+               13.5px label needs - so the pressed state is pinned to the palette's own
+               hover surface instead. -->
           <Button
               x:Name="ScanButton"
               FontSize="13.5"

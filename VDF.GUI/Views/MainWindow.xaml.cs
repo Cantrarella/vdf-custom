@@ -116,23 +116,15 @@ namespace VDF.GUI.Views {
 			SettingsFile.Instance.FilePathContainsTexts.CollectionChanged += (_, __) => RestartSettingsSaveDebounce();
 			SettingsFile.Instance.FilePathNotContainsTexts.CollectionChanged += (_, __) => RestartSettingsSaveDebounce();
 
-			ShowAlgoView();
-		}
-
-		async void ShowAlgoView() {
-
-			if (File.Exists(FileUtils.SafePathCombine(
-					CoreUtils.ResolveDatabaseFolder(SettingsFile.Instance.CustomDatabaseFolder),
-					"ScannedFiles.db")))
-				return;
-
-			while (!this.IsVisible) {
-				await Task.Delay(200);
-			}
-			var dlg = new Views.ChooseAlgoView();
-			await dlg.ShowDialog(this);
-			if (dlg.FindControl<RadioButton>("Cb16x16")?.IsChecked == true)
-				VDF.Core.Utils.DatabaseUtils.Create16x16Database();
+			// The first-run wizard ("初始设置") is not opened any more: the user is the only
+			// one who runs this build and he does not want to be told how to use his own tool.
+			// It used to open itself from here whenever no ScannedFiles.db existed, which on
+			// this machine is every fresh install.
+			//
+			// Nothing else was wired to it — its three steps only filled in settings the
+			// settings page exposes anyway, and the (empty) database it wrote is created on
+			// demand the first time "scan against the entire database" needs one. The view
+			// itself stays in the tree: the headless contrast suite still builds it.
 		}
 
 		void MainWindow_Opened(object? sender, EventArgs e) {

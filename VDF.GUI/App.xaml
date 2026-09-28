@@ -20,81 +20,94 @@
                          those reached only 3.4 to 4.4:1 on white, on their own soft chips and
                          on the checked-row tint. WCAG AA wants 4.5:1. Borders keep the
                          mockup tone, they are not text. -->
-                    <SolidColorBrush x:Key="VdfGoodBrush" Color="#16703F" />
-                    <SolidColorBrush x:Key="VdfGoodSoftBrush" Color="#E2F2E9" />
-                    <SolidColorBrush x:Key="VdfGoodBorderBrush" Color="#731C8A52" />
-                    <SolidColorBrush x:Key="VdfWarnBrush" Color="#855709" />
-                    <SolidColorBrush x:Key="VdfWarnSoftBrush" Color="#F6ECD9" />
-                    <SolidColorBrush x:Key="VdfWarnBorderBrush" Color="#73A06A10" />
-                    <SolidColorBrush x:Key="VdfDangerBrush" Color="#A5332A" />
-                    <SolidColorBrush x:Key="VdfDangerSoftBrush" Color="#F7E5E3" />
-                    <SolidColorBrush x:Key="VdfDangerBorderBrush" Color="#73BB4237" />
+                    <SolidColorBrush x:Key="VdfGoodBrush" Color="#15803D" />
+                    <SolidColorBrush x:Key="VdfGoodSoftBrush" Color="#ECFDF3" />
+                    <SolidColorBrush x:Key="VdfGoodBorderBrush" Color="#73BBF7D0" />
+                    <SolidColorBrush x:Key="VdfWarnBrush" Color="#B45309" />
+                    <SolidColorBrush x:Key="VdfWarnSoftBrush" Color="#FFF7ED" />
+                    <SolidColorBrush x:Key="VdfWarnBorderBrush" Color="#73FED7AA" />
+                    <SolidColorBrush x:Key="VdfDangerBrush" Color="#C9353A" />
+                    <SolidColorBrush x:Key="VdfDangerSoftBrush" Color="#FFF2F1" />
+                    <SolidColorBrush x:Key="VdfDangerBorderBrush" Color="#73F4CFCD" />
                     <!-- Checked-row tint: the mockup's row-sel blue (#E8F4FF). Checked means
                          "will be deleted", but the state is carried by the tick itself, so the
                          row tint stays in the accent family and follows the theme. Active =
                          the checked row is ALSO list-selected: the opaque checked tint covers
                          the ListBoxItem highlight, so selection needs its own stronger step. -->
-                    <SolidColorBrush x:Key="VdfSelBrush" Color="#E8F4FF" />
+                    <SolidColorBrush x:Key="VdfSelBrush" Color="#EAF5FF" />
                     <!-- The mockup's row-sel-hover step (#DCECFD). The selected row is marked
                          by its frame as well. -->
-                    <SolidColorBrush x:Key="VdfSelActiveBrush" Color="#DCECFD" />
+                    <SolidColorBrush x:Key="VdfSelActiveBrush" Color="#DDF0FC" />
                     <!-- The list-selected row: a quiet tint under text that keeps its colors,
                          and a frame. -->
-                    <SolidColorBrush x:Key="VdfRowSelectedBrush" Color="#E8F4FF" />
-                    <SolidColorBrush x:Key="VdfRowSelectedFrameBrush" Color="#4A97CD" />
-                    <!-- Text of a selected list item under the pointer. -->
+                    <SolidColorBrush x:Key="VdfRowSelectedBrush" Color="#EAF5FF" />
+                    <SolidColorBrush x:Key="VdfRowSelectedFrameBrush" Color="#3789CA" />
+                    <!-- Text of a selected list item under the pointer. It is one step deeper
+                         than the palette's own accent ink (doc Primary Text #2474A6) on
+                         purpose: the row under the pointer is not on the palette's selected
+                         tint, the theme writes its own hover tint over it, and that tint is a
+                         step deeper still - #2474A6 measures 3.6:1 there. See the same
+                         reasoning under VdfGoodBrush: the doc's tone is the one to use on the
+                         doc's own surface, not on every surface the theme invents. -->
                     <SolidColorBrush x:Key="VdfSelectedHoverTextBrush" Color="#17587F" />
                     <SolidColorBrush x:Key="VdfTombBrush" Color="#A93B31" />
-                    <SolidColorBrush x:Key="VdfMutedBrush" Color="#8A9793" />
-                    <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#F8FCFF" />
-                    <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#DCE8F5" />
+                    <SolidColorBrush x:Key="VdfMutedBrush" Color="#60748A" />
+                    <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#F8FAFC" />
+                    <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#D7E0E8" />
                     <!-- Accent-colored text on a soft accent surface (selected settings section,
                          drive chip, outline accent buttons). The mockup's accent ink. -->
-                    <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#17587F" />
+                    <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#2474A6" />
                     <!-- Text on the solid accent (Scan, Next group). -->
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#0F3A55" />
                     <!-- Solid red behind white text (Delete checked): the theme's #EE4343 is 3.8:1. -->
-                    <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#D32F2F" />
+                    <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#C9353A" />
                     <!-- Settings row under the pointer: the mockup's .row:hover
                          (accent-softer). Rows sit on a white card, so the hover reads
                          against the card, not the page. -->
-                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#F3F9FF" />
+                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#F1F5F9" />
                     <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
                          deep accent, knob white. The two track colours have to differ in
                          lightness, or the state cannot be read at a glance. -->
-                    <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#C9D6E3" />
-                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#CBD5E1" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#5AA9E6" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
                     <!-- Slider (mockup .slider-track/.slider-fill/.slider-knob): the rest of
                          the track is the sunken surface, the filled part fades from a
                          near-white accent to the accent-active tone, and the knob is a
                          white disc ringed in that same accent-active tone. -->
-                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#EEF6FD" />
+                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#E3EAF1" />
                     <LinearGradientBrush x:Key="VdfSliderFillBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-                        <GradientStop Color="#DBEFFF" Offset="0" />
-                        <GradientStop Color="#A8D3F7" Offset="1" />
+                        <GradientStop Color="#5AA9E6" Offset="0" />
+                        <GradientStop Color="#7CC0EE" Offset="1" />
                     </LinearGradientBrush>
-                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#A8D3F7" />
+                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#4799DA" />
                     <!-- Verdict band on the results page (mockup .verdict): the one surface
                          that states what the scan found, so it sits a step above the page in
                          every theme instead of blending into it. The mockup paints it as a
                          120° accent gradient fading into the surface. -->
                     <LinearGradientBrush x:Key="VdfVerdictBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-                        <GradientStop Color="#CDE9FF" Offset="0" />
-                        <GradientStop Color="#EFF7FF" Offset="0.78" />
+                        <GradientStop Color="#EAF5FF" Offset="0" />
+                        <GradientStop Color="#F4F9FD" Offset="0.78" />
                     </LinearGradientBrush>
-                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#A9D7F6" />
+                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#7FBCE5" />
                     <!-- Solid accent (the mockup's accent-deep token): small solid chips — the rail's
                          group badge, the on-state of the filter segment — where the soft
                          fill is too quiet to read as "this is counted in". -->
-                    <SolidColorBrush x:Key="VdfAccentSolidBrush" Color="#4A97CD" />
+                    <SolidColorBrush x:Key="VdfAccentSolidBrush" Color="#2474A6" />
                     <!-- Text on the solid accent (the mockup's check-ink token: white). -->
                     <SolidColorBrush x:Key="VdfOnAccentSolidBrush" Color="#FFFFFF" />
+                    <!-- The same solid fill under the pointer. It is a step deeper, not a step
+                         lighter: a solid accent button has to answer the pointer with a colour
+                         of its own. Fading the whole button with an Opacity step instead washed
+                         its white label out to 4.25:1 on #2474A6 — under the 4.5:1 a 13px
+                         label needs. Deepening the fill keeps the label at full strength
+                         (white on this: 5.7:1) and reads as "pressed towards". -->
+                    <SolidColorBrush x:Key="VdfAccentFillHoverBrush" Color="#1B6BA0" />
                     <!-- Brand tile (mockup .brand-mark): the accent gradient tile with the
                          white inner ring; the same tile in every theme, like the mockup. -->
                     <LinearGradientBrush x:Key="VdfBrandMarkBrush" StartPoint="0%,0%" EndPoint="100%,100%">
-                        <GradientStop Color="#CDE9FF" Offset="0" />
-                        <GradientStop Color="#E9F5FF" Offset="1" />
+                        <GradientStop Color="#7FBCE5" Offset="0" />
+                        <GradientStop Color="#EAF5FF" Offset="1" />
                     </LinearGradientBrush>
                     <!-- Ink ON the brand tile. The tile keeps the light gradient in every theme
                          (the mockup does the same), so its glyph has to stay the dark accent in
@@ -105,7 +118,7 @@
                          card surface itself (its surface token). They used to be the same
                          white, so a card was readable only by its outline, which read as a
                          frame around the group rather than as a panel. -->
-                    <SolidColorBrush x:Key="VdfPageBrush" Color="#EEF5FC" />
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#F6F9FC" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#FFFFFF" />
                     <!-- The hairline along a card's edge: the mockup's own line token (#E4EDF5),
                          which reads as an edge rather than as a frame. (The frame the results
@@ -113,13 +126,13 @@
                          than three times this strong.) It is kept light on purpose: the card
                          is separated from the page by the elevation shadow, so this line has
                          only to close the shape. -->
-                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E4EDF5" />
+                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E2E8F0" />
                     <!-- The rail's own surface (the mockup's rail token): white at 74% over the
                          page bg, flattened to an opaque tone here. The cards sit on the page,
                          the rail sits beside it, so the two must not be the same white. -->
-                    <SolidColorBrush x:Key="VdfRailBrush" Color="#FBFDFF" />
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#FFFFFF" />
                     <!-- Inset tracks and wells on the rail (the mockup's surface-sunken). -->
-                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#EEF6FD" />
+                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#F1F5F9" />
                     <!-- The selected rail entry and the open settings child (the mockup's
                          accent-soft token). Keeping it on the palette stops these two from
                          borrowing the theme's own accent container, which is a step darker. -->
@@ -145,7 +158,30 @@
                     <!-- A card sits on the page and lifts off it (the mockup's Elevation):
                          a tight contact shadow under the edge, then a wide soft one for
                          depth. Two parts, because one alone reads as a blur. -->
-                    <BoxShadows x:Key="VdfCardShadow">0 2 6 0 #0D103C64, 0 14 32 -18 #3D103C64</BoxShadows>
+                    <BoxShadows x:Key="VdfCardShadow">0 2 8 0 #0D0F2337, 0 14 32 -18 #2E0F2337</BoxShadows>
+
+                    <!-- Main text ink (doc 主文字). It was whatever the theme defaults to;
+                         the Window style hangs it on every window, and TextBlock inherits. -->
+                    <SolidColorBrush x:Key="VdfTextBrush" Color="#172033" />
+                    <!-- The band the window paints above its content (doc 顶部标题栏). The rail
+                         is its own surface, so the shell and the rail are two tokens: white rail,
+                         page-toned shell. -->
+                    <SolidColorBrush x:Key="VdfShellBrush" Color="#F6F9FC" />
+                    <!-- The dialog close button under the pointer (doc Danger Text): white on
+                         the doc's Danger #E5484D is 3.9:1, which the contrast suite rejects for
+                         a 13px glyph, and Danger Text is the same red two steps down. -->
+                    <SolidColorBrush x:Key="VdfCloseHoverBrush" Color="#C9353A" />
+                    <SolidColorBrush x:Key="VdfOnCloseHoverBrush" Color="#FFFFFF" />
+                    <!-- Scroll bar (doc 滚动条): transparent track, one thumb tone, no blue.
+                         ActiPro draws the bar from these keys, so they are set per theme. -->
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushVertical}" Color="#C7D1DC" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushHorizontal}" Color="#C7D1DC" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushVerticalPointerOver}" Color="#AEBCCA" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushHorizontalPointerOver}" Color="#AEBCCA" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushVerticalPressed}" Color="#AEBCCA" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushHorizontalPressed}" Color="#AEBCCA" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarBackgroundBrushVertical}" Color="Transparent" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarBackgroundBrushHorizontal}" Color="Transparent" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="VdfGoodBrush" Color="#45B878" />
@@ -164,70 +200,74 @@
                          the checked row is ALSO list-selected: the opaque checked tint
                          covers the ListBoxItem highlight, so selection needs its own
                          stronger step. -->
-                    <SolidColorBrush x:Key="VdfSelBrush" Color="#22303F" />
+                    <SolidColorBrush x:Key="VdfSelBrush" Color="#213344" />
                     <!-- The mockup's row-sel-hover step (rgba(205,233,255,.18)). The selected
                          row is marked by its frame as well. -->
-                    <SolidColorBrush x:Key="VdfSelActiveBrush" Color="#2A3B4D" />
+                    <SolidColorBrush x:Key="VdfSelActiveBrush" Color="#263E53" />
                     <!-- The list-selected row: a quiet tint under text that keeps its colors,
                          and a frame. -->
-                    <SolidColorBrush x:Key="VdfRowSelectedBrush" Color="#223040" />
-                    <SolidColorBrush x:Key="VdfRowSelectedFrameBrush" Color="#CDE9FF" />
+                    <SolidColorBrush x:Key="VdfRowSelectedBrush" Color="#213344" />
+                    <SolidColorBrush x:Key="VdfRowSelectedFrameBrush" Color="#8DCCF2" />
                     <!-- Text of a selected list item under the pointer: the accent is pale, so
                          the text on it goes dark. -->
                     <SolidColorBrush x:Key="VdfSelectedHoverTextBrush" Color="#0B1F2E" />
                     <SolidColorBrush x:Key="VdfTombBrush" Color="#C05248" />
-                    <SolidColorBrush x:Key="VdfMutedBrush" Color="#6D7B76" />
-                    <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#1C2836" />
-                    <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#2C3A4A" />
-                    <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#CDE9FF" />
+                    <SolidColorBrush x:Key="VdfMutedBrush" Color="#9AAABD" />
+                    <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#1E2935" />
+                    <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#354454" />
+                    <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#8DCCF2" />
                     <!-- The accent is pale, so the text on it goes dark. -->
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#0B1F2E" />
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#D32F2F" />
                     <!-- Settings row under the pointer: the mockup's accent-softer over
                          the dark card. -->
-                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#1E2C3C" />
+                    <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#1E2935" />
                     <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
                          deep accent, knob white. The two track colours have to differ in
                          lightness, or the state cannot be read at a glance. -->
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
-                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#4A97CD" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#5AA9E6" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#E9F4FF" />
                     <!-- Slider: same roles as the light theme, on the dark sunken tone. -->
-                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#101A25" />
+                    <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#2A3745" />
                     <LinearGradientBrush x:Key="VdfSliderFillBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-                        <GradientStop Color="#DBEFFF" Offset="0" />
-                        <GradientStop Color="#B6DCF7" Offset="1" />
+                        <GradientStop Color="#5AA9E6" Offset="0" />
+                        <GradientStop Color="#72B9EE" Offset="1" />
                     </LinearGradientBrush>
-                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#B6DCF7" />
+                    <SolidColorBrush x:Key="VdfSliderKnobBorderBrush" Color="#4799DA" />
                     <!-- Verdict band: the dark counterpart keeps the accent-tinged fade,
                          but from a deep accent-navy so the light verdict text stays clear
                          across the whole band. -->
                     <LinearGradientBrush x:Key="VdfVerdictBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-                        <GradientStop Color="#1E3750" Offset="0" />
-                        <GradientStop Color="#16293C" Offset="0.78" />
+                        <GradientStop Color="#213B54" Offset="0" />
+                        <GradientStop Color="#17212C" Offset="0.78" />
                     </LinearGradientBrush>
-                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#2C4763" />
+                    <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#2E5A7D" />
                     <!-- Solid accent chips: in the dark theme the mockup's accent-deep is
                          the pale accent itself, with dark ink on it. -->
-                    <SolidColorBrush x:Key="VdfAccentSolidBrush" Color="#CDE9FF" />
+                    <SolidColorBrush x:Key="VdfAccentSolidBrush" Color="#8DCCF2" />
                     <SolidColorBrush x:Key="VdfOnAccentSolidBrush" Color="#0B1F2E" />
+                    <!-- Hover step for that fill: here the fill is the pale one and the ink the
+                         dark one, so the step goes the other way - lighter (doc Primary Text 2),
+                         which only makes the dark ink clearer. -->
+                    <SolidColorBrush x:Key="VdfAccentFillHoverBrush" Color="#A5D8F5" />
                     <!-- Brand tile: the mockup keeps the same light gradient tile on the
                          dark rail, so the brand stays the brand when the theme flips. -->
                     <LinearGradientBrush x:Key="VdfBrandMarkBrush" StartPoint="0%,0%" EndPoint="100%,100%">
-                        <GradientStop Color="#CDE9FF" Offset="0" />
-                        <GradientStop Color="#E9F5FF" Offset="1" />
+                        <GradientStop Color="#7FBCE5" Offset="0" />
+                        <GradientStop Color="#EAF5FF" Offset="1" />
                     </LinearGradientBrush>
                     <!-- Ink ON the brand tile. The tile keeps the light gradient in every theme
                          (the mockup does the same), so its glyph has to stay the dark accent in
                          every theme too. It used to be VdfAccentTextBrush, which is pale in the
                          dark themes: a pale-blue glyph on a pale-blue tile, invisible. -->
                     <SolidColorBrush x:Key="VdfBrandMarkInkBrush" Color="#17587F" />
-                    <SolidColorBrush x:Key="VdfPageBrush" Color="#0D1621" />
-                    <SolidColorBrush x:Key="VdfCardBrush" Color="#16212E" />
-                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#293542" />
-                    <SolidColorBrush x:Key="VdfRailBrush" Color="#121C28" />
-                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#101A25" />
-                    <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#2C3A48" />
+                    <SolidColorBrush x:Key="VdfPageBrush" Color="#111820" />
+                    <SolidColorBrush x:Key="VdfCardBrush" Color="#19232E" />
+                    <SolidColorBrush x:Key="VdfCardLineBrush" Color="#2A3745" />
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#141D27" />
+                    <SolidColorBrush x:Key="VdfSunkenBrush" Color="#151F29" />
+                    <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#223748" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>
@@ -245,7 +285,20 @@
                     <x:Double x:Key="VdfPlaceholderOpacity">0.67</x:Double>
                     <!-- Dark surfaces swallow a soft shadow, so the dark theme lifts the
                          card with more opacity and a longer falloff instead. -->
-                    <BoxShadows x:Key="VdfCardShadow">0 2 8 0 #59000000, 0 18 40 -20 #A6000000</BoxShadows>
+                    <BoxShadows x:Key="VdfCardShadow">0 2 8 0 #52000000, 0 18 40 -20 #8C000000</BoxShadows>
+
+                    <SolidColorBrush x:Key="VdfTextBrush" Color="#E8F0F7" />
+                    <SolidColorBrush x:Key="VdfShellBrush" Color="#141D27" />
+                    <SolidColorBrush x:Key="VdfCloseHoverBrush" Color="#C9353A" />
+                    <SolidColorBrush x:Key="VdfOnCloseHoverBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushVertical}" Color="#3A4A5A" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushHorizontal}" Color="#3A4A5A" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushVerticalPointerOver}" Color="#4B5D70" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushHorizontalPointerOver}" Color="#4B5D70" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushVerticalPressed}" Color="#4B5D70" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarThumbBackgroundBrushHorizontalPressed}" Color="#4B5D70" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarBackgroundBrushVertical}" Color="Transparent" />
+                    <SolidColorBrush x:Key="{actipro:ThemeResourceKey ScrollBarBackgroundBrushHorizontal}" Color="Transparent" />
                 </ResourceDictionary>
                 <!-- High contrast on dark. Held to 7:1 for text (4.5:1 large text and icons) by the contrast guard: no dimmed text at all, tones light enough for the darkest and the tinted surfaces alike, and outlines one can see. -->
                 <ResourceDictionary x:Key="{x:Static utils:VdfThemes.HighContrastDark}">
@@ -294,6 +347,8 @@
                     <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#2E6E9E" />
                     <SolidColorBrush x:Key="VdfAccentSolidBrush" Color="#CDE9FF" />
                     <SolidColorBrush x:Key="VdfOnAccentSolidBrush" Color="#0B1F2E" />
+                    <!-- Hover step: lighter still, for the same reason as the dark theme. -->
+                    <SolidColorBrush x:Key="VdfAccentFillHoverBrush" Color="#E1F2FF" />
                     <LinearGradientBrush x:Key="VdfBrandMarkBrush" StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
@@ -354,6 +409,11 @@
                     <!-- High contrast reads shapes, not depth: no shadow here, the card
                          outline does the separating. -->
                     <BoxShadows x:Key="VdfCardShadow">0 0 0 0 #00000000</BoxShadows>
+
+                    <SolidColorBrush x:Key="VdfTextBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="VdfShellBrush" Color="#000000" />
+                    <SolidColorBrush x:Key="VdfCloseHoverBrush" Color="#FFB3A8" />
+                    <SolidColorBrush x:Key="VdfOnCloseHoverBrush" Color="#000000" />
                 </ResourceDictionary>
                 <!-- High contrast on light, the counterpart of the above. -->
                 <ResourceDictionary x:Key="{x:Static utils:VdfThemes.HighContrastLight}">
@@ -401,6 +461,8 @@
                     <SolidColorBrush x:Key="VdfVerdictBorderBrush" Color="#14507A" />
                     <SolidColorBrush x:Key="VdfAccentSolidBrush" Color="#14507A" />
                     <SolidColorBrush x:Key="VdfOnAccentSolidBrush" Color="#FFFFFF" />
+                    <!-- Hover step: deeper, so the white label gains rather than loses. -->
+                    <SolidColorBrush x:Key="VdfAccentFillHoverBrush" Color="#0F4166" />
                     <LinearGradientBrush x:Key="VdfBrandMarkBrush" StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="#CDE9FF" Offset="0" />
                         <GradientStop Color="#E9F5FF" Offset="1" />
@@ -458,6 +520,11 @@
                     <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#EAF5FF" />
                     <!-- No shadow: the outline separates the card here. -->
                     <BoxShadows x:Key="VdfCardShadow">0 0 0 0 #00000000</BoxShadows>
+
+                    <SolidColorBrush x:Key="VdfTextBrush" Color="#000000" />
+                    <SolidColorBrush x:Key="VdfShellBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="VdfCloseHoverBrush" Color="#9E1B1B" />
+                    <SolidColorBrush x:Key="VdfOnCloseHoverBrush" Color="#FFFFFF" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>

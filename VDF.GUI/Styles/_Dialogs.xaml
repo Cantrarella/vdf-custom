@@ -26,6 +26,11 @@
 
   <Style Selector="Window">
     <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+    <!-- The palette's main ink, hung on the window so every TextBlock under it inherits
+         it (the colour scheme names one 主文字 per theme; the theme's default was its own
+         near-black). MainWindow matches this selector too - it sets its Background locally,
+         not its Foreground, so it picks this up as well. -->
+    <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     <Setter Property="FontSize" Value="13.5" />
   </Style>
 
@@ -65,8 +70,9 @@
        white on it is 3.2:1, and the contrast tests in VDF.GUI.HeadlessTests say so.
        The fill and the ink both have to be re-applied under the pointer and while
        pressed, because the theme paints its own colours onto the presenter - the same
-       reason Button.solid exists in _Buttons.xaml. The hover state is an opacity step
-       instead, so the fill itself never leaves. -->
+       reason Button.solid exists in _Buttons.xaml. The hover step is a deeper fill of its
+       own (VdfAccentFillHoverBrush), not an opacity fade: fading the whole button faded its
+       white label with it, and white at 0.88 over this fill measures 4.25:1. -->
   <Style Selector="Button.dlgprimary">
     <Setter Property="Background" Value="{DynamicResource VdfAccentTextBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource VdfOnAccentSolidBrush}" />
@@ -80,7 +86,7 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.dlgprimary:pointerover">
-    <Setter Property="Opacity" Value="0.88" />
+    <Setter Property="Background" Value="{DynamicResource VdfAccentFillHoverBrush}" />
   </Style>
   <Style Selector="Button.dlgprimary /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -118,8 +124,10 @@
   </Style>
 
   <!-- A window with no caption has no close button either, so the ones whose only way out
-       used to be the caption ✕ (the database viewer, the comparer, the About box) carry
-       this one in their own header row. -->
+       used to be the caption ✕ (the database viewer, the comparer) carry this one in their
+       own header row. "closered" is the red-under-the-pointer half on its own, for a close
+       button that is not a bare 28x28 glyph — the comparer's "✕ 关闭对比器", which is wider
+       and would be squeezed by this style's Width. -->
   <Style Selector="Button.dlgclose">
     <Setter Property="Width" Value="28" />
     <Setter Property="Height" Value="28" />
@@ -138,9 +146,16 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
   </Style>
-  <Style Selector="Button.dlgclose:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
-    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+  <!-- Under the pointer the ✕ turns into the red every other "this is how you leave" control
+       in the app speaks: the caption is gone, so the button is the only way out and a sunken
+       grey stated nothing. The ink goes white on the red (5.2:1, which the contrast suite
+       measures on the pressed state as well). -->
+  <Style Selector="Button.dlgclose:pointerover, Button.closered:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource VdfOnCloseHoverBrush}" />
+  </Style>
+  <Style Selector="Button.dlgclose:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.closered:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource VdfCloseHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource VdfOnCloseHoverBrush}" />
   </Style>
 
   <!-- Text fields, lists and tables inside a dialog take the sunken surface: the theme

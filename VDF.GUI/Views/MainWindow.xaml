@@ -25,7 +25,7 @@
     MinHeight="450"
     d:DesignHeight="750"
     d:DesignWidth="900"
-    Background="{DynamicResource VdfRailBrush}"
+    Background="{DynamicResource VdfShellBrush}"
     BorderBrush="{DynamicResource VdfCardLineBrush}"
     BorderThickness="1"
     ExtendClientAreaToDecorationsHint="True"

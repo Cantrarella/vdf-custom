@@ -1,4 +1,9 @@
-﻿<Window
+﻿<!-- No caption (WindowDecorations=BorderOnly) *and* the client area extended over the
+     frame: without the second half, Windows paints an ~8px band above the client area of a
+     resizable window in the system's own border colour - pure white on a light Windows, which
+     is the blank strip that showed above every one of these dialogs in the dark theme. The
+     extended part is ours to paint, so the band becomes the window's own surface. -->
+<Window
     x:Class="VDF.GUI.RelocateFilesDialog"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,6 +22,7 @@
     d:DesignWidth="800"
     WindowStartupLocation="CenterOwner"
     WindowDecorations="BorderOnly"
+    ExtendClientAreaToDecorationsHint="True"
     mc:Ignorable="d">
     <!-- 弹窗主体：统一 14px 外边距，底部一排按钮用 dlgprimary / dlgghost。 -->
     <Grid Margin="14" RowDefinitions="Auto,Auto,*,Auto">

@@ -24,8 +24,13 @@
     <mvvm:FileNameConverter x:Key="FileNameConverter" />
     <mvvm:DirectoryPathConverter x:Key="DirectoryPathConverter" />
     <mvvm:ResultsRowSizingConverter x:Key="ResultsRowSizingConverter" />
-    <mvvm:BoolToValueConverter x:Key="ChevronConverter" TrueValue="▸" FalseValue="▾" />
     <mvvm:BoolToValueConverter x:Key="SortDirectionGlyphConverter" TrueValue="↓" FalseValue="↑" />
+    <!-- The group caret, from the icon the user supplied (a 1024x1024 viewBox). Expanded it
+         points down; collapsed it is the same triangle given a quarter turn to the right, so
+         the second path is the first one rotated about (512,512) — no transform at render
+         time, and both states keep the same ink weight. -->
+    <StreamGeometry x:Key="ChevronDownGeometry">M938.731988 88.590688c12.600993-6.859221 26.437116 6.808056 19.732413 19.492959L523.883655 930.264129c-5.437849 10.289344-20.175505 10.289344-25.614378 0L63.688531 108.083647c-6.704702-12.68388 7.131421-26.352181 19.732414-19.492959l427.65501 232.794997L938.731988 88.590688z</StreamGeometry>
+    <StreamGeometry x:Key="ChevronRightGeometry">M88.5907 85.268c-6.85922-12.601 6.80806-26.4371 19.493-19.7324L930.264 500.116c10.2893 5.43785 10.2893 20.1755 0 25.6144L108.084 960.311c-12.6839 6.7047-26.3522-7.13142-19.493-19.7324l232.795-427.655L88.5907 85.268z</StreamGeometry>
     <!-- #854: compact rows keep the single-line name; comfortable rows may wrap to two. -->
     <mvvm:BoolToValueConverter x:Key="FileNameMaxLinesConverter" TrueValue="1" FalseValue="2" />
   </UserControl.Resources>
@@ -37,15 +42,40 @@
       <Setter Property="FontSize" Value="12" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-    <!-- The chevron shows a glyph only; its accessible name says what pressing it does. -->
+    <!-- The chevron shows a glyph only; its accessible name says what pressing it does.
+         It drops the theme's button outline: every Button in this theme is drawn with a
+         1px frame, which around a bare 12px triangle reads as a box drawn round the arrow
+         rather than as a control - the triangle is the whole control. The pointerover
+         well goes with it, so hovering answers by deepening the triangle itself instead
+         of painting a square behind it. -->
     <Style Selector="Button.chevron">
       <Setter Property="AutomationProperties.Name" Value="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.CollapseGroup]}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
     <Style Selector="Button.chevron.collapsed">
       <Setter Property="AutomationProperties.Name" Value="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.ExpandGroup]}" />
     </Style>
+    <!-- The caret itself: the solid triangle the user supplied, drawn at the size of the
+         similarity chips it faces across the group header (12px box, ~11px of ink), where the
+         text glyph it replaces (▾ / ▸) sat at the mercy of the font's own metrics. -->
+    <Style Selector="Path.chevglyph">
+      <Setter Property="Fill" Value="{DynamicResource VdfAccentTextBrush}" />
+      <Setter Property="Width" Value="12" />
+      <Setter Property="Height" Value="12" />
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
     <Style Selector="Button.group-action:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+    </Style>
+    <!-- ... except the chevron, which has no frame to fill: see Button.chevron above. -->
+    <Style Selector="Button.chevron:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.chevron:pointerover Path.chevglyph">
+      <Setter Property="Fill" Value="{DynamicResource VdfSelectedHoverTextBrush}" />
     </Style>
     <!-- Row action pair (mockup .btn-ghost.btn-sm): outlined and quiet, because two of
          them now sit in every row. They brighten on hover instead of shouting. -->
@@ -86,14 +116,15 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Padding" Value="0" />
     </Style>
-    <!-- The list's scrollbar. The theme draws a full-strength grey thumb (#9FA3AD, about
-         7px) down the page edge — heavier than anything else on this page, and the card
-         hairlines next to it are #E4EDF5. Dimmed to a hint: the position stays readable
-         and the bar stops being a stripe down the side. The bare selector is deliberate —
-         the bar lives in the ListBox's own template, two templates deep, and neither
-         "ListBox.results /template/ ScrollBar" nor a descendant selector reached it. -->
+    <!-- The list's scrollbar used to be dimmed to 0.4 here because the theme's own thumb
+         was a full-strength grey (#9FA3AD) and read as a stripe down the page edge. The
+         colour scheme now names the thumb (#C7D1DC, hover #AEBCCA in light; #3A4A5A, hover
+         #4B5D70 in dark) and App.xaml sets it on the ActiPro keys the bar is drawn from, so
+         the dimming would only wash those out. The bare selector stays - the bar lives two
+         templates deep in the ListBox and neither a /template/ nor a descendant selector
+         reached it - now only to keep the hover step visible. -->
     <Style Selector="ScrollBar">
-      <Setter Property="Opacity" Value="0.4" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
     <Style Selector="ListBox.results ListBoxItem">
       <Setter Property="Padding" Value="0" />
@@ -907,8 +938,12 @@
                       Padding="0"
                       Margin="0,0,6,0"
                       Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleGroupCollapsedCommand}"
-                      CommandParameter="{Binding}"
-                      Content="{Binding IsCollapsed, Converter={StaticResource ChevronConverter}}" />
+                      CommandParameter="{Binding}">
+                    <Panel>
+                      <Path Classes="chevglyph" Data="{StaticResource ChevronDownGeometry}" IsVisible="{Binding !IsCollapsed}" />
+                      <Path Classes="chevglyph" Data="{StaticResource ChevronRightGeometry}" IsVisible="{Binding IsCollapsed}" />
+                    </Panel>
+                  </Button>
                   <!-- mockup .group-idx -->
                   <Border DockPanel.Dock="Left" Classes="idxbadge">
                     <TextBlock Text="{Binding GroupNumber}" />

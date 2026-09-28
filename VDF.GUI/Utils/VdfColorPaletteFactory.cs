@@ -21,16 +21,23 @@ namespace VDF.GUI.Utils {
 	/// <summary>
 	/// The default ActiPro color palette plus VDF's accent ramp. The ramp is generated
 	/// from a midtone, so the dark theme lands on the lighter accent and the light theme
-	/// on its darker counterpart. The midtone is the mockup's #4A97CD: it sits between
-	/// the mockup's pale accent surface (#CDE9FF, used for large fills) and its darker
-	/// accent ink (#17587F, used for text on accent), which keeps both ramps readable.
+	/// on its darker counterpart.
+	///
+	/// Under the final colour scheme the midtone is the document's Primary (#5AA9E6). It
+	/// is the same weight the ramp used to be keyed on: the previous midtone (#4A97CD) sat
+	/// at the geometric middle of its pale surface (#CDE9FF) and its accent ink (#17587F),
+	/// and #5AA9E6 sits at the geometric middle of this palette's pair — Primary Soft
+	/// (#EAF5FF) and Primary Text (#2474A6) — within a couple of percent of luminance.
+	/// Everything the theme paints from the accent ramp (the checked tick, the switch, the
+	/// progress bar, focus rings) therefore moves with the palette instead of staying on
+	/// the old blue.
 	/// </summary>
 	public sealed class VdfColorPaletteFactory : DefaultColorPaletteFactory {
 		public const string AccentRampName = "VdfAccent";
 
 		public override ColorPalette Create() {
 			ColorPalette palette = base.Create();
-			palette.Ramps.Add(CreateColorRamp(AccentRampName, isNeutral: false, UIColor.Parse("#4A97CD")));
+			palette.Ramps.Add(CreateColorRamp(AccentRampName, isNeutral: false, UIColor.Parse("#5AA9E6")));
 			return palette;
 		}
 	}
