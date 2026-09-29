@@ -157,7 +157,11 @@
     </Window.Styles>
     <!-- Speaks the transient messages to a screen reader (see AnnouncerHost). -->
     <ctl:AnnouncerHost x:Name="Announcer">
-    <Border BorderBrush="{DynamicResource VdfMutedBorderBrush}" BorderThickness="2">
+    <!-- The window's own edge: the same Border.dlgframe every other dialog wears, so all
+         twelve read alike. It used to be its own thing - 2px of the general hairline, square
+         corners - which made this the one dialog with a heavier, harder frame. The class
+         brings 1px, the dialogs' own deeper colour and the card's 20px corner with it. -->
+    <Border Classes="dlgframe">
         <Grid RowDefinitions="Auto,Auto,*,Auto">
             <controls:ExperimentalAcrylicBorder
                 x:Name="ExperimentalAcrylicBorderBackgroundWhite"

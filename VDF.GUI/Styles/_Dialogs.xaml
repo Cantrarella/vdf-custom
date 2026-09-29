@@ -49,21 +49,24 @@
        the SAME colour is not a thing the eye can find. The reference never relied on the
        fill either - its .modal carries a 1px line-2 outline and its large shadow on top of
        the backdrop that cannot exist here (the dialogs are top-level windows, not layers).
-       So the outline is the whole of it: one pixel of the palette's muted border, the card's
-       own corner, and the card's own shadow to lift it.
+       So the outline is the whole of it: one pixel of VdfDialogFrameBrush - the dialogs' own
+       colour, three steps deeper than the hairline this used to borrow, because nothing else
+       is lifting the edge (see App.xaml) - the card's own corner, and the card's own shadow
+       to lift it.
 
        Where this hangs is not a detail. Avalonia's Window has no BorderBrush,
        BorderThickness, CornerRadius or BoxShadow - setting them on the Window selector in
        this file would compile, run, and quietly do nothing. They go on the content layer's
        root container instead, which is the class the dialogs carry: six of them on the
        Border.dlgbody they already had, five wrapped in one around their root Grid/DockPanel,
-       and the comparer already had an outline of its own to recolour.
+       and the comparer, which had an outline of its own at 2px and square corners, now
+       carrying this same class as the other eleven.
 
        The corner is the card tier (20). A rounded outline inside a square window leaves the
        window's own colour in the four corner squares; that colour is the card's, so all that
        shows past the arc is card - no page tint, no gap. -->
   <Style Selector="Border.dlgframe">
-    <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfDialogFrameBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="20" />
     <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />

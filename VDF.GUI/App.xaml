@@ -54,6 +54,17 @@
                     <SolidColorBrush x:Key="VdfMutedBrush" Color="#60748A" />
                     <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#F8FAFC" />
                     <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#D7E0E8" />
+                    <!-- The dialog's own edge, and a token of its own rather than VdfMutedBorderBrush:
+                         that one is the general hairline and ten other places wear it - the results
+                         table's rules, the settings cards, the scan button's ring, the rail's divider - so
+                         deepening it for the dialogs would deepen those along with them. Measured against
+                         the card the dialogs sit on, the two working themes now read 3.40:1 (#718FA8 on
+                         #FFFFFF) and 3.03:1 (#5D6E7D on #19232E), over the 3:1 a graphic boundary is held
+                         to. Before this they were 1.34:1 and 1.59:1, a line the eye has to hunt for, and
+                         the reference could afford that because its dialogs also carry a large shadow - a
+                         shadow a top-level window cannot show (probe-verified). The line is the whole of
+                         the boundary here, so the line has to do the whole of the work. -->
+                    <SolidColorBrush x:Key="VdfDialogFrameBrush" Color="#718FA8" />
                     <!-- Accent-colored text on a soft accent surface (selected settings section,
                          drive chip, outline accent buttons). The mockup's accent ink. -->
                     <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#2474A6" />
@@ -261,6 +272,17 @@
                     <SolidColorBrush x:Key="VdfMutedBrush" Color="#9AAABD" />
                     <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#1E2935" />
                     <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#354454" />
+                    <!-- The dialog's own edge, and a token of its own rather than VdfMutedBorderBrush:
+                         that one is the general hairline and ten other places wear it - the results
+                         table's rules, the settings cards, the scan button's ring, the rail's divider - so
+                         deepening it for the dialogs would deepen those along with them. Measured against
+                         the card the dialogs sit on, the two working themes now read 3.40:1 (#718FA8 on
+                         #FFFFFF) and 3.03:1 (#5D6E7D on #19232E), over the 3:1 a graphic boundary is held
+                         to. Before this they were 1.34:1 and 1.59:1, a line the eye has to hunt for, and
+                         the reference could afford that because its dialogs also carry a large shadow - a
+                         shadow a top-level window cannot show (probe-verified). The line is the whole of
+                         the boundary here, so the line has to do the whole of the work. -->
+                    <SolidColorBrush x:Key="VdfDialogFrameBrush" Color="#5D6E7D" />
                     <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#8DCCF2" />
                     <!-- The accent is pale, so the text on it goes dark. -->
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#0B1F2E" />
@@ -390,6 +412,9 @@
                     <SolidColorBrush x:Key="VdfMutedBrush" Color="#C8CDD4" />
                     <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#1C2836" />
                     <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#C8CDD4" />
+                    <!-- Same tone as the hairline, on purpose: against #000000 (13.1:1) and #FFFFFF
+                         (9.5:1) this line already carries the boundary by itself. -->
+                    <SolidColorBrush x:Key="VdfDialogFrameBrush" Color="#C8CDD4" />
                     <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#CDE9FF" />
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#9E1B1B" />
@@ -525,6 +550,9 @@
                     <SolidColorBrush x:Key="VdfMutedBrush" Color="#3F4650" />
                     <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#F8FCFF" />
                     <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#3F4650" />
+                    <!-- Same tone as the hairline, on purpose: against #000000 (13.1:1) and #FFFFFF
+                         (9.5:1) this line already carries the boundary by itself. -->
+                    <SolidColorBrush x:Key="VdfDialogFrameBrush" Color="#3F4650" />
                     <SolidColorBrush x:Key="VdfAccentTextBrush" Color="#0B3D5C" />
                     <SolidColorBrush x:Key="VdfOnAccentBrush" Color="#000000" />
                     <SolidColorBrush x:Key="VdfDangerSolidBrush" Color="#9E1B1B" />
