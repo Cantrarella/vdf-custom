@@ -21,7 +21,7 @@
         Title="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Title]}">
     <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方（卡片 + dlgprimary/dlgghost + dlglist），
          窗口底色由全局 Window 规则给。 -->
-    <Border Classes="dlgbody">
+    <Border Classes="dlgbody dlgframe">
     <DockPanel>
         <!-- The caption is gone, so the window's own name is the body's heading. -->
         <TextBlock DockPanel.Dock="Top"

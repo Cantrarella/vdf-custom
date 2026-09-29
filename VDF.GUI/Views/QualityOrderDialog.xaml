@@ -17,7 +17,7 @@
         Title="{Binding Source={x:Static app:App.Lang}, Path=[QualityOrderDialog.Title]}">
     <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方：窗口底色是全局 Window 规则给的页面色，
          内容装在一张 dlgcard 里，主/次按钮用 dlgprimary / dlgghost。 -->
-    <Border Classes="dlgbody">
+    <Border Classes="dlgbody dlgframe">
     <StackPanel Spacing="12">
         <!-- The caption is gone, so the window's own name is the body's heading. -->
         <TextBlock Classes="dlgtitle"

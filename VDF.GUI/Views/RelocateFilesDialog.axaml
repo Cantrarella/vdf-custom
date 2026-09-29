@@ -25,6 +25,7 @@
     ExtendClientAreaToDecorationsHint="True"
     mc:Ignorable="d">
     <!-- 弹窗主体：统一 14px 外边距，底部一排按钮用 dlgprimary / dlgghost。 -->
+    <Border Classes="dlgframe">
     <Grid Margin="14" RowDefinitions="Auto,Auto,*,Auto">
         <!--  Mode selector  -->
         <StackPanel
@@ -192,4 +193,5 @@
             </StackPanel>
         </Border>
     </Grid>
+    </Border>
 </Window>

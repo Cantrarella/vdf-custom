@@ -61,6 +61,7 @@
         </Style>
     </Window.Styles>
 
+    <Border Classes="dlgframe">
     <Grid
         Margin="16"
         RowDefinitions="Auto,*,Auto"
@@ -305,4 +306,5 @@
                 IsCancel="True" />
         </Grid>
     </Grid>
+    </Border>
 </Window>

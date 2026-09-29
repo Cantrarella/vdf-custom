@@ -10,7 +10,7 @@
     <!-- The card, the page tint and the buttons come from Styles/_Dialogs.xaml. The rule
          under the header is the palette's hairline now: it was the theme's chrome grey,
          which is a third colour next to the card's own edge. -->
-    <Border Classes="dlgbody">
+    <Border Classes="dlgbody dlgframe">
         <StackPanel Spacing="16">
             <StackPanel
                 HorizontalAlignment="Center"

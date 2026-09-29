@@ -157,7 +157,7 @@
     </Window.Styles>
     <!-- Speaks the transient messages to a screen reader (see AnnouncerHost). -->
     <ctl:AnnouncerHost x:Name="Announcer">
-    <Border BorderBrush="{DynamicResource VdfCardLineBrush}" BorderThickness="2">
+    <Border BorderBrush="{DynamicResource VdfMutedBorderBrush}" BorderThickness="2">
         <Grid RowDefinitions="Auto,Auto,*,Auto">
             <controls:ExperimentalAcrylicBorder
                 x:Name="ExperimentalAcrylicBorderBackgroundWhite"

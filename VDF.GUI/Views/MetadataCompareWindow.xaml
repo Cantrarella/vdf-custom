@@ -46,6 +46,7 @@
     </Style>
   </Window.Styles>
 
+  <Border Classes="dlgframe">
   <DockPanel Margin="14">
     <!-- The caption is gone, so the window's own name is the body's heading. -->
     <TextBlock DockPanel.Dock="Top"
@@ -164,4 +165,5 @@
       </ScrollViewer>
     </Border>
   </DockPanel>
+  </Border>
 </Window>

@@ -77,6 +77,7 @@
     </Style>
   </Window.Styles>
 
+  <Border Classes="dlgframe" ClipToBounds="True">
   <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
 
     <!-- ======== Toolbar: type/error/flag filter chips · search · sort ======== -->
@@ -458,4 +459,5 @@
       </DockPanel>
     </Border>
   </Grid>
+  </Border>
 </Window>

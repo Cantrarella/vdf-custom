@@ -19,8 +19,8 @@
 		WindowDecorations="BorderOnly"
 		ExtendClientAreaToDecorationsHint="True"
 		SizeToContent="WidthAndHeight"
-		Padding="20"
 		Title="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.Title]}">
+	<Border Classes="dlgframe" Padding="20">
 	<Grid RowDefinitions="*,Auto" RowSpacing="12">
 		<TabControl SelectedIndex="{Binding StepIndex, Mode=TwoWay}">
 			<TabItem AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.Step.DatabaseSize]}">
@@ -147,4 +147,5 @@
 			</Grid>
 		</Border>
 	</Grid>
+	</Border>
 </Window>
