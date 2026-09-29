@@ -35,13 +35,11 @@
       <Setter Property="BorderThickness" Value="0,0,0,1" />
       <Setter Property="Padding" Value="20,12" />
     </Style>
-    <!-- Mockup .dir-ico: 34x34, radius 10, accent-soft on accent-ink. -->
+    <!-- Mockup .dir-ico: 34x34, radius 10, accent-soft ground. The icon inside it carries
+         the accent ink itself - see the folder path in the item template. -->
     <Style Selector="Border.drivechip">
       <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
       <Setter Property="CornerRadius" Value="10" />
-    </Style>
-    <Style Selector="Border.drivechip TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
     </Style>
     <!-- Mockup .btn-sm: 6px 11px, 12.5px, radius 9. .soft is the folder card's own
          "添加目录" (mockup .btn-soft). -->
@@ -58,11 +56,18 @@
       <Setter Property="CornerRadius" Value="3" />
       <Setter Property="Padding" Value="5,0" />
     </Style>
-    <!-- See the note on the button itself: the pressed state is the one state the theme
-         paints over the palette's own tint, so it is taken back here. -->
-    <Style Selector="Button#ScanButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    <!-- The scan button's three states. It wears a SOLID fill now (see App.xaml), so the
+         palette has to supply every state: without these two, hovering falls back to the
+         theme's own accent and the button changes colour family under the pointer.
+         .solid only pins the presenter to the button's own Background; it does not invent
+         hover or pressed tints. (The previous rule here pinned the PRESSED presenter to the
+         palette's row-hover grey: that was for the soft fill, where the theme painted over
+         the pale tint and left the label 4.43:1.) -->
+    <Style Selector="Button#ScanButton:pointerover">
+      <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidHoverBrush}" />
+    </Style>
+    <Style Selector="Button#ScanButton:pressed">
+      <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidPressedBrush}" />
     </Style>
     <Style Selector="Border.offchip TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
@@ -128,38 +133,51 @@
               VerticalAlignment="Center"
               Click="OnAdvancedSettingsClick"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AdvancedSettings]}" />
-          <!-- The scan call to action (mockup .btn-primary): the soft accent surface with
-               the accent ink on top. Both come from the palette rather than from the
-               theme's own soft accent brush, which in the dark theme is a dark surface
-               that the palette's dark accent ink then sat on: the label came out near
-               black on near black. The label carries its own foreground because a theme
-               may set one on the button's content presenter and win over the button's
-               own. While it is pressed the theme repaints the presenter with its own grey
-               (#EFEFF1), which the accent ink reads 4.43:1 on - a hair under the 4.5:1 a
-               13.5px label needs - so the pressed state is pinned to the palette's own
-               hover surface instead. -->
+          <!-- The scan call to action (mockup .btn-primary): a SOLID primary fill with the
+               mockup's own dark ink on it, and its own lift shadow. It used to be the soft
+               accent surface with the accent ink, which read as another secondary button in
+               a row of secondary buttons.
+
+               The ink is the mockup's accent-btn-text token, not the palette doc's #FFFFFF:
+               white on this blue is 2.55:1 and ContrastTests.Text_IsReadable measures this
+               very button. See App.xaml for the three fills.
+               Classes="solid" is what keeps the fill: without it the theme repaints the
+               content presenter on hover and press, and the button goes grey under the
+               pointer. The label and the glyph carry their own foreground because a theme
+               may set one on the presenter and win over the button's. -->
+          <!-- The mockup's primary lift. A Button carries no BoxShadow of its own, and in
+               this theme's template the fill is painted by the CONTENT PRESENTER, not by a
+               border one could shadow - so the lift is drawn by this wrapper, which takes
+               the button's exact size and corner radius. Background is transparent rather
+               than null, which is what makes Avalonia draw a shadow with nothing under it. -->
+          <Border VerticalAlignment="Center"
+                  CornerRadius="11"
+                  Background="Transparent"
+                  BoxShadow="0 2 10 -4 #E65AA9E6">
           <Button
               x:Name="ScanButton"
+              Classes="solid"
               FontSize="13.5"
               FontWeight="620"
               Padding="16,9"
               CornerRadius="11"
               VerticalAlignment="Center"
-              Background="{DynamicResource VdfAccentSoftBrush}"
-              Foreground="{DynamicResource VdfAccentTextBrush}"
+              Background="{DynamicResource VdfPrimarySolidBrush}"
+              Foreground="{DynamicResource VdfOnPrimarySolidBrush}"
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}"
               Command="{Binding StartScanCommand}"
               CommandParameter="FullScan">
             <StackPanel Orientation="Horizontal" Spacing="7">
               <Path Width="15" Height="15" Stretch="Uniform"
-                    Stroke="{DynamicResource VdfAccentTextBrush}" StrokeThickness="2.2"
+                    Stroke="{DynamicResource VdfOnPrimarySolidBrush}" StrokeThickness="2.2"
                     StrokeLineCap="Round" StrokeJoin="Round"
                     Data="M 6 4 L 19 12 L 6 20 Z" />
               <TextBlock
-                  Foreground="{DynamicResource VdfAccentTextBrush}"
+                  Foreground="{DynamicResource VdfOnPrimarySolidBrush}"
                   Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}" />
             </StackPanel>
           </Button>
+          </Border>
         </StackPanel>
         <StackPanel VerticalAlignment="Center" Spacing="2">
           <TextBlock FontSize="13.5" FontWeight="SemiBold" Text="{Binding SetupEstimatedFilesText}" />
@@ -177,12 +195,24 @@
           <StackPanel>
             <Border Classes="cardhead">
               <DockPanel LastChildFill="True">
+                <!-- Mockup .btn-soft: the plus glyph leads the label, and takes the button's
+                     own foreground so it follows every state the theme gives one, rather
+                     than being pinned to a palette colour that then clashes with it. -->
                 <Button
                     DockPanel.Dock="Right"
                     Classes="dirbtn soft"
                     VerticalAlignment="Center"
-                    Command="{Binding AddIncludesToListCommand}"
-                    Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddDir]}" />
+                    Command="{Binding AddIncludesToListCommand}">
+                  <StackPanel Orientation="Horizontal" Spacing="7">
+                    <Path Width="14" Height="14" Stretch="Uniform"
+                          Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="2"
+                          StrokeLineCap="Round"
+                          VerticalAlignment="Center"
+                          Data="M12 5v14M5 12h14" />
+                    <TextBlock VerticalAlignment="Center"
+                               Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddDir]}" />
+                  </StackPanel>
+                </Button>
                 <StackPanel Spacing="2">
                   <TextBlock Classes="cardtitle"
                              Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Folders.Title]}" />
@@ -203,8 +233,13 @@
                     <DockPanel LastChildFill="True">
                       <Border DockPanel.Dock="Left" Width="34" Height="34"
                               Classes="drivechip">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   FontWeight="Bold" FontSize="12" Text="{Binding DriveLabel}" />
+                        <!-- Mockup .dir-ico: the folder outline in the chip's accent ink. It
+                             used to be the drive LETTER ("E:"), which told nobody anything
+                             the path beside it does not say more plainly. -->
+                        <Path Width="17" Height="17" Stretch="Uniform"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Stroke="{DynamicResource VdfAccentTextBrush}" StrokeThickness="2"
+                              StrokeJoin="Round" StrokeLineCap="Round"                              Data="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
                       </Border>
                       <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8"
                                   VerticalAlignment="Center" Margin="12,0,0,0">
@@ -226,10 +261,15 @@
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleSetupFolderCommand}"
                             CommandParameter="{Binding}"
                             Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Enable]}" />
+                        <!-- Mockup: the frame takes its danger-line token, the TEXT stays the
+                             danger ink.
+                             One strong colour for both made a quiet row-level action look
+                             like a warning; split, it reads as a button you may still
+                             press. High contrast keeps one red for both - see App.xaml. -->
                         <Button
                             Classes="dirbtn"
                             Foreground="{DynamicResource VdfDangerBrush}"
-                            BorderBrush="{DynamicResource VdfDangerBrush}"
+                            BorderBrush="{DynamicResource VdfDangerLineBrush}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RemoveSetupFolderCommand}"
                             CommandParameter="{Binding}"
                             ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Setup.RemoveFolder]}"
