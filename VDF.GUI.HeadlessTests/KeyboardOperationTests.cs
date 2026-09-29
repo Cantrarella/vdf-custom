@@ -85,9 +85,14 @@ public class KeyboardOperationTests {
 		}
 	});
 
+	// By name, not by position. This used to take the last visible Button on the page, which
+	// was the scan button back when the page held nothing else of the kind. It now ends in
+	// the scrollbar it grew, whose page-down button is visible and enabled but answers to no
+	// key and cannot hold focus at all - so the helper was "focusing" a wheel click target and
+	// every assertion downstream read a null focus as a broken curtain.
 	static Button FocusScanButton(Window window) {
 		var setup = window.GetVisualDescendants().OfType<SetupView>().First();
-		var button = setup.GetVisualDescendants().OfType<Button>().Last(b => b.IsEffectivelyVisible && b.IsEffectivelyEnabled);
+		var button = setup.GetVisualDescendants().OfType<Button>().First(b => b.Name == "ScanButton");
 		button.Focus(NavigationMethod.Tab);
 		HeadlessUi.Pump();
 		Assert.Same(button, window.FocusManager!.GetFocusedElement());

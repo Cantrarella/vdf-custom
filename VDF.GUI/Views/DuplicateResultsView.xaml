@@ -342,9 +342,14 @@
     <Style Selector="Button.filteritem.on:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource VdfRowSelectedBrush}" />
     </Style>
+    <!-- The count beside each facet label. It carries no Opacity: 11px text cannot afford
+         any. Dimmed to 0.65 this grey landed at 2.40:1 on the counters row, and no amount of
+         dimming reaches 4.5 once the run is this small (see VdfMutedBrush in App.xaml - even
+         at full strength these greys only just clear it). The step down from the label's own
+         colour to VdfMutedBrush is the whole of the hierarchy here, and that is enough: it is
+         the same move Border.hdrchip.best already makes when a value has to be read. -->
     <Style Selector="TextBlock.facetn">
       <Setter Property="FontSize" Value="11" />
-      <Setter Property="Opacity" Value="0.65" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <!-- mockup .btn-ghost.btn-sm, reused by the toolbar's right hand side:
@@ -520,14 +525,14 @@
                Results restored from a previous session have no scan figures — the whole
                line is dropped rather than claiming "Scanned 0 files". -->
           <StackPanel Orientation="Horizontal" IsVisible="{Binding !!ScannedFileCount}">
-            <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}">
+            <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}">
               <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Verdict.Scanned]}" />
               <Run Text=" " />
               <Run Text="{Binding ScannedFileCount, Mode=OneWay, StringFormat={}{0:N0}}" />
               <Run Text=" " />
               <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Scan.FilesUnit]}" />
             </TextBlock>
-            <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+            <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                        IsVisible="{Binding TimeElapsed, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
               <Run Text=" · " />
               <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Stats.ElapsedTime]}" />
@@ -605,6 +610,7 @@
         <Border DockPanel.Dock="Left" Classes="filtertrack" Margin="9,0,0,0">
           <StackPanel Orientation="Horizontal" Spacing="5">
             <Button Classes="filteritem" Classes.on="{Binding IsFacetAll}"
+                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.All]}"
                     Command="{Binding SetResultsFacetCommand}" CommandParameter="All"
                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.AllTip]}">
               <StackPanel Orientation="Horizontal" Spacing="4">
@@ -613,6 +619,7 @@
               </StackPanel>
             </Button>
             <Button Classes="filteritem" Classes.on="{Binding IsFacetReview}"
+                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.Review]}"
                     Command="{Binding SetResultsFacetCommand}" CommandParameter="Review"
                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.ReviewTip]}">
               <StackPanel Orientation="Horizontal" Spacing="4">
@@ -621,6 +628,7 @@
               </StackPanel>
             </Button>
             <Button Classes="filteritem" Classes.on="{Binding IsFacetConfident}"
+                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.Confident]}"
                     Command="{Binding SetResultsFacetCommand}" CommandParameter="Confident"
                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.ConfidentTip]}">
               <StackPanel Orientation="Horizontal" Spacing="4">
@@ -629,6 +637,7 @@
               </StackPanel>
             </Button>
             <Button Classes="filteritem"
+                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.Ignored]}"
                     Command="{Binding OpenBlacklistManagerCommand}"
                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.IgnoredTip]}">
               <StackPanel Orientation="Horizontal" Spacing="4">
@@ -1001,7 +1010,7 @@
                        per line than the old header packed them side by side -->
                   <StackPanel Margin="11,0,0,0" VerticalAlignment="Center" Spacing="2">
                     <TextBlock FontSize="13.5" FontWeight="SemiBold" Text="{Binding Title}" />
-                    <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                    <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                Text="{Binding Summary}" />
                   </StackPanel>
                 </DockPanel>
@@ -1289,7 +1298,7 @@
                       <Border Background="Transparent" Tag="duration,framesize"
                               PointerEntered="OnMetricPointerEntered" PointerExited="OnMetricPointerExited">
                         <StackPanel Orientation="Horizontal" Spacing="7">
-                          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                          <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                      Classes="metric-diff"
                                      IsVisible="{Binding !Item.ItemInfo.IsImage}"
                                      Classes.hi="{Binding DurationHi}"
@@ -1304,7 +1313,7 @@
                             </TextBlock.Text>
                           </TextBlock>
                           <StackPanel Orientation="Horizontal" Spacing="5">
-                            <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                            <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                        Classes="metric-diff"
                                        Classes.hi="{Binding FrameSizeHi}"
                                        Classes.lo="{Binding FrameSizeLo}"
@@ -1332,7 +1341,7 @@
                       <TextBlock Classes="specsep" />
                       <Border Tag="size" Background="Transparent"
                               PointerEntered="OnMetricPointerEntered" PointerExited="OnMetricPointerExited">
-                        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                        <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                    Classes="metric-diff"
                                    Classes.hi="{Binding SizeHi}"
                                    Classes.lo="{Binding SizeLo}"
@@ -1347,19 +1356,19 @@
                         </TextBlock>
                       </Border>
                       <TextBlock Classes="specsep" />
-                      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                  Text="{Binding Item.ShownDate, Converter={StaticResource ExtraShortDateTimeConverter}}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="7"
                                 IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowFormatColumn}">
                       <TextBlock Classes="specsep" />
-                      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                  Text="{Binding Item.ItemInfo.Format, TargetNullValue=''}" />
                       <Border Tag="fps" Background="Transparent" IsVisible="{Binding !Item.ItemInfo.IsImage}"
                               PointerEntered="OnMetricPointerEntered" PointerExited="OnMetricPointerExited">
                         <StackPanel Orientation="Horizontal" Spacing="7">
                           <TextBlock Classes="specsep" />
-                          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                          <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                      Classes="metric-diff"
                                      Classes.diffing="{Binding Item.FpsDiff, Converter={x:Static ObjectConverters.IsNotNull}}">
                             <TextBlock.Text>
@@ -1378,7 +1387,7 @@
                       <Border Background="Transparent" Tag="bitrate,audiobitrate"
                               PointerEntered="OnMetricPointerEntered" PointerExited="OnMetricPointerExited">
                         <StackPanel Orientation="Horizontal" Spacing="7">
-                          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                          <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                      Classes="metric-diff"
                                      IsVisible="{Binding !Item.ItemInfo.IsImage}"
                                      Classes.hi="{Binding BitRateHi}"
@@ -1393,7 +1402,7 @@
                             </TextBlock.Text>
                           </TextBlock>
                           <TextBlock Classes="specsep" IsVisible="{Binding !Item.ItemInfo.IsImage}" />
-                          <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                          <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                      Classes="metric-diff"
                                      IsVisible="{Binding !Item.ItemInfo.IsImage}"
                                      Classes.hi="{Binding AudioBitRateHi}"
@@ -1413,12 +1422,12 @@
                     <StackPanel Orientation="Horizontal" Spacing="7"
                                 IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowFormatColumn}">
                       <TextBlock Classes="specsep" IsVisible="{Binding !Item.ItemInfo.IsImage}" />
-                      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                  IsVisible="{Binding !Item.ItemInfo.IsImage}"
                                  Text="{Binding Item.ItemInfo.AudioFormat, TargetNullValue=''}" />
                       <StackPanel Orientation="Horizontal" Spacing="7">
                         <TextBlock Classes="specsep" IsVisible="{Binding !Item.ItemInfo.IsImage}" />
-                        <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                        <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                    IsVisible="{Binding !Item.ItemInfo.IsImage}"
                                    Text="{Binding Item.ItemInfo.AudioChannel, TargetNullValue=''}" />
                       </StackPanel>
@@ -1426,11 +1435,11 @@
                     <StackPanel Orientation="Horizontal" Spacing="7"
                                 IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowLanguagesColumn}">
                       <TextBlock Classes="specsep" />
-                      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                  IsVisible="{Binding Item.ItemInfo.AudioLanguages, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                  Text="{Binding Item.ItemInfo.AudioLanguages}" />
                       <TextBlock Classes="specsep" IsVisible="{Binding Item.ItemInfo.SubtitleLanguages, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                  IsVisible="{Binding Item.ItemInfo.SubtitleLanguages, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                  Text="{Binding Item.ItemInfo.SubtitleLanguages}" />
                     </StackPanel>
@@ -1438,7 +1447,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="7"
                                 IsVisible="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ResultsShowClipOffsetColumn}">
                       <TextBlock Classes="specsep" IsVisible="{Binding Item.ItemInfo.PartialClipOffsetDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                      <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextDim75Opacity}"
+                      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}"
                                  Text="{Binding Item.ItemInfo.PartialClipOffsetDisplay}" />
                     </StackPanel>
                   </WrapPanel>

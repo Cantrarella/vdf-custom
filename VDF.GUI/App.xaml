@@ -51,7 +51,14 @@
                          doc's own surface, not on every surface the theme invents. -->
                     <SolidColorBrush x:Key="VdfSelectedHoverTextBrush" Color="#17587F" />
                     <SolidColorBrush x:Key="VdfTombBrush" Color="#A93B31" />
-                    <SolidColorBrush x:Key="VdfMutedBrush" Color="#60748A" />
+                    <!-- Secondary text wherever it lands. #60748A is the same grey the mockup
+                         dims its captions to, and on white it is fine at 4.9:1, but two of the
+                         surfaces it sits on are tinted - the sunken rows (#F1F5F9) and the
+                         pointer rows (#EAF5FF) - and there it fell to 4.39 / 4.44:1, under the
+                         4.5 a small run of text needs. Two points deeper clears all three
+                         (5.01 / 4.58 / 4.54) holding the hue, so nothing about how it reads
+                         changes. Derived with scripts rather than picked: see §6.22. -->
+                    <SolidColorBrush x:Key="VdfMutedBrush" Color="#5E7187" />
                     <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#F8FAFC" />
                     <SolidColorBrush x:Key="VdfMutedBorderBrush" Color="#D7E0E8" />
                     <!-- The dialog's own edge, and a token of its own rather than VdfMutedBorderBrush:
@@ -119,10 +126,14 @@
                          mockup splits its danger-ink token from its danger-line token. -->
                     <SolidColorBrush x:Key="VdfDangerLineBrush" Color="#F4CFCD" />
                     <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
-                         deep accent, knob white. The two track colours have to differ in
-                         lightness, or the state cannot be read at a glance. -->
+                         deep accent, knob white. "Deep" is load-bearing twice over: the two
+                         track colours have to differ in lightness or the state cannot be read
+                         at a glance, and the near-white knob has to stay visible ON the track
+                         it sits in. At #5AA9E6 that pair measured 2.5:1, under the 3:1 an
+                         indicator owes whatever it sits on, which walks straight back into the
+                         "on looks like off" this pair was written to answer. -->
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#CBD5E1" />
-                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#5AA9E6" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#3789CA" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#FFFFFF" />
                     <!-- Slider (mockup .slider-track/.slider-fill/.slider-knob): the rest of
                          the track is the sunken surface, the filled part fades from a
@@ -282,9 +293,13 @@
                          and a frame. -->
                     <SolidColorBrush x:Key="VdfRowSelectedBrush" Color="#213344" />
                     <SolidColorBrush x:Key="VdfRowSelectedFrameBrush" Color="#8DCCF2" />
-                    <!-- Text of a selected list item under the pointer: the accent is pale, so
-                         the text on it goes dark. -->
-                    <SolidColorBrush x:Key="VdfSelectedHoverTextBrush" Color="#0B1F2E" />
+                    <!-- Text of a selected list item under the pointer. Here the reasoning
+                         under the light copy of this token inverts, and carrying its wording
+                         over is what broke this one: the light accent tint is pale, so the
+                         text there goes dark, but THIS theme's selected tint is #213344, already
+                         deep, and dark ink on it measured 1.30:1 on a dialog list. Dark carries
+                         light text of its own for exactly that reason, same as upstream had it. -->
+                    <SolidColorBrush x:Key="VdfSelectedHoverTextBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="VdfTombBrush" Color="#C05248" />
                     <SolidColorBrush x:Key="VdfMutedBrush" Color="#9AAABD" />
                     <SolidColorBrush x:Key="VdfMutedSoftBrush" Color="#1E2935" />
@@ -330,10 +345,14 @@
                     <!-- The resting fill of a soft button; nothing points at it yet (see Light). -->
                     <SolidColorBrush x:Key="VdfBtnSoftSurfaceBrush" Color="#101A25" />
                     <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
-                         deep accent, knob white. The two track colours have to differ in
-                         lightness, or the state cannot be read at a glance. -->
+                         deep accent, knob white. "Deep" is load-bearing twice over: the two
+                         track colours have to differ in lightness or the state cannot be read
+                         at a glance, and the near-white knob has to stay visible ON the track
+                         it sits in. At #5AA9E6 that pair measured 2.5:1, under the 3:1 an
+                         indicator owes whatever it sits on, which walks straight back into the
+                         "on looks like off" this pair was written to answer. -->
                     <SolidColorBrush x:Key="VdfSwitchTrackOffBrush" Color="#45566A" />
-                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#5AA9E6" />
+                    <SolidColorBrush x:Key="VdfSwitchTrackOnBrush" Color="#3789CA" />
                     <SolidColorBrush x:Key="VdfSwitchKnobBrush" Color="#E9F4FF" />
                     <!-- Slider: same roles as the light theme, on the dark sunken tone. -->
                     <SolidColorBrush x:Key="VdfSliderTrackBrush" Color="#2A3745" />

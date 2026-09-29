@@ -222,11 +222,25 @@
     <Setter Property="Padding" Value="4" />
   </Style>
   <!-- The theme answers the pointer with a neutral grey and selection with its own accent;
-       both read as a second, unrelated palette inside a dialog. Same tint the pages use. -->
-  <Style Selector="ListBox.dlglist ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+       both read as a second, unrelated palette inside a dialog. Same tint the pages use.
+
+       Both ways of drawing one have to be named. Every dialog that has drawn a list so far
+       put .dlglist on a Border and set a plain ListBox inside it, so a selector written for
+       the ListBox alone matched nothing at all - those rows stayed on whatever the theme
+       answers the pointer with, which in dark is a #4273A4 carrying our own 13.5px label at
+       3.38:1. Two of those dialogs draw one this way, so it is the way to cover.
+       The foreground rides along on both: the theme rewrites it to suit the fill it chose,
+       so it is pinned back to the row's own with $parent, the same binding the results list
+       uses for its selected row. Without it the label changes colour under the pointer and
+       not by our hand. -->
+  <Style Selector="ListBox.dlglist ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                   Border.dlglist ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+    <Setter Property="Foreground" Value="{Binding $parent[ListBoxItem].Foreground}" />
   </Style>
-  <Style Selector="ListBox.dlglist ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+  <Style Selector="ListBox.dlglist ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter,
+                   Border.dlglist ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource VdfRowSelectedBrush}" />
+    <Setter Property="Foreground" Value="{Binding $parent[ListBoxItem].Foreground}" />
   </Style>
 </Styles>

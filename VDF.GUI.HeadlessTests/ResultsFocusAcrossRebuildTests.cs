@@ -84,13 +84,17 @@ public class ResultsFocusAcrossRebuildTests {
 		try {
 			list.ContainerFromIndex(1)!.Focus(NavigationMethod.Tab);
 			HeadlessUi.Pump();
-			var sortBox = window.GetVisualDescendants().OfType<ComboBox>().First(c => c.IsEffectivelyVisible);
+			// Any control outside the list will do, and it used to be the sort box. Not any
+			// more: the sort and type menus now live in the advanced strip, which stays closed
+			// until it is asked for, so there is no visible ComboBox left to pick. The search
+			// field is the one control off the list that is always on the page.
+			var outside = window.GetVisualDescendants().OfType<TextBox>().First(t => t.IsEffectivelyVisible);
 
 			vm.RebuildResultsList();
-			sortBox.Focus(NavigationMethod.Tab); // before the deferred refocus runs
+			outside.Focus(NavigationMethod.Tab); // before the deferred refocus runs
 			HeadlessUi.Pump();
 
-			Assert.Same(sortBox, window.FocusManager!.GetFocusedElement());
+			Assert.Same(outside, window.FocusManager!.GetFocusedElement());
 		}
 		finally {
 			window.Close();

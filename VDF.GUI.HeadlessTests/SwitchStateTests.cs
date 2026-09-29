@@ -16,6 +16,7 @@
 
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
@@ -32,10 +33,25 @@ public class SwitchStateTests {
 
 	static ThemeVariant Variant(string name) => name == "Dark" ? ThemeVariant.Dark : ThemeVariant.Light;
 
+	// Both templates are read, on purpose. The names below are template internals, and there
+	// are two switch templates now: the theme's own (parts "border" and "glyph") and the plain
+	// one this app draws for the settings rows (VdfSwitchTrack, with the knob an Ellipse inside
+	// PART_SwitchKnob). Asking for one spelling only is exactly how this stopped guarding #906
+	// - it threw "no matching element" and read as a broken switch rather than a moved part.
 	static (Color Track, Color Knob) Colors(ToggleSwitch toggle) {
-		var track = toggle.GetVisualDescendants().OfType<Border>().First(b => b.Name == "border");
-		var knob = toggle.GetVisualDescendants().OfType<ContentPresenter>().First(c => c.Name == "glyph");
-		return (((ISolidColorBrush)track.Background!).Color, ((ISolidColorBrush)knob.Foreground!).Color);
+		var all = toggle.GetVisualDescendants().ToList();
+		var track = all.OfType<Border>().FirstOrDefault(b => b.Name == "VdfSwitchTrack")
+				 ?? all.OfType<Border>().First(b => b.Name == "border");
+		Color trackColor = ((ISolidColorBrush)track.Background!).Color;
+
+		// Ours draws the knob as an Ellipse and colours its fill; the theme's draws it as a
+		// glyph and colours its foreground. Which shape is present is what tells them apart -
+		// NOT the Canvas they sit in, which both templates name PART_SwitchKnob.
+		var ellipse = all.OfType<Ellipse>().FirstOrDefault();
+		if (ellipse is not null)
+			return (trackColor, ((ISolidColorBrush)ellipse.Fill!).Color);
+		var glyph = all.OfType<ContentPresenter>().First(c => c.Name == "glyph");
+		return (trackColor, ((ISolidColorBrush)glyph.Foreground!).Color);
 	}
 
 	[Theory]

@@ -254,10 +254,15 @@
                 <!-- Mockup .btn-soft: the plus glyph leads the label, and takes the button's
                      own foreground so it follows every state the theme gives one, rather
                      than being pinned to a palette colour that then clashes with it. -->
+                <!-- Its label is a StackPanel (plus glyph beside the text), and that is what a
+                     screen reader reads out for a button whose content is not text - the button
+                     announces itself as "stack panel" without saying what it adds. Named from
+                     the same key the visible label reads, so the two cannot drift apart. -->
                 <Button
                     DockPanel.Dock="Right"
                     Classes="dirbtn soft"
                     VerticalAlignment="Center"
+                    AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AddDir]}"
                     Command="{Binding AddIncludesToListCommand}">
                   <StackPanel Orientation="Horizontal" Spacing="7">
                     <Path Width="14" Height="14" Stretch="Uniform"
@@ -408,7 +413,13 @@
                                Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=MinimumFileSize}" />
                 <TextBlock VerticalAlignment="Center" FontSize="12.5"
                            Opacity="{DynamicResource VdfTextDim80Opacity}" Text="MB" />
+                <!-- Two inputs in one row: SettingRow names the FIRST one and expects the rest
+                     to be named here (see FindLabelTarget in SettingRow.cs), otherwise this
+                     switch announces itself as a bare "button". The row's own title is the
+                     right answer - "only files over N MB" is what this switch turns on and
+                     off - and reading it from the row keeps the two from drifting apart. -->
                 <ToggleSwitch Classes="plain" VerticalAlignment="Center"
+                              AutomationProperties.Name="{Binding $parent[views:SettingRow].Title}"
                               IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilterByFileSize}" />
               </StackPanel>
             </views:SettingRow>
@@ -453,7 +464,10 @@
                            Opacity="{DynamicResource VdfTextDim70Opacity}"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Threshold]}" />
               </StackPanel>
+              <!-- Not inside a SettingRow, so nothing hands it the label sitting right above
+                   it: named here with the same key that label reads. -->
               <Slider Classes="mock" Margin="0,16,0,10" Minimum="70" Maximum="100" TickFrequency="0.5"
+                      AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Threshold]}"
                       IsSnapToTickEnabled="True" Value="{Binding SimilarityThreshold}" />
               <Grid ColumnDefinitions="*,*,*">
                 <TextBlock Grid.Column="0" FontSize="11" HorizontalAlignment="Left"

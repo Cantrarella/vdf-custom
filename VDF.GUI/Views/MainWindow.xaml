@@ -421,6 +421,7 @@
                             Classes="railbrand"
                             Command="{Binding ToggleRailCommand}"
                             DockPanel.Dock="Top"
+                            AutomationProperties.Name="{Binding RailToggleTooltip}"
                             ToolTip.Tip="{Binding RailToggleTooltip}">
                             <StackPanel Orientation="Horizontal" Spacing="11">
                                 <!-- Mockup .brand-mark: 38x38, radius 12, the accent
