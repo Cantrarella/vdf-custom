@@ -79,8 +79,13 @@
                          these buttons also need Classes="solid". -->
                     <SolidColorBrush x:Key="VdfPrimarySolidBrush" Color="#5AA9E6" />
                     <SolidColorBrush x:Key="VdfPrimarySolidHoverBrush" Color="#4799DA" />
-                    <SolidColorBrush x:Key="VdfPrimarySolidPressedBrush" Color="#3789CA" />
+                    <SolidColorBrush x:Key="VdfPrimarySolidPressedBrush" Color="#3E96DC" />
                     <SolidColorBrush x:Key="VdfOnPrimarySolidBrush" Color="#0F3A55" />
+                    <!-- One step deeper than the resting ink. Going down in lightness steals
+                         contrast from this pairing, so the label has to give some back: on the
+                         hover fill #0F3A55 measures 3.89:1, below the 4.5:1 a 13.5px label
+                         needs. This one reads 4.77:1 on hover and 4.61:1 on pressed. -->
+                    <SolidColorBrush x:Key="VdfOnPrimarySolidPointerBrush" Color="#0A2B40" />
                     <!-- Outline for the destructive buttons (the mockup's danger-line):
                          the ink stays VdfDangerBrush, only the frame lightens, exactly as the
                          mockup splits its danger-ink token from its danger-line token. -->
@@ -271,6 +276,12 @@
                     <SolidColorBrush x:Key="VdfPrimarySolidHoverBrush" Color="#72B9EE" />
                     <SolidColorBrush x:Key="VdfPrimarySolidPressedBrush" Color="#3E91D0" />
                     <SolidColorBrush x:Key="VdfOnPrimarySolidBrush" Color="#0B1F2E" />
+                    <!-- Same value as the resting ink, and deliberately so: both pointer
+                         grounds here are LIGHTER than or equal to the resting one (hover goes
+                         up, see above), so this dark ink only gains contrast under the pointer.
+                         It exists as its own key so one set of pointer rules can cover every
+                         theme. Pressed is the tightest of the three at 4.93:1. -->
+                    <SolidColorBrush x:Key="VdfOnPrimarySolidPointerBrush" Color="#0B1F2E" />
                     <!-- Switch (mockup .switch): off = neutral grey-blue, on = the
                          deep accent, knob white. The two track colours have to differ in
                          lightness, or the state cannot be read at a glance. -->
@@ -389,6 +400,9 @@
                     <SolidColorBrush x:Key="VdfPrimarySolidHoverBrush" Color="#CDE9FF" />
                     <SolidColorBrush x:Key="VdfPrimarySolidPressedBrush" Color="#CDE9FF" />
                     <SolidColorBrush x:Key="VdfOnPrimarySolidBrush" Color="#000000" />
+                    <!-- One tone for all three states here, so the pointer ink is the same black
+                         (16.70:1 either way). -->
+                    <SolidColorBrush x:Key="VdfOnPrimarySolidPointerBrush" Color="#000000" />
                     <!-- The destructive buttons' frame: high contrast keeps the strong ink
                          here too (see Light) - a pale pink line is an outline nobody sees. -->
                     <SolidColorBrush x:Key="VdfDangerLineBrush" Color="#FFB3A8" />
@@ -521,6 +535,9 @@
                     <SolidColorBrush x:Key="VdfPrimarySolidHoverBrush" Color="#14507A" />
                     <SolidColorBrush x:Key="VdfPrimarySolidPressedBrush" Color="#14507A" />
                     <SolidColorBrush x:Key="VdfOnPrimarySolidBrush" Color="#FFFFFF" />
+                    <!-- Same white as the resting ink: one tone for all three states, 8.54:1
+                         throughout. -->
+                    <SolidColorBrush x:Key="VdfOnPrimarySolidPointerBrush" Color="#FFFFFF" />
                     <SolidColorBrush x:Key="VdfDangerLineBrush" Color="#7A1710" />
                     <!-- Row hover at the enhanced level: a filled step one can see. -->
                     <SolidColorBrush x:Key="VdfRowHoverBrush" Color="#D6E9FA" />

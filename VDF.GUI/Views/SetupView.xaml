@@ -56,18 +56,49 @@
       <Setter Property="CornerRadius" Value="3" />
       <Setter Property="Padding" Value="5,0" />
     </Style>
-    <!-- The scan button's three states. It wears a SOLID fill now (see App.xaml), so the
-         palette has to supply every state: without these two, hovering falls back to the
-         theme's own accent and the button changes colour family under the pointer.
-         .solid only pins the presenter to the button's own Background; it does not invent
-         hover or pressed tints. (The previous rule here pinned the PRESSED presenter to the
-         palette's row-hover grey: that was for the soft fill, where the theme painted over
-         the pale tint and left the label 4.43:1.) -->
+    <!-- The scan button's three states, all three of them set HERE rather than on the button
+         itself. They have to be: a value written as an attribute on a control is a local
+         value, and a local value outranks anything a Style says about the same property -
+         so the resting pair down below would have frozen the button and every pointer setter
+         here would compile, resolve, and do precisely nothing. (Worth knowing generally: an
+         attribute on the element beats a Style Setter every time, and says nothing when it
+         does.)
+
+         Why the palette supplies the fill at all: .solid only pins the presenter to the
+         button's own Background; it does not invent hover or pressed tints, and without them
+         hovering falls back to the theme's accent and changes colour family mid-hover.
+
+         The ink deepens under the pointer because this theme's hover and pressed grounds go
+         DOWN in lightness from the resting fill, and that costs contrast: the resting ink
+         measures 4.70:1 at rest, 3.89:1 on hover and 3.18:1 on pressed, against the 4.5:1 a
+         13.5px label needs. Three targets rather than one: the button's own Foreground, the
+         TextBlock inside it (which needs its own because the theme may paint the content
+         presenter and win over the button), and the glyph, which is a Path whose Stroke has
+         nothing at all to inherit from. -->
+    <Style Selector="Button#ScanButton">
+      <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfOnPrimarySolidBrush}" />
+    </Style>
+    <Style Selector="Button#ScanButton TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource VdfOnPrimarySolidBrush}" />
+    </Style>
+    <Style Selector="Button#ScanButton Path">
+      <Setter Property="Stroke" Value="{DynamicResource VdfOnPrimarySolidBrush}" />
+    </Style>
     <Style Selector="Button#ScanButton:pointerover">
       <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidHoverBrush}" />
     </Style>
     <Style Selector="Button#ScanButton:pressed">
       <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidPressedBrush}" />
+    </Style>
+    <Style Selector="Button#ScanButton:pointerover, Button#ScanButton:pressed">
+      <Setter Property="Foreground" Value="{DynamicResource VdfOnPrimarySolidPointerBrush}" />
+    </Style>
+    <Style Selector="Button#ScanButton:pointerover TextBlock, Button#ScanButton:pressed TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource VdfOnPrimarySolidPointerBrush}" />
+    </Style>
+    <Style Selector="Button#ScanButton:pointerover Path, Button#ScanButton:pressed Path">
+      <Setter Property="Stroke" Value="{DynamicResource VdfOnPrimarySolidPointerBrush}" />
     </Style>
     <Style Selector="Border.offchip TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
@@ -162,18 +193,17 @@
               Padding="16,9"
               CornerRadius="11"
               VerticalAlignment="Center"
-              Background="{DynamicResource VdfPrimarySolidBrush}"
-              Foreground="{DynamicResource VdfOnPrimarySolidBrush}"
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}"
               Command="{Binding StartScanCommand}"
               CommandParameter="FullScan">
+            <!-- Note there is no Background or Foreground here: they live in the three-state
+                 Style above, for the reason written there. -->
             <StackPanel Orientation="Horizontal" Spacing="7">
               <Path Width="15" Height="15" Stretch="Uniform"
-                    Stroke="{DynamicResource VdfOnPrimarySolidBrush}" StrokeThickness="2.2"
+                    StrokeThickness="2.2"
                     StrokeLineCap="Round" StrokeJoin="Round"
                     Data="M 6 4 L 19 12 L 6 20 Z" />
               <TextBlock
-                  Foreground="{DynamicResource VdfOnPrimarySolidBrush}"
                   Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.StartScan]}" />
             </StackPanel>
           </Button>
