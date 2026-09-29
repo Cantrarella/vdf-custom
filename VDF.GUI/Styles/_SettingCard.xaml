@@ -25,7 +25,16 @@
          faint against a page this light. Nothing about a card's state adds a second
          shadow: a shadow under the current one would read as a glow, not depth. -->
     <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
-    <Setter Property="Padding" Value="0,6" />
+    <!-- No vertical padding of its own. It was 6px top and bottom, and that band was
+         the one thing the row's hover surface could not cover: on the first and last
+         rows the highlight stopped 6px short of the card's inner wall and left a strip
+         of plain card between it and the hairline, which reads as a highlight that
+         missed part of the row it belongs to. The mockup's .card has no padding either
+         - the rows and the header carry their own - so the band bought nothing.
+         The cost is on the two cards that are not row stacks: the scanning page's card
+         content sits in its own 30,32 margin and so gets 12px shorter. The page is a
+         centred column, so that reads as the mockup, not as a loss. -->
+    <Setter Property="Padding" Value="0" />
     <!-- The mockup's .stack gap (14px), which is the distance between two cards. It was
          18px, so every page stacked its cards 4px further apart than the mockup drew. -->
     <Setter Property="Margin" Value="0,0,0,14" />
@@ -67,7 +76,10 @@
                nothing: #F1F5F9 on #FFFFFF is a 3% step, invisible at any viewing distance.
                Clipping the card to its corner was the other way to hide it and was
                rejected - ClipToBounds applies to the card's whole rendering, VdfCardShadow
-               included, and the shadow is doing more work here than the 3% is. -->
+               included, and the shadow is doing more work here than the 3% is.
+               The card no longer pads itself vertically (see Border.setcard), so the
+               surface reaches the card's inner wall exactly on the first and last rows:
+               no band of bare card colour between the highlight and the card's edge. -->
           <Border Name="RowSurface"
                   Margin="0"
                   Padding="20,15"
