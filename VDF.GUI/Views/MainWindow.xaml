@@ -354,15 +354,46 @@
                     <media:ExperimentalAcrylicMaterial BackgroundSource="Digger" TintColor="Black" />
                 </controls:ExperimentalAcrylicBorder.Material>
             </controls:ExperimentalAcrylicBorder>
-            <TextBlock
-                x:Name="TextBlockWindowTitle"
-                Margin="0,4,0,0"
-                HorizontalAlignment="Center"
-                IsHitTestVisible="false"
-                Text="{Binding #MainWindow.Title}" />
+            <!-- The mockup's body background: a wash of accent off each top corner. It is the
+                 only reason the rail's 74% white has anything to be translucent over - over
+                 flat page the rail reads as one dead slab, which is what it was.
+
+                 Each one is a SOLID ellipse with a blur, not a radial gradient. A gradient is
+                 the obvious shape for this, but every GradientStop's Offset is ignored here:
+                 the stops pile up at 0 and the brush paints the last one flat, so a gradient
+                 whose last stop is the page tone is indistinguishable from nothing at all -
+                 which is exactly what the first pass produced. A blurred ellipse falls off
+                 gradually to nothing on its own, which is what the mockup's wash does anyway.
+
+                 Each colour already carries the mockup's strength: the accent mixed into the
+                 page tone at 16% / 10% (light), 10% / 6% (dark), nothing at all in high
+                 contrast. The mockup's own 55% / 34% are the alphas at the CENTRE of a
+                 gradient that has decayed to nothing by the time it crosses the window, so
+                 the number that matters here is the average over the corner, not that peak.
+
+                 Drawn here, under the shell and before it: nothing sits between them and the
+                 window's own surface, so there is no backdrop blur - the mockup's own advice. -->
+            <Ellipse Width="620" Height="400"
+                     Margin="-280,-270,0,0"
+                     HorizontalAlignment="Left" VerticalAlignment="Top"
+                     IsHitTestVisible="False"
+                     Fill="{DynamicResource VdfGlowTopBrush}">
+                <Ellipse.Effect>
+                    <BlurEffect Radius="175" />
+                </Ellipse.Effect>
+            </Ellipse>
+            <Ellipse Width="580" Height="380"
+                     Margin="0,-190,-300,0"
+                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                     IsHitTestVisible="False"
+                     Fill="{DynamicResource VdfGlowTopRightBrush}">
+                <Ellipse.Effect>
+                    <BlurEffect Radius="165" />
+                </Ellipse.Effect>
+            </Ellipse>
             <Grid
                 x:Name="MainContentGrid"
-                Margin="2,30,2,2"
+                Margin="2,2,2,2"
                 ColumnDefinitions="Auto,*">
                 <!-- ============ 侧边栏 (mockup .rail) ============ -->
                 <!-- Sidebar rail: 248px wide (74px collapsed), padding 18px 12px 14px. -->
@@ -717,8 +748,24 @@
                                 <!-- ===== 主区（mockup .main）：顶栏 + 页面 ===== -->
                 <!-- The page sits on the mockup's page-bg token so the cards on top of it
                      read as cards; the rail keeps its own lighter surface at the side. -->
-                <Grid Grid.Column="1" RowDefinitions="Auto,*"
-                      Background="{DynamicResource VdfPageBrush}">
+                <!-- The window title's 30px strip, then the page - the whole of the
+                     column right of the rail. The title used to hang on the ROOT grid and
+                     the shell started 30px below it, so the rail lost its top 30px to a
+                     page-coloured band: the mockup's rail is `top:0; height:100vh`, it is
+                     reached by nothing. Moving the title into this column hands those 30px
+                     back and centres the title over the page, which is what it names. -->
+                <Grid Grid.Column="1" RowDefinitions="30,*">
+                    <TextBlock
+                        x:Name="TextBlockWindowTitle"
+                        Grid.Row="0"
+                        Margin="0,4,0,0"
+                        HorizontalAlignment="Center"
+                        IsHitTestVisible="false"
+                        Text="{Binding #MainWindow.Title}" />
+                    <!-- Transparent rather than Page: the two are the same tone, and letting
+                         the window show through is what puts the glows under this column. -->
+                    <Grid Grid.Row="1" RowDefinitions="Auto,*"
+                          Background="Transparent">
                     <!-- Mockup .topbar: 86px tall, padding 20px 32px 14px, the title and
                          its sub-line on the left and the actions at the right edge. -->
                     <Border Grid.Row="0" Height="86" Padding="32,20,32,14">
@@ -957,6 +1004,7 @@
                 <views:SettingsView Grid.Row="1" IsVisible="{Binding IsShellSettingsVisible}" />
                 <views:LogView Grid.Row="1" IsVisible="{Binding IsShellLogVisible}" />
                 </Grid>
+            </Grid>
             </Grid>
         </Grid>
         </Grid>
