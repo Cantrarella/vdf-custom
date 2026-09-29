@@ -354,7 +354,7 @@
                   </StackPanel>
                 </views:SettingRow>
 
-                <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,16,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="4" Margin="20,16,20,0">
                   <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" VerticalAlignment="Center"
                              Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.MiscWikiHint]}" />
                   <Button Classes="hyperlink" FontSize="12" VerticalAlignment="Center" Command="{Binding OpenWikiLinkCommand}"
@@ -437,7 +437,7 @@
               <StackPanel Tag="Files">
                 <TextBlock Classes="sectioncaption" IsVisible="False"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Nav.FilesFilters]}" />
-                <TextBlock Margin="0,12,0,0" FontSize="12.5" TextWrapping="Wrap" Opacity="{DynamicResource VdfTextDim80Opacity}"
+                <TextBlock Margin="20,18,20,0" FontSize="12.5" TextWrapping="Wrap" Opacity="{DynamicResource VdfTextDim80Opacity}"
                            Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilesNote]}" />
 
                 <views:SettingRow
@@ -460,13 +460,13 @@
                   </StackPanel>
                 </views:SettingRow>
 
-                <StackPanel Margin="0,16,0,0" Spacing="6"
+                <StackPanel Margin="20,16,20,0" Spacing="10"
                             views:SettingsSearchMeta.Text="wildcard">
                   <StackPanel Orientation="Horizontal" Spacing="10">
                     <ToggleSwitch x:Name="ToggleFilterByPathContains" Classes="plain" VerticalAlignment="Center"
                                   AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathContains]}"
                                   IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilterByFilePathContains}" />
-                    <StackPanel VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
                       <TextBlock FontSize="14" FontWeight="SemiBold"
                                  Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathContains]}" />
                       <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" MaxWidth="560" HorizontalAlignment="Left"
@@ -486,13 +486,13 @@
                            ItemsSource="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilePathContainsTexts}" />
                 </StackPanel>
 
-                <StackPanel Margin="0,16,0,0" Spacing="6"
+                <StackPanel Margin="20,16,20,0" Spacing="10"
                             views:SettingsSearchMeta.Text="wildcard">
                   <StackPanel Orientation="Horizontal" Spacing="10">
                     <ToggleSwitch x:Name="ToggleFilterByPathNotContains" Classes="plain" VerticalAlignment="Center"
                                   AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathNotContains]}"
                                   IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilterByFilePathNotContains}" />
-                    <StackPanel VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
                       <TextBlock FontSize="14" FontWeight="SemiBold"
                                  Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathNotContains]}" />
                       <TextBlock FontSize="12.5" Opacity="{DynamicResource VdfTextDim70Opacity}" TextWrapping="Wrap" MaxWidth="560" HorizontalAlignment="Left"
@@ -510,7 +510,7 @@
                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathNotContains]}"
                            IsEnabled="{Binding #ToggleFilterByPathNotContains.IsChecked}"
                            ItemsSource="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilePathNotContainsTexts}" />
-                  <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" TextWrapping="Wrap"
+                  <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" TextWrapping="Wrap" Margin="0,6,0,0"
                              Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.WildcardNote]}" />
                 </StackPanel>
               </StackPanel>
