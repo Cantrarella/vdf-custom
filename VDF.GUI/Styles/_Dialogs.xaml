@@ -62,13 +62,19 @@
        and the comparer, which had an outline of its own at 2px and square corners, now
        carrying this same class as the other eleven.
 
-       The corner is the card tier (20). A rounded outline inside a square window leaves the
-       window's own colour in the four corner squares; that colour is the card's, so all that
-       shows past the arc is card - no page tint, no gap. -->
+       The frame is square, and that is the fix for the corners, not a retreat from them.
+       A dialog is a top-level window, so Windows gives it a rectangle: a rectangular 1px
+       non-client frame and a rectangular shadow. A rounded outline on the content layer
+       thus always drew a second, rounder edge inside the window's own square one, and the
+       four corner squares in between showed the window's background - card colour, so
+       quiet, but unmistakably a second outline around an outline. Square on both layers
+       means one edge, not two. On Windows 11 the compositor rounds windows like these by
+       itself (it keys off WS_THICKFRAME, or a 1px non-client frame), so the corners come
+       back there at whatever radius the system picks. -->
   <Style Selector="Border.dlgframe">
     <Setter Property="BorderBrush" Value="{DynamicResource VdfDialogFrameBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="20" />
+    <Setter Property="CornerRadius" Value="0" />
     <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
   </Style>
 
