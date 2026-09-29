@@ -19,6 +19,18 @@
       <Setter Property="Padding" Value="10,3" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="CornerRadius" Value="6" />
+      <!-- mockup .btn-ghost.btn-sm: the frame is what makes a quiet command read as a
+           button rather than as a word sitting next to one. -->
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnGhostLineBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.mini:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+    </Style>
+    <Style Selector="Button.mini:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     </Style>
     <Style Selector="ListBox.log ListBoxItem">
       <Setter Property="Padding" Value="0" />
@@ -52,14 +64,26 @@
       <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="Opacity" Value="{DynamicResource VdfTextDim80Opacity}" />
     </Style>
-    <Style Selector="Button.lrep:pointerover">
+    <!-- The expanded chip's own frame. It sits BEFORE the pointer rules on purpose: an
+         expanded chip can still be hovered, and these two rules are the same specificity,
+         so whichever is written last takes the frame. Left where it used to be it would
+         have handed the accent frame back on every hover and made the palette's line
+         colour unreachable on exactly the chips the reader is most likely to be over -
+         the same ordering trick Button.scanact.stop uses for its danger frame. -->
+    <Style Selector="Button.lrep.on">
       <Setter Property="BorderBrush" Value="{actipro:ThemeResource ControlForegroundBrushOutlineAccent}" />
       <Setter Property="Foreground" Value="{actipro:ThemeResource ControlForegroundBrushOutlineAccent}" />
       <Setter Property="Opacity" Value="1" />
     </Style>
-    <Style Selector="Button.lrep.on">
-      <Setter Property="BorderBrush" Value="{actipro:ThemeResource ControlForegroundBrushOutlineAccent}" />
-      <Setter Property="Foreground" Value="{actipro:ThemeResource ControlForegroundBrushOutlineAccent}" />
+    <Style Selector="Button.lrep:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <!-- The frame is set on the presenter, not on the button: the theme writes its own
+           grey onto this part under the pointer, so the accent line the button was given
+           never showed (measured: #A9D7F6 on the button, #9FA3AD on the part in view). -->
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+    </Style>
+    <Style Selector="Button.lrep:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
       <Setter Property="Opacity" Value="1" />
     </Style>
   </UserControl.Styles>

@@ -810,14 +810,6 @@
                 </views:SettingRow>
 
                 <views:SettingRow
-                    Title="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.HighContrast.Title]}"
-                    Description="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.HighContrast.Desc]}"
-                    SearchTags="contrast visibility low vision accessibility bold borders">
-                  <ToggleSwitch Classes="plain"
-                                IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=AlwaysHighContrast}" />
-                </views:SettingRow>
-
-                <views:SettingRow
                     Title="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.ReduceMotion.Title]}"
                     Description="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.ReduceMotion.Desc]}"
                     SearchTags="animation motion movement shimmer pulse accessibility vestibular">

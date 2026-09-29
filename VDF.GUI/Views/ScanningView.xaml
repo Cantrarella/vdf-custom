@@ -56,7 +56,8 @@
       <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
     </Style>
     <Style Selector="Button.scanact:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
     </Style>
     <!-- The mockup's .btn-ghost:hover lifts the label to the page's main ink, and the
          contrast suite needs it to: the muted ink it rests at is 4.39:1 on the hover
@@ -74,6 +75,12 @@
     <Style Selector="Button.scanact.stop">
       <Setter Property="Foreground" Value="{DynamicResource VdfDangerBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfDangerLineBrush}" />
+    </Style>
+    <!-- Under the pointer the danger frame gives way to the accent one, which is what the
+         mockup's .btn-ghost:hover does with its own line colour. It has to sit after .stop
+         to get the last word on the frame: same specificity, so the later rule wins. -->
+    <Style Selector="Button.scanact:pointerover">
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
     </Style>
   </UserControl.Styles>
 

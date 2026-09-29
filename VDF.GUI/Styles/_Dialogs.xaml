@@ -107,12 +107,13 @@
        white on it is 3.2:1, and the contrast tests in VDF.GUI.HeadlessTests say so.
        The fill and the ink both have to be re-applied under the pointer and while
        pressed, because the theme paints its own colours onto the presenter - the same
-       reason Button.solid exists in _Buttons.xaml. The hover step is a deeper fill of its
-       own (VdfAccentFillHoverBrush), not an opacity fade: fading the whole button faded its
-       white label with it, and white at 0.88 over this fill measures 4.25:1. -->
+       reason Button.solid exists in _Buttons.xaml. This button IS the mockup's
+       .btn-primary, exactly as the scan button on the setup page is, so the two share the
+       VdfPrimarySolid keys and all three of their steps. The pointer fill is a step of its
+       own rather than an opacity fade: fading the whole button fades its label with it. -->
   <Style Selector="Button.dlgprimary">
-    <Setter Property="Background" Value="{DynamicResource VdfAccentTextBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource VdfOnAccentSolidBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource VdfOnPrimarySolidBrush}" />
     <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="9" />
@@ -123,19 +124,28 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.dlgprimary:pointerover">
-    <Setter Property="Background" Value="{DynamicResource VdfAccentFillHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfPrimarySolidHoverBrush}" />
   </Style>
+  <!-- BorderBrush is pinned along with the fill and the ink, and for the same reason: the
+       mockup's .btn-primary rests on a 1px transparent frame, but the theme's pointerover
+       rule paints its own grey onto the presenter, so hovering the affirmative button drew
+       a grey outline nobody asked for (measured: #9FA3AD on the part in view while the
+       button's own frame was still transparent). Pinned to the button, the frame stays
+       Transparent in all three states. -->
   <Style Selector="Button.dlgprimary /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}" />
   </Style>
   <Style Selector="Button.dlgprimary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}" />
   </Style>
   <Style Selector="Button.dlgprimary:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+    <Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}" />
   </Style>
 
   <!-- The other choices: an outlined button. It was a card surface with the card's own
@@ -153,11 +163,12 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.dlgghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
     <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
   </Style>
   <Style Selector="Button.dlgghost:pointerover">
-    <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
   </Style>
 
   <!-- A window with no caption has no close button either, so the ones whose only way out

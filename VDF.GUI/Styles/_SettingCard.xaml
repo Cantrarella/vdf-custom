@@ -164,6 +164,18 @@
     <Setter Property="Width" Value="150" />
     <Setter Property="HorizontalAlignment" Value="Right" />
   </Style>
+  <!-- The two step buttons are built by the control's template, not written here, and
+       they inherit the control's own class: the NumericUpDown carries "stepper", and the
+       ButtonSpinner and both RepeatButtons come out wearing it too. That is what these
+       selectors key on. Left alone they took the theme's grey fill and frame under the
+       pointer, which is the one thing the mockup never puts behind a button. -->
+  <Style Selector="RepeatButton.stepper">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+  <Style Selector="RepeatButton.stepper:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+  </Style>
 
   <!-- The mockup's slider (page 1, 匹配强度): a 6px sunken track, the filled part a
        soft accent gradient that ends at the knob, and a 20px white knob ringed in

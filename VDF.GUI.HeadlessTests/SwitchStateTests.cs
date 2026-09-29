@@ -28,13 +28,9 @@ namespace VDF.GUI.HeadlessTests;
 /// On is now filled with the accent, in every theme, and its knob stays visible on the fill.
 /// </summary>
 public class SwitchStateTests {
-	public static TheoryData<string> Themes() => new() { "Light", "Dark", "HighContrastLight", "HighContrastDark" };
+	public static TheoryData<string> Themes() => new() { "Light", "Dark" };
 
-	static ThemeVariant Variant(string name) => name switch {
-		"Light" => ThemeVariant.Light,
-		"Dark" => ThemeVariant.Dark,
-		_ => ContrastTests.HighContrastVariant(name),
-	};
+	static ThemeVariant Variant(string name) => name == "Dark" ? ThemeVariant.Dark : ThemeVariant.Light;
 
 	static (Color Track, Color Knob) Colors(ToggleSwitch toggle) {
 		var track = toggle.GetVisualDescendants().OfType<Border>().First(b => b.Name == "border");

@@ -51,6 +51,17 @@
         <Style Selector="Button.mini">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Padding" Value="10,3" />
+            <!-- mockup .btn-ghost.btn-sm (see LogView). -->
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnGhostLineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Button.mini:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+        </Style>
+        <Style Selector="Button.mini:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
         </Style>
         <Style Selector="ListBox.pathlist">
             <Setter Property="MinHeight" Value="72" />

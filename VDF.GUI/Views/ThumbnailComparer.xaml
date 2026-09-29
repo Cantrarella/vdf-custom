@@ -40,12 +40,30 @@
         <mvvm:BoolToValueConverter x:Key="WinnerPaneBackgroundConverter" TrueValue="#143E9B6E" FalseValue="Transparent" />
     </Window.Resources>
     <Window.Styles>
-        <Style Selector="Button.tool-btn">
+        <!-- Both toolbars wear the app's own palette rather than the theme's grey: the
+             tool buttons carry a word each, so they keep an outline (mockup .btn-ghost.btn-sm),
+             while the step buttons are glyphs and keep none. -->
+        <!-- Both types are named, as on the database viewer's chips. A ToggleButton derives
+             from Button, but a Selector naming Button does NOT match one, so the pair at
+             the end of this toolbar (the "fit"/zoom buttons, plain Buttons) and the
+             toggle at its head were being styled by different sets of rules - and the
+             toggle was getting none of them, which is how it kept the theme's grey. -->
+        <Style Selector="ToggleButton.tool-btn, Button.tool-btn">
             <Setter Property="Padding" Value="6,4" />
             <Setter Property="MinWidth" Value="32" />
             <Setter Property="MinHeight" Value="28" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnGhostLineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="ToggleButton.tool-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.tool-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+        </Style>
+        <Style Selector="ToggleButton.tool-btn:pointerover, Button.tool-btn:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
         </Style>
         <Style Selector="Button.offset-btn">
             <Setter Property="Padding" Value="5,2" />
@@ -54,6 +72,14 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.offset-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+        </Style>
+        <Style Selector="Button.offset-btn:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
         </Style>
         <!-- keycap hint (mockup .kbd) -->
         <Style Selector="Border.kbd">
@@ -146,6 +172,9 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Margin" Value="0,0,4,0" />
+        </Style>
+        <Style Selector="Button.stripframe:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
         </Style>
         <!-- current strip position: theme-accent outline -->
         <Style Selector="Border.stripframeborder">

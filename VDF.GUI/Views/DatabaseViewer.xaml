@@ -36,6 +36,20 @@
     <Style Selector="Button.mini">
       <Setter Property="FontSize" Value="12" />
       <Setter Property="Padding" Value="10,3" />
+      <!-- mockup .btn-ghost.btn-sm (see LogView). The :not(.solid) is what keeps the one
+           solid red button in this view wearing its own fill under the pointer: that fill
+           is the only thing that says pressing it deletes rows, and Button.solid exists to
+           pin it back (see _Buttons.xaml). -->
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnGhostLineBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.mini:not(.solid):pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+    </Style>
+    <Style Selector="Button.mini:not(.solid):pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     </Style>
     <!-- flag chips (same 1px-border badge language as the results view) -->
     <Style Selector="Button.fchip">
@@ -44,6 +58,18 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.fchip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+      <!-- Every chip, warn and err included: the mockup's .chip-tog:hover moves only the
+           frame, to its accent line, whatever the chip's own colours are - a warn chip keeps
+           its amber ground under the pointer but answers with the accent frame. Without
+           this the theme put its grey there instead, and the chip's own danger or warn
+           frame vanished the moment the mouse arrived. -->
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+    </Style>
+    <Style Selector="Button.fchip:not(.warn):not(.err):pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
     </Style>
     <Style Selector="Button.fchip TextBlock">
       <Setter Property="FontSize" Value="9.5" />
@@ -68,9 +94,13 @@
     </Style>
     <Style Selector="Button.pencil">
       <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Padding" Value="4,0" />
       <Setter Property="FontSize" Value="11" />
       <Setter Property="Opacity" Value="{DynamicResource VdfTextDim55Opacity}" />
+    </Style>
+    <Style Selector="Button.pencil:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
     </Style>
     <Style Selector="Button.pencil:pointerover">
       <Setter Property="Opacity" Value="1" />
@@ -423,7 +453,7 @@
                   ToolTip.Tip="{Binding Source={x:Static app:App.Lang}, Path=[DatabaseViewer.ClearHashesTip]}" />
           <Button Classes="mini" Command="{Binding OpenSelectedInFolderCommand}"
                   Content="{Binding Source={x:Static app:App.Lang}, Path=[MainWindow.ContextMenu.OpenInFolder]}" />
-          <Button Classes="mini" Background="{DynamicResource VdfDangerBrush}" Foreground="White"
+          <Button Classes="mini solid" Background="{DynamicResource VdfDangerBrush}" Foreground="White"
                   Command="{Binding DeleteSelectedEntries}"
                   Content="{Binding Source={x:Static app:App.Lang}, Path=[DatabaseViewer.RemoveEntries]}" />
         </StackPanel>

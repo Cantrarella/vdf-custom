@@ -68,7 +68,12 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.group-action:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <!-- On the presenter, like every other frame in this batch: the theme's pointerover
+           rule paints its grey straight onto this part, so a setter on the button itself
+           never reaches the frame. This one had no pointer frame rule at all, which is
+           why hovering it swapped #B7BAC1 for the theme's darker #9FA3AD. -->
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
     </Style>
     <!-- ... except the chevron, which has no frame to fill: see Button.chevron above. -->
     <Style Selector="Button.chevron:pointerover /template/ ContentPresenter">
@@ -93,11 +98,11 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.fileact:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource VdfRowSelectedFrameBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
     </Style>
     <Style Selector="Button.fileact:pointerover">
-      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     </Style>
     <!-- AI-matched group strip (mockup .callout). Amber, not the mockup's red: in this
          build red means "this will be deleted", and this strip is the opposite advice. -->
@@ -327,7 +332,7 @@
       <Setter Property="FontWeight" Value="Medium" />
     </Style>
     <Style Selector="Button.filteritem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
     </Style>
     <Style Selector="Button.filteritem.on">
       <Setter Property="Background" Value="{DynamicResource VdfRowSelectedBrush}" />
@@ -355,11 +360,11 @@
       <Setter Property="Foreground" Value="{DynamicResource VdfMutedBrush}" />
     </Style>
     <Style Selector="Button.ghostsm:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource VdfVerdictBorderBrush}" />
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
     </Style>
     <Style Selector="Button.ghostsm:pointerover">
-      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     </Style>
     <!-- mockup .group-idx: the group number, sitting where the old chevron was -->
     <Style Selector="Border.idxbadge">

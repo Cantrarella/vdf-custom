@@ -47,9 +47,35 @@
       <Setter Property="Padding" Value="11,6" />
       <Setter Property="FontSize" Value="12.5" />
       <Setter Property="CornerRadius" Value="9" />
+      <!-- The outline is part of what makes these read as buttons, and left to the theme
+           it was the chrome grey instead of the mockup's line-2. Restated here for the
+           same reason the fill below is: the control has to own both, or the theme
+           repaints them under the pointer.
+           The :not(.dirremove) is not decoration. An inline attribute is NOT the local value
+           the rest of these rules assume it is: a {DynamicResource} written on a control
+           loses to a Style setter for the same property, so a bare Button.dirbtn would
+           have taken the palette's line-2 and quietly stripped the destructive button of
+           the danger frame it rests in (measured: #F4CFCD became #D9E1E8, the pink the
+           mockup draws on that one frame). Naming the exception here leaves that button
+           with a single claimant to its frame, and it keeps the colour it was given. -->
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.dirbtn:not(.dirremove)">
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnGhostLineBrush}" />
+    </Style>
+    <Style Selector="Button.dirbtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfBtnHoverLineBrush}" />
+    </Style>
+    <Style Selector="Button.dirbtn:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     </Style>
     <Style Selector="Button.dirbtn.soft">
       <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+    </Style>
+    <Style Selector="Button.dirbtn.soft:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfBtnSoftHoverBrush}" />
     </Style>
     <Style Selector="Border.offchip">
       <Setter Property="Background" Value="{DynamicResource VdfMutedSoftBrush}" />
@@ -295,9 +321,10 @@
                              danger ink.
                              One strong colour for both made a quiet row-level action look
                              like a warning; split, it reads as a button you may still
-                             press. High contrast keeps one red for both - see App.xaml. -->
+                             press. The .dirremove class is what keeps that frame: see the
+                             Button.dirbtn rule above. -->
                         <Button
-                            Classes="dirbtn"
+                            Classes="dirbtn dirremove"
                             Foreground="{DynamicResource VdfDangerBrush}"
                             BorderBrush="{DynamicResource VdfDangerLineBrush}"
                             Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).RemoveSetupFolderCommand}"
