@@ -14,7 +14,6 @@
     xmlns:media="clr-namespace:Avalonia.Media;assembly=Avalonia.Base"
     xmlns:mvvm="clr-namespace:VDF.GUI.Mvvm;assembly=VDF.GUI"
     xmlns:presenters="clr-namespace:Avalonia.Controls.Presenters;assembly=Avalonia.Controls"
-    xmlns:utils="clr-namespace:VDF.GUI.Utils;assembly=VDF.GUI"
     xmlns:views="clr-namespace:VDF.GUI.Views;assembly=VDF.GUI"
     xmlns:vm="clr-namespace:VDF.GUI.ViewModels;assembly=VDF.GUI"
     x:DataType="vm:MainWindowVM"
@@ -32,15 +31,15 @@
     FontSize="14"
     Icon="/Assets/icon.ico"
     WindowStartupLocation="CenterScreen"
+    Title=""
     mc:Ignorable="d">
-    <Window.Title>
-        <!-- Localized app title plus the build identity (e.g. "… 4.1.0 (a225a45)").
-             Releases roll to one tag, so the commit is the meaningful version. -->
-        <MultiBinding StringFormat="{}{0}  —  {1}">
-            <Binding Path="[App.Title]" Source="{x:Static local:App.Lang}" />
-            <Binding Source="{x:Static utils:VersionInfo.ShortDisplay}" />
-        </MultiBinding>
-    </Window.Title>
+    <!-- Deliberately no <Window.Title>: the app had been putting "Video Duplicate
+         Finder - 跨平台  —  4.1.0 (commit)" both in the window's own top line and in
+         every taskbar button and Alt+Tab entry, which is a build identity, not
+         something anyone needs to read there. The window now carries no title at
+         all - and the version still lives in Help > About, which is where it belongs.
+         (TextBlockWindowTitle further down is NOT this: it is already hidden on
+         Windows, and it draws on the page, not in the title bar.) -->
     <Window.Resources>
         <mvvm:ExtraShortDateTimeConverter x:Key="ExtraShortDateTimeConverter" />
         <mvvm:SimilarityToFormattedConverter x:Key="SimilarityToFormattedConverter" />
