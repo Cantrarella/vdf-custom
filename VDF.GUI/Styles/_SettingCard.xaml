@@ -56,16 +56,23 @@
         <StackPanel>
           <!-- The row carries the pointer-over surface; the hairline below it stays
                full width (mockup .row + .row:hover).
-               The surface runs the card's full width. It used to sit in a 4px margin,
-               which left a white sliver between it and the card's edge on both sides -
-               the user read the highlight as not reaching ("选中状态没有占满"). The 12px
-               corner keeps it inside the card's own 20px shoulder on the first and last
-               rows, where a square corner would poke past the curve. -->
+               The surface runs the card's full width and is a plain rectangle, because
+               that is what the mockup draws: .row:hover is a bare background with no
+               border-radius on it, and .card carries no overflow:hidden either, so on the
+               first and last rows the reference's own highlight does run into the card's
+               20px shoulder. The 12px corner was there to stay inside that shoulder, and
+               it is the one thing wrong with the surface - a highlight smaller than the
+               row it highlights reads as "选中没覆盖整个选项", the same complaint that put
+               the surface on the card's full width in the first place. The overlap costs
+               nothing: #F1F5F9 on #FFFFFF is a 3% step, invisible at any viewing distance.
+               Clipping the card to its corner was the other way to hide it and was
+               rejected - ClipToBounds applies to the card's whole rendering, VdfCardShadow
+               included, and the shadow is doing more work here than the 3% is. -->
           <Border Name="RowSurface"
                   Margin="0"
                   Padding="20,15"
                   Background="Transparent"
-                  CornerRadius="12">
+                  CornerRadius="0">
             <Grid ColumnDefinitions="*,Auto">
               <StackPanel Grid.Column="0" Margin="0,0,16,0" Spacing="2" VerticalAlignment="Center">
                 <!-- mockup .row-name (13.5px/550) and .row-note (12px): the row's own
