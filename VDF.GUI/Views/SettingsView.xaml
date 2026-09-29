@@ -76,10 +76,12 @@
          page is one column: the section title and the search box on top, the cards under
          them. It used to repeat that list down its own left edge, which showed the same
          seven sections twice. -->
-    <!-- The tinted page the cards sit on — the mockup's page-bg token, the same one the
-         scanner's page uses, so the two pages are one surface rather than a tinted one
-         and a neutral one. -->
-    <Border Grid.Row="0" Background="{DynamicResource VdfPageBrush}">
+    <!-- No page tint here, deliberately. The mockup's page-bg token is the colour the window
+         itself already paints (VdfShellBrush), so this layer drew nothing new — but an opaque
+         surface still ends the decoration glow at its own top edge, and that is what put the
+         hard step in this page's glow and not the scanner's. Left transparent, the glow fades
+         out over the top third exactly as it does on the scan page. Do not put the fill back. -->
+    <Border Grid.Row="0" Background="Transparent">
       <!-- The horizontal insets sit INSIDE the scroll area, so the scroll bar ends up on
            the page's own edge exactly like the scan page's, instead of standing 42px in
            from it over the cards' shadow. The column is no longer capped at 760 either:
