@@ -114,7 +114,7 @@ namespace VDF.GUI.Utils {
 			if (!e.GetCurrentPoint(w).Properties.IsLeftButtonPressed) return;
 			if (OwnsTheEdge(e.Source)) return;
 
-			var edges = HitEdges(e.GetPosition(w), CardRect(w));
+			var edges = HitEdges(e.GetPosition(w), CardRect(w), CardRadius(w));
 			if (edges == Edges.None) return;
 
 			TakeOverSize(w, edges);
@@ -150,7 +150,7 @@ namespace VDF.GUI.Utils {
 			// A window that says it cannot be resized keeps its word: five of the twelve
 			// set CanResize="False" (the message box, the input box, About, the expression
 			// builder, the quality order), and their edges move the window instead.
-			var edges = w.CanResize ? HitEdges(here, CardRect(w)) : Edges.None;
+			var edges = w.CanResize ? HitEdges(here, CardRect(w), CardRadius(w)) : Edges.None;
 			if (edges != Edges.None) TakeOverSize(w, edges);
 
 			Begin(w, e, edges);
@@ -181,7 +181,7 @@ namespace VDF.GUI.Utils {
 				// would do. Without it an edge that can be dragged looks like any other
 				// part of the card, and the grip is invisible until it is found by luck.
 				if (w.WindowState == WindowState.Normal && w.CanResize)
-					w.Cursor = CursorFor(HitEdges(e.GetPosition(w), CardRect(w)));
+					w.Cursor = CursorFor(HitEdges(e.GetPosition(w), CardRect(w), CardRadius(w)));
 				return;
 			}
 
@@ -253,23 +253,73 @@ namespace VDF.GUI.Utils {
 			Live.Remove(w);
 			e.Pointer.Capture(null);
 			if (w.WindowState == WindowState.Normal && w.CanResize)
-				w.Cursor = CursorFor(HitEdges(e.GetPosition(w), CardRect(w)));
+				w.Cursor = CursorFor(HitEdges(e.GetPosition(w), CardRect(w), CardRadius(w)));
 		}
 
 		/// <summary>
 		/// Which edges the point is near, if any. Measured on the card rather than on the
 		/// window: the card is what the eye calls the edge, and the 28px between it and
 		/// the window is transparent margin the shadow falls into.
+		///
+		/// The card is a rounded rectangle now, so the grip follows the shape: the four
+		/// corners answer by their quarter-circle arc instead of the square the bounding
+		/// box would draw. The box's corner (the square in the cut-out) sits up to
+		/// r*(sqrt 2 - 1) outside the arc, and with a 26px radius that is well past the
+		/// 6px band - a press there used to read as a corner grip on a corner the eye
+		/// cannot see, and would size the window from a gap of shadow.
 		/// </summary>
-		static Edges HitEdges(Point p, Rect card) {
+		static Edges HitEdges(Point p, Rect card, double r) {
 			if (card.Width <= 0 || card.Height <= 0) return Edges.None;
+			r = Math.Min(r, Math.Min(card.Width, card.Height) / 2);
+			double L = card.Left, T = card.Top, R = card.Right, B = card.Bottom;
+
+			// Each edge is an arc in its two corner quadrants and a straight span between.
+			// The arc test is radial distance from the corner centre; the quadrant clause
+			// keeps the full circle the centre belongs to from claiming the straight span
+			// that begins where its arc ends.
+			bool nearLeft, nearRight, nearTop, nearBottom;
+
+			if (p.X <= L + r && p.Y <= T + r)
+				nearLeft = ArcDist(p, new Point(L + r, T + r), r) <= Edge;
+			else if (p.X <= L + r && p.Y >= B - r)
+				nearLeft = ArcDist(p, new Point(L + r, B - r), r) <= Edge;
+			else
+				nearLeft = Math.Abs(p.X - L) <= Edge;
+
+			if (p.X >= R - r && p.Y <= T + r)
+				nearRight = ArcDist(p, new Point(R - r, T + r), r) <= Edge;
+			else if (p.X >= R - r && p.Y >= B - r)
+				nearRight = ArcDist(p, new Point(R - r, B - r), r) <= Edge;
+			else
+				nearRight = Math.Abs(p.X - R) <= Edge;
+
+			if (p.X <= L + r && p.Y <= T + r)
+				nearTop = ArcDist(p, new Point(L + r, T + r), r) <= Edge;
+			else if (p.X >= R - r && p.Y <= T + r)
+				nearTop = ArcDist(p, new Point(R - r, T + r), r) <= Edge;
+			else
+				nearTop = Math.Abs(p.Y - T) <= Edge;
+
+			if (p.X <= L + r && p.Y >= B - r)
+				nearBottom = ArcDist(p, new Point(L + r, B - r), r) <= Edge;
+			else if (p.X >= R - r && p.Y >= B - r)
+				nearBottom = ArcDist(p, new Point(R - r, B - r), r) <= Edge;
+			else
+				nearBottom = Math.Abs(p.Y - B) <= Edge;
 
 			var edges = Edges.None;
-			if (Math.Abs(p.X - card.Left) <= Edge) edges |= Edges.Left;
-			else if (Math.Abs(p.X - card.Right) <= Edge) edges |= Edges.Right;
-			if (Math.Abs(p.Y - card.Top) <= Edge) edges |= Edges.Top;
-			else if (Math.Abs(p.Y - card.Bottom) <= Edge) edges |= Edges.Bottom;
+			if (nearLeft) edges |= Edges.Left;
+			else if (nearRight) edges |= Edges.Right;
+			if (nearTop) edges |= Edges.Top;
+			else if (nearBottom) edges |= Edges.Bottom;
 			return edges;
+		}
+
+		/// <summary>Distance from the point to a circle of the given radius, unsigned.</summary>
+		static double ArcDist(Point p, Point center, double r) {
+			var dx = p.X - center.X;
+			var dy = p.Y - center.Y;
+			return Math.Abs(Math.Sqrt(dx * dx + dy * dy) - r);
 		}
 
 		/// <summary>
@@ -286,6 +336,11 @@ namespace VDF.GUI.Utils {
 			if (entry.Found is not { } found || !found.IsAttachedToVisualTree()) {
 				entry.Found = found = w.GetVisualDescendants().OfType<Border>()
 					.FirstOrDefault(b => b.Classes.Contains("dlgframe"));
+				if (found != null) {
+					var cr = found.CornerRadius;
+					entry.Radius = Math.Max(cr.TopLeft,
+						Math.Max(cr.TopRight, Math.Max(cr.BottomLeft, cr.BottomRight)));
+				}
 			}
 			if (found is null) return new Rect(0, 0, w.Bounds.Width, w.Bounds.Height);
 
@@ -297,7 +352,17 @@ namespace VDF.GUI.Utils {
 				: new Rect(at.Value, found.Bounds.Size);
 		}
 
-		sealed class Card { public Border? Found; }
+		/// <summary>
+		/// The card's corner radius, read from the same dlgframe border CardRect finds.
+		/// HitEdges needs it so the grip follows the rounded corner rather than the square
+		/// bounding box; 0 when there is no card, which makes every edge a straight one.
+		/// </summary>
+		static double CardRadius(Window w) {
+			CardRect(w); // finds the card and caches its radius on the first call
+			return Cards.TryGetValue(w, out var entry) ? entry.Radius : 0;
+		}
+
+		sealed class Card { public Border? Found; public double Radius; }
 
 		static readonly ConditionalWeakTable<Window, Card> Cards = new();
 

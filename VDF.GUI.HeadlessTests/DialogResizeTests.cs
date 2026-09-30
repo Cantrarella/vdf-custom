@@ -68,7 +68,21 @@ public class DialogResizeTests {
 	static Point LeftOf(Rect c) => new(c.Left + Inside, c.Top + c.Height / 2);
 	static Point BottomOf(Rect c) => new(c.Left + c.Width / 2, c.Bottom - Inside);
 	static Point TopOf(Rect c) => new(c.Left + c.Width / 2, c.Top + Inside);
-	static Point BottomRightOf(Rect c) => new(c.Right - Inside, c.Bottom - Inside);
+	// The corner grip sits on the quarter-circle arc, not on the square corner the
+	// bounding box would draw: the card's corners are rounded, so the diagonal point
+	// that used to be "3px inside both edges" is now 6.5px outside the arc, in the
+	// shadow. The 45-degree point of the arc is the plainest corner grip there is.
+	static Point BottomRightOf(Rect c, double r) {
+		var inset = r - r / Math.Sqrt(2);
+		return new Point(c.Right - inset, c.Bottom - inset);
+	}
+
+	/// <summary>The card's corner radius, read from the dlgframe border like CardOf does.</summary>
+	static double RadiusOf(Window dlg) {
+		var card = dlg.GetVisualDescendants().OfType<Border>()
+			.First(b => b.Classes.Contains("dlgframe"));
+		return card.CornerRadius.TopLeft;
+	}
 
 	static void Pull(Window w, Point from, Point to) {
 		w.MouseDown(from, MouseButton.Left);
@@ -175,13 +189,42 @@ public class DialogResizeTests {
 		try {
 			var card = CardOf(dlg);
 			var before = dlg.Bounds;
-			var at = BottomRightOf(card);
+			var at = BottomRightOf(card, RadiusOf(dlg));
 
 			Pull(dlg, at, new Point(at.X + 40, at.Y + 30));
 			LetGo(dlg, new Point(at.X + 40, at.Y + 30));
 
 			Assert.Equal(40, dlg.Bounds.Width - before.Width);
 			Assert.Equal(30, dlg.Bounds.Height - before.Height);
+		}
+		finally {
+			dlg.Close();
+			HeadlessUi.Pump();
+		}
+	});
+
+	/// <summary>
+	/// The square corner the bounding box draws is not a grip: the card's corner is a
+	/// quarter circle, and the little square between the box and the arc is the cut-out
+	/// the shadow falls into. A press there sizes nothing - it moves the window, exactly
+	/// like any other press on the body. The old square hit test read it as a corner, so
+	/// the window grew from a gap of shadow the eye could not see.
+	/// </summary>
+	[Fact]
+	public Task The_square_corner_outside_the_arc_is_not_a_grip() => HeadlessUi.Run(() => {
+		var dlg = Open("DatabaseEditor");
+		try {
+			var card = CardOf(dlg);
+			var before = dlg.Bounds;
+			var was = dlg.Position;
+			var at = new Point(card.Right - Inside, card.Bottom - Inside);
+
+			Pull(dlg, at, new Point(at.X + 40, at.Y + 30));
+			LetGo(dlg, new Point(at.X + 40, at.Y + 30));
+
+			Assert.Equal(before.Width, dlg.Bounds.Width);
+			Assert.Equal(before.Height, dlg.Bounds.Height);
+			Assert.Equal(new PixelPoint(was.X + 40, was.Y + 30), dlg.Position);
 		}
 		finally {
 			dlg.Close();
