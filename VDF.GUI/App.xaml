@@ -234,6 +234,15 @@
                          and pad their content 24px, so the spread has somewhere to go. -->
                     <BoxShadows x:Key="VdfDialogShadow">0 10 44 -14 #4D103C64</BoxShadows>
 
+                    <!-- The mockup's backdrop, in the only form a desktop app can have it:
+                         a dialog is its own top-level window, so no layer underneath it can
+                         be dimmed - but the shell behind it can, and that is what separates
+                         the two surfaces. This is the mockup's color-mix (42% page over
+                         rgba(9,20,32,.5)) as one flat colour: alpha 0.71, rgb(149,156,162),
+                         which lands the page at about (177,183,188) - clearly darker, still
+                         readable through. Heavier goes to CC, lighter to 8C. -->
+                    <SolidColorBrush x:Key="VdfScrimBrush" Color="#B5959CA2" />
+
                     <!-- Main text ink (doc 主文字). It was whatever the theme defaults to;
                          the Window style hangs it on every window, and TextBlock inherits. -->
                     <SolidColorBrush x:Key="VdfTextBrush" Color="#172033" />
@@ -424,6 +433,12 @@
                          against a dark page the only thing that reads as elevation is the
                          falloff itself. -->
                     <BoxShadows x:Key="VdfDialogShadow">0 12 48 -14 #BF000000</BoxShadows>
+                    <!-- Not the mockup's mix this time: run the same formula on a page that
+                         is already #111820 and the result is indistinguishable from the page,
+                         so the dark theme dims with plain black instead. The effect wanted is
+                         the dialog reading lighter than what is behind it, and here that only
+                         comes from pushing the shell down. -->
+                    <SolidColorBrush x:Key="VdfScrimBrush" Color="#80000000" />
 
                     <SolidColorBrush x:Key="VdfTextBrush" Color="#E8F0F7" />
                     <SolidColorBrush x:Key="VdfShellBrush" Color="#141D27" />

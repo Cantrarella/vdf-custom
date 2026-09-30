@@ -1017,6 +1017,15 @@
             </Grid>
             </Grid>
         </Grid>
+        <!-- The mockup's backdrop. A dialog is a top-level window, so nothing can be
+             painted under it - but the shell behind it can be dimmed, and that is the
+             part of the mockup's backdrop that actually does the work of separating the
+             two. IsHitTestVisible is off so a modeless dialog (the blacklist, the
+             database viewer) still leaves the shell usable. -->
+        <Border x:Name="DialogScrim"
+                IsVisible="{Binding IsDialogDimmed}"
+                IsHitTestVisible="False"
+                Background="{DynamicResource VdfScrimBrush}" />
         </Grid>
     </Border>
     </ctl:AnnouncerHost>

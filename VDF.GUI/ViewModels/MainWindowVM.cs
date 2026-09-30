@@ -213,6 +213,17 @@ namespace VDF.GUI.ViewModels {
 					BusyProgress = null;
 			}
 		}
+		/// <summary>
+		/// True while any dialog is open. The shell dims behind it so the dialog's own
+		/// surface reads as being in front - see Utils/DialogDim, which owns the counting.
+		/// Nothing to do with IsBusy: that one is the scan's overlay, this one is the
+		/// mockup's backdrop.
+		/// </summary>
+		bool _IsDialogDimmed;
+		public bool IsDialogDimmed {
+			get => _IsDialogDimmed;
+			set => this.RaiseAndSetIfChanged(ref _IsDialogDimmed, value);
+		}
 		double? _BusyProgress;
 		/// <summary>
 		/// How far the current busy-overlay operation is, 0..1. Null (the default, and again
