@@ -425,6 +425,17 @@ namespace VDF.GUI.ViewModels {
 		/// <summary>Last few log lines, shown under the scan card.</summary>
 		public ObservableCollection<LogTailRow> LogTail { get; } = new();
 		internal const int LogTailLength = 4;
+
+		string _ScanNotice = string.Empty;
+		/// <summary>
+		/// Why the last scan came back with nothing in it, when the filters threw the
+		/// files away rather than there being no duplicates. Empty the rest of the time,
+		/// so nothing about the normal case gets a line of its own.
+		/// </summary>
+		public string ScanNotice {
+			get => _ScanNotice;
+			set => this.RaiseAndSetIfChanged(ref _ScanNotice, value);
+		}
 		internal void AppendLogTail(LogTailRow row) {
 			LogTail.Add(row);
 			while (LogTail.Count > LogTailLength)

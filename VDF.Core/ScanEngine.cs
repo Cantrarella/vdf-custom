@@ -111,6 +111,11 @@ namespace VDF.Core {
 		const int maxExcludedLogsPerReason = 5;
 		readonly ConcurrentDictionary<string, int> excludedReasonCounts = new();
 		readonly ConcurrentDictionary<string, int> excludedReasonLoggedCounts = new();
+		// Exclusions that happened *inside* the folders this run was asked to scan. The
+		// plain count above also collects the historical entries of a compare-only run,
+		// which is the whole database and says nothing about the folder the user picked -
+		// "323 files were filtered out" is not an answer to "why is my 8-file folder empty".
+		int excludedInScopeCount;
 		// Files whose stored pHash for the comparison position is null. Dedupes the
 		// per-pair log spam from #754: one bad file otherwise produces a line per
 		// candidate it's compared against (thousands of lines from a handful of files).
@@ -150,6 +155,7 @@ namespace VDF.Core {
 		void ResetExcludedLogging() {
 			excludedReasonCounts.Clear();
 			excludedReasonLoggedCounts.Clear();
+			excludedInScopeCount = 0;
 		}
 		// ParallelOptions.MaxDegreeOfParallelism rejects 0 but accepts -1 (unlimited).
 		// Only 0 needs correcting — clamping with Math.Max(1, ...) turned the -1 default
@@ -190,10 +196,16 @@ namespace VDF.Core {
 		// "comparing …" instead of leaving the last analyzed file path on screen, which looked
 		// like a frozen analysis.
 		string currentStageLabel = string.Empty;
-		void LogExcludedFile(FileEntry entry, string reason) {
+		void LogExcludedFile(FileEntry entry, string reason, bool inScanScope = false) {
+			// Counted even when the log switch is off. The log is a diagnostic: nobody
+			// turns it on unless something already looks wrong. But "every file you had
+			// was filtered out" is not a diagnostic, it is the answer to why the scan
+			// found nothing, and it has to be available to whoever asks.
+			var totalCount = excludedReasonCounts.AddOrUpdate(reason, 1, (_, count) => count + 1);
+			if (inScanScope)
+				Interlocked.Increment(ref excludedInScopeCount);
 			if (!Settings.LogExcludedFiles)
 				return;
-			var totalCount = excludedReasonCounts.AddOrUpdate(reason, 1, (_, count) => count + 1);
 			var loggedCount = excludedReasonLoggedCounts.GetOrAdd(reason, 0);
 			if (loggedCount >= maxExcludedLogsPerReason)
 				return;
@@ -201,6 +213,16 @@ namespace VDF.Core {
 			if (loggedCount <= maxExcludedLogsPerReason)
 				Logger.Instance.Warn(T("Log.ExcludedFile", entry.Path, reason, totalCount));
 		}
+		/// <summary>
+		/// Files inside the folders this run was asked to scan that were refused, whatever
+		/// the reason. Counted whether or not <c>LogExcludedFiles</c> is on, because the
+		/// answer it serves - why a scan came back empty - is a user question, not a
+		/// diagnostic one. Scoped to the scan folders and not to every entry the engine
+		/// looked at: a scan also walks the historical database, so the unscoped total
+		/// describes the library rather than the folder the user chose. Reset by
+		/// <see cref="ResetExcludedLogging"/> at the start of every run.
+		/// </summary>
+		public int ExcludedFilesCount => Volatile.Read(ref excludedInScopeCount);
 		void LogExcludedSummary() {
 			if (!Settings.LogExcludedFiles || excludedReasonCounts.IsEmpty)
 				return;
@@ -584,7 +606,7 @@ namespace VDF.Core {
 				foreach (FileEntry entry in DatabaseUtils.Database) {
 					entry.invalid = InvalidEntry(entry, out _, out string? reason);
 					if (entry.invalid && reason != null)
-						LogExcludedFile(entry, reason);
+						LogExcludedFile(entry, reason, IsInIncludeScope(entry));
 				}
 			}
 
@@ -871,7 +893,13 @@ namespace VDF.Core {
 				reason = "file size is outside the configured range";
 				return true;
 			}
-			if (Settings.FilterByFilePathContains) {
+			// A filter with no patterns in it has nothing to say about any file, so it
+			// must filter nothing. Read the other way round the loop never sets its flag
+			// for an empty list, and every single file came out "does not match the
+			// required patterns" - a scan that quietly excluded the whole drive and
+			// reported zero duplicates. The switch means "filter by path"; the list is
+			// what it filters BY, and only the two together are a rule.
+			if (Settings.FilterByFilePathContains && Settings.FilePathContainsTexts.Count > 0) {
 				bool contains = false;
 				foreach (var f in Settings.FilePathContainsTexts) {
 					if (System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(f, entry.Path)) {
@@ -901,7 +929,11 @@ namespace VDF.Core {
 					return true;
 				}
 			}
-			if (Settings.FilterByFilePathNotContains) {
+			// Same reading as the rule above: an exclusion list with no patterns excludes
+			// nothing. Harmless today (an empty list could never match) but the same two
+			// switches read as a pair, and a pair that behaves differently when empty is
+			// a trap for whoever edits the one next.
+			if (Settings.FilterByFilePathNotContains && Settings.FilePathNotContainsTexts.Count > 0) {
 				bool contains = false;
 				foreach (var f in Settings.FilePathNotContainsTexts) {
 					if (System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(f, entry.Path)) {
@@ -1029,7 +1061,7 @@ namespace VDF.Core {
 					try {
 						entry.invalid = InvalidEntry(entry, out bool reportProgress, out string? invalidReason);
 						if (entry.invalid && invalidReason != null)
-							LogExcludedFile(entry, invalidReason);
+							LogExcludedFile(entry, invalidReason, IsInIncludeScope(entry));
 
 						bool wasInvalid = entry.invalid;
 						bool skipEntry = false;
@@ -1048,7 +1080,7 @@ namespace VDF.Core {
 						if (skipEntry) {
 							entry.invalid = true;
 							if (!wasInvalid && skipReason != null)
-								LogExcludedFile(entry, skipReason);
+								LogExcludedFile(entry, skipReason, IsInIncludeScope(entry));
 							if (reportProgress)
 								CompleteEntry(entry, driveCounter);
 							return ValueTask.CompletedTask;

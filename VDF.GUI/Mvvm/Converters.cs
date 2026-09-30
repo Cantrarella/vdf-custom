@@ -30,6 +30,23 @@ namespace VDF.GUI.Mvvm {
 		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => !(bool)value!;
 	}
 	/// <summary>
+	/// Shows an element only while the bound count is zero - a filter list has nothing
+	/// to complain about when it has patterns in it, and plenty when it does not.
+	/// </summary>
+	public sealed class CountIsZeroConverter : IValueConverter {
+		public static readonly CountIsZeroConverter Instance = new();
+
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+			value switch {
+				int count => count == 0,
+				null => true,
+				_ => false
+			};
+
+		public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+			throw new NotSupportedException();
+	}
+	/// <summary>
 	/// Lights up the element whose value matches the parameter: the rail's settings
 	/// entries each compare their own section id against the one that is showing.
 	/// </summary>

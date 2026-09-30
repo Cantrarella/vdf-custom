@@ -807,6 +807,15 @@ namespace VDF.GUI.ViewModels {
 				SettingsFile.SaveSettings();
 				RefreshSetupEstimate();
 
+				// Nothing to show at the end of a scan has two very different causes and
+				// they must not read the same: there were no duplicates, or there was
+				// nothing left to compare. The second one is invisible without this - the
+				// scan says "done", the result list stays empty, and nothing anywhere says
+				// the filters threw every single file away.
+				ScanNotice = Scanner.Duplicates.Count == 0 && Scanner.ExcludedFilesCount > 0
+					? string.Format(App.Lang["MainWindow.Scan.ExcludedEverything"], Scanner.ExcludedFilesCount)
+					: string.Empty;
+
 				AddDuplicatesInBulk(Scanner.Duplicates.Select(item => new DuplicateItemVM(item)));
 
 				// A completed scan that matched nothing drops back to the Setup screen; flag
@@ -1191,7 +1200,11 @@ namespace VDF.GUI.ViewModels {
 				int skipped = items.RemoveAll(it => it?.ItemInfo == null);
 				if (skipped > 0)
 					Logger.Instance.Warn($"Skipped {skipped} corrupt scan result entries (missing ItemInfo)");
-				if (items.Count == 0)
+				// Only a file that HAD entries and lost them all is corrupt. An empty item
+				// list is a legitimate result: a scan that matched nothing saves exactly
+				// {"version":1,"items":[]}, and treating that as damage greeted every
+				// restart after a no-duplicates scan with "the file may be corrupt".
+				if (items.Count == 0 && skipped > 0)
 					throw new JsonException("All scan result entries were corrupt");
 
 				// Apply not-a-match blacklist; saved results may pre-date marks made just before a crash.
@@ -1802,6 +1815,7 @@ Non-Windows setup:
 			TotalDuplicatesSize = string.Empty;
 			GroupsNeedingReview = 0;
 			ScannedFileCount = 0;
+			ScanNotice = string.Empty;
 
 			SettingsFile.SaveSettings();
 			SyncCoreSettings();

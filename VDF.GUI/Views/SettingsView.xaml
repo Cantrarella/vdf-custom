@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:VDF.GUI;assembly=VDF.GUI"
     xmlns:views="clr-namespace:VDF.GUI.Views;assembly=VDF.GUI"
     xmlns:vm="clr-namespace:VDF.GUI.ViewModels;assembly=VDF.GUI"
+    xmlns:mvvm="clr-namespace:VDF.GUI.Mvvm;assembly=VDF.GUI"
     x:DataType="vm:MainWindowVM">
 
   <UserControl.Styles>
@@ -486,6 +487,16 @@
                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathContains]}"
                            IsEnabled="{Binding #ToggleFilterByPathContains.IsChecked}"
                            ItemsSource="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilePathContainsTexts}" />
+                  <!-- The switch on and the list empty is not "no filtering", it is "filter
+                       everything out" - a scan that finds nothing and says nothing. The
+                       engine no longer reads it that way, but the setting still does not
+                       look like anything is wrong, so say so while it is empty. -->
+                  <StackPanel IsVisible="{Binding #ToggleFilterByPathContains.IsChecked}">
+                    <TextBlock FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Foreground="{DynamicResource VdfWarnBrush}"
+                               IsVisible="{Binding #ListboxFilePathContainsText.ItemCount, Converter={x:Static mvvm:CountIsZeroConverter.Instance}}"
+                               Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.PathContains.EmptyWarn]}" />
+                  </StackPanel>
                 </StackPanel>
 
                 <StackPanel Margin="20,16,20,0" Spacing="10"
@@ -512,6 +523,12 @@
                            AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.FilePathNotContains]}"
                            IsEnabled="{Binding #ToggleFilterByPathNotContains.IsChecked}"
                            ItemsSource="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=FilePathNotContainsTexts}" />
+                  <StackPanel IsVisible="{Binding #ToggleFilterByPathNotContains.IsChecked}">
+                    <TextBlock FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Foreground="{DynamicResource VdfWarnBrush}"
+                               IsVisible="{Binding #ListboxFilePathNotContainsText.ItemCount, Converter={x:Static mvvm:CountIsZeroConverter.Instance}}"
+                               Text="{Binding Source={x:Static local:App.Lang}, Path=[Settings.Row.PathNotContains.EmptyWarn]}" />
+                  </StackPanel>
                   <TextBlock FontSize="12" Opacity="{DynamicResource VdfTextFaintOpacity}" TextWrapping="Wrap" Margin="0,6,0,0"
                              Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Settings.WildcardNote]}" />
                 </StackPanel>

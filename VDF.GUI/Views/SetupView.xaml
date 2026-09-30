@@ -246,6 +246,19 @@
     <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Margin="0,14,0,20">
 
+        <!-- Why the last scan came back empty, when there was something to scan. An empty
+             result list looks the same whether there were no duplicates or nothing
+             survived the file filters, and only one of those two can be acted on. -->
+        <Border Margin="0,0,0,14" Padding="14,11" CornerRadius="12"
+                Background="{DynamicResource VdfWarnSoftBrush}"
+                BorderBrush="{DynamicResource VdfWarnBorderBrush}"
+                BorderThickness="1"
+                IsVisible="{Binding ScanNotice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+          <TextBlock FontSize="12.5" TextWrapping="Wrap"
+                     Foreground="{DynamicResource VdfWarnBrush}"
+                     Text="{Binding ScanNotice}" />
+        </Border>
+
         <!-- 扫描目录 -->
         <Border Classes="setcard">
           <StackPanel>
