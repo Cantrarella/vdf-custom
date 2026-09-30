@@ -223,6 +223,12 @@
       <Setter Property="BorderBrush" Value="{DynamicResource VdfGoodBorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="6" />
+      <!-- A horizontal StackPanel stretches its children across the cross axis, so a chip
+           that shares a row with a button is pulled up to the button's 31px while its
+           text still lays out one 11.5 line box, top aligned: 6px above, 16px below. The
+           file row's own chip never showed this because it sets this itself; setting it
+           here covers every chip instead of the one that happened to be noticed. -->
+      <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Border.simchip TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource VdfGoodBrush}" />
@@ -447,6 +453,8 @@
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="BorderBrush" Value="{DynamicResource VdfCardLineBrush}" />
       <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+      <!-- Same row, same stretch, same reason as Border.simchip above. -->
+      <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Border.aitag TextBlock">
       <Setter Property="FontSize" Value="10.5" />
