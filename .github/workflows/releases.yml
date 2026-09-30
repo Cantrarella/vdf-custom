@@ -77,38 +77,12 @@ jobs:
       # matrix would leave it with missing assets until the next push.
       fail-fast: false
       matrix:
-        kind: ['linux', 'windows', 'windowsarm64', 'macOS', 'macOSarm64', 'linuxarm64']
+        kind: ['windows']
         include:
-          - kind: linux
-            os: ubuntu-latest
-            target: linux-x64
-            name: linux-x64
           - kind: windows
             os: windows-latest
             target: win-x64
             name: win-x64
-          - kind: windowsarm64
-            # Native ARM64 runner (same reasoning as linux-arm64): Native AOT
-            # builds on its own architecture instead of relying on the x64
-            # image's cross toolchain. The FFmpeg auto-downloader already picks
-            # the BtbN winarm64 shared build on ARM64 Windows.
-            os: windows-11-arm
-            target: win-arm64
-            name: win-arm64
-          - kind: macOS
-            os: macos-latest
-            target: osx-x64
-            name: osx-x64
-          - kind: macOSarm64
-            os: macos-latest
-            target: osx-arm64
-            name: osx-arm64
-          - kind: linuxarm64
-            # Native ARM64 runner: Native AOT cannot cross-compile from x64 to
-            # linux-arm64 without a cross toolchain, so build it on its own arch.
-            os: ubuntu-24.04-arm
-            target: linux-arm64
-            name: linux-arm64
             
     runs-on: ${{ matrix.os }}
 
@@ -139,49 +113,12 @@ jobs:
           dotnet publish ./VDF.CLI/VDF.CLI.csproj -c Release -v q -p:PublishAot=true -p:VersionPrefix="$VERSION" -r "${{ matrix.target }}" -o "outputCLI"
           # Build Web (JIT, self-contained — Blazor Server is not supported under Native AOT)
           dotnet publish ./VDF.Web/VDF.Web.csproj -c Release -v q --self-contained -p:VersionPrefix="$VERSION" -r "${{ matrix.target }}" -o "outputWeb"
-          # Pack files
-          if [[ "${{ matrix.target }}" == win-* ]]; then
-            7z a -tzip "GUI-${{ matrix.target }}.zip" "./outputGUI/*"
-            7z a -tzip "CLI-${{ matrix.target }}.zip" "./outputCLI/*"
-            7z a -tzip "Web-${{ matrix.target }}.zip" "./outputWeb/*"
-          elif [[ "${{ matrix.target }}" == osx-* ]]; then
-            # Wrap the GUI in a proper macOS .app bundle
-            mkdir -p "Video Duplicate Finder.app/Contents/MacOS"
-            mkdir -p "Video Duplicate Finder.app/Contents/Resources"
-            cp -r outputGUI/. "Video Duplicate Finder.app/Contents/MacOS/"
-            cp "VDF.GUI/Assets/macOS/icon.icns" "Video Duplicate Finder.app/Contents/Resources/icon.icns"
-            cp "VDF.GUI/Assets/macOS/Info.plist" "Video Duplicate Finder.app/Contents/Info.plist"
-            plutil -replace CFBundleShortVersionString -string "$VERSION" "Video Duplicate Finder.app/Contents/Info.plist"
-            plutil -replace CFBundleVersion -string "$VERSION" "Video Duplicate Finder.app/Contents/Info.plist"
-            chmod +x "Video Duplicate Finder.app/Contents/MacOS/VDF.GUI"
-            # Ad-hoc sign every binary in the bundle. macOS 14+ (and especially Tahoe 26)
-            # rejects unsigned dylibs under Library Validation, which previously caused
-            # "library load disallowed by system policy" on launch.
-            codesign --force --deep --sign - \
-              --entitlements "VDF.GUI/Assets/macOS/entitlements.plist" \
-              "Video Duplicate Finder.app"
-            codesign --verify --deep --strict --verbose=2 "Video Duplicate Finder.app"
-            tar czvf "GUI-${{ matrix.target }}.tar.gz" "Video Duplicate Finder.app"
-            chmod +x outputCLI/vdf-cli
-            chmod +x outputWeb/VDF.Web
-            codesign --force --deep --sign - \
-              --entitlements "VDF.GUI/Assets/macOS/entitlements.plist" \
-              outputCLI/vdf-cli
-            codesign --force --deep --sign - \
-              --entitlements "VDF.GUI/Assets/macOS/entitlements.plist" \
-              outputWeb/VDF.Web
-            tar czvf "CLI-${{ matrix.target }}.tar.gz" "outputCLI"
-            tar czvf "Web-${{ matrix.target }}.tar.gz" "outputWeb"
-          else
-            # Bundle .desktop file and icon for Linux desktop integration
-            cp "VDF.GUI/Assets/Linux/icon.png" "outputGUI/icon.png"
-            cp "VDF.GUI/Assets/Linux/videoduplicatefinder.desktop" "outputGUI/videoduplicatefinder.desktop"
-            tar czvf "GUI-${{ matrix.target }}.tar.gz" "outputGUI"
-            tar czvf "CLI-${{ matrix.target }}.tar.gz" "outputCLI"
-            tar czvf "Web-${{ matrix.target }}.tar.gz" "outputWeb"
-          fi
+          # Pack files — Windows only (this release no longer builds macOS or Linux).
+          7z a -tzip "GUI-${{ matrix.target }}.zip" "./outputGUI/*"
+          7z a -tzip "CLI-${{ matrix.target }}.zip" "./outputCLI/*"
+          7z a -tzip "Web-${{ matrix.target }}.zip" "./outputWeb/*"
           # Clean up
-          rm -rf "outputGUI" "outputCLI" "outputWeb" "Video Duplicate Finder.app"
+          rm -rf "outputGUI" "outputCLI" "outputWeb"
           
     - name: Publish
       if: github.ref_type == 'branch'
