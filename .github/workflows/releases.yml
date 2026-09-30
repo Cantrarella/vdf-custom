@@ -116,16 +116,10 @@ jobs:
           # Build GUI (Native AOT — verified AOT-safe for 4.0: compiled bindings,
           # source-generated JSON, statically-registered MemoryPack formatters)
           dotnet publish ./VDF.GUI/VDF.GUI.csproj -c Release -v q -p:PublishAot=true -p:VersionPrefix="$VERSION" -r "${{ matrix.target }}" -o "outputGUI"
-          # Build CLI (Native AOT)
-          dotnet publish ./VDF.CLI/VDF.CLI.csproj -c Release -v q -p:PublishAot=true -p:VersionPrefix="$VERSION" -r "${{ matrix.target }}" -o "outputCLI"
-          # Build Web (JIT, self-contained — Blazor Server is not supported under Native AOT)
-          dotnet publish ./VDF.Web/VDF.Web.csproj -c Release -v q --self-contained -p:VersionPrefix="$VERSION" -r "${{ matrix.target }}" -o "outputWeb"
           # Pack files — Windows only (this release no longer builds macOS or Linux).
           7z a -tzip "GUI-${{ matrix.target }}.zip" "./outputGUI/*"
-          7z a -tzip "CLI-${{ matrix.target }}.zip" "./outputCLI/*"
-          7z a -tzip "Web-${{ matrix.target }}.zip" "./outputWeb/*"
           # Clean up
-          rm -rf "outputGUI" "outputCLI" "outputWeb"
+          rm -rf "outputGUI"
           
     - name: Publish
       if: github.ref_type == 'branch'
@@ -137,8 +131,6 @@ jobs:
           make_latest: false
           files: |
             GUI-*
-            CLI-*
-            Web-*
           body: |
             Note: These are daily builds. Attachments are automatically created and replaced on every new commit. Regardless of what the message above says. If you experience upgrade issues you may need to delete your 'ScannedFiles.db' file in VDF folder.
             4.1 highlights: redesigned interface (guided Set up / Scan / Review flow, scan profiles, reworked results list and settings) on top of all 4.0.x features. Databases and settings carry over. Prefer the old interface? The final classic build stays available in the 4.0.x release.
@@ -152,7 +144,7 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # No --clobber: an asset of a versioned release is never replaced.
-      run: gh release upload "$GITHUB_REF_NAME" GUI-* CLI-* Web-*
+      run: gh release upload "$GITHUB_REF_NAME" GUI-*
 
   publish-release:
     needs: build
