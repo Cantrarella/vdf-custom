@@ -56,6 +56,28 @@
     <Setter Property="Opacity" Value="{DynamicResource VdfTextDim70Opacity}" />
   </Style>
 
+  <!-- One card per scan profile: radio, name, note. The surface is the selection, so
+       backgrounds stay inside the palette that the contrast tests already walk: the
+       note keeps VdfMutedBrush (4.54 on the selected fill), and none of these states
+       needs a second tone behind the text. The selected card deliberately has no
+       pointerover rule of its own: stepping the fill one notch darker drops the note
+       to 4.28, below the 4.5 the small print has to hold. -->
+  <Style Selector="Border.profilecard">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="14,12" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Border.profilecard:pointerover">
+    <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+  </Style>
+  <Style Selector="Border.profilecard.active">
+    <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource VdfRowSelectedFrameBrush}" />
+  </Style>
+
   <!-- one option per row: title + always-visible description left, control right -->
   <Style Selector="views|SettingRow">
     <Setter Property="Focusable" Value="False" />

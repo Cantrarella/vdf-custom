@@ -51,5 +51,14 @@ namespace VDF.GUI.Views {
 			if (ViewModel != null)
 				ViewModel.ActiveShellView = Data.ShellView.Settings;
 		}
+
+		// The radio inside a profile card is out of hit testing, so every click anywhere
+		// on the card lands here: the card is what the pointer gets to aim at, and it
+		// picks the same profile the radio's Space key does.
+		void OnProfileCardPressed(object? sender, PointerPressedEventArgs e) {
+			if (ViewModel is null || sender is not Border { DataContext: ScanProfileOptionVM option }) return;
+			e.Handled = true;
+			ViewModel.SelectScanProfileCommand.Execute(option).Subscribe();
+		}
 	}
 }

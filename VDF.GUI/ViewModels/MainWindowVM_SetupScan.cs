@@ -388,22 +388,6 @@ namespace VDF.GUI.ViewModels {
 			option.IsActive = option.Value == active;
 		ActiveScanProfileIsManaged = active != ScanProfile.Custom;
 		ActiveScanProfileName = ScanProfileOptions.First(o => o.Value == active).Name;
-		ActiveScanProfileOption = ScanProfileOptions.FirstOrDefault(o => o.IsActive);
-	}
-
-	/// <summary>
-	/// The same choice as the old profile cards, as one row of the mockup's 匹配强度
-	/// card. Setting it applies the profile; the setter ignores the echo that
-	/// <see cref="RefreshScanProfileSelection"/> writes back after applying.
-	/// </summary>
-	ScanProfileOptionVM? _ActiveScanProfileOption;
-	public ScanProfileOptionVM? ActiveScanProfileOption {
-		get => _ActiveScanProfileOption;
-		set {
-			this.RaiseAndSetIfChanged(ref _ActiveScanProfileOption, value);
-			if (value != null && !value.IsActive)
-				SelectScanProfileCommand.Execute(value).Subscribe();
-		}
 	}
 
 		bool _ActiveScanProfileIsManaged;

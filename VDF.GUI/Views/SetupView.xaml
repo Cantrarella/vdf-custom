@@ -438,21 +438,69 @@
               </StackPanel>
             </Border>
 
-            <!-- The profile picker: the mockup has no row for it, but dropping it would
-                 leave no way to pick a profile anywhere, so it lives here as one row. -->
-            <views:SettingRow
-                Title="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Title]}"
-                Description="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Desc]}">
-              <ComboBox MinWidth="200" VerticalAlignment="Center"
-                        ItemsSource="{Binding ScanProfileOptions}"
-                        SelectedItem="{Binding ActiveScanProfileOption}">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate x:DataType="vm:ScanProfileOptionVM">
-                    <TextBlock Text="{Binding Name}" />
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
-            </views:SettingRow>
+            <!-- The profile picker. One card per profile and one radio per card: the
+                 mockup has no row for it, but dropping it would leave no way to pick a
+                 profile anywhere, so the bundle lives on top of the strength slider it
+                 writes. Every card owns its radio rather than sharing one list, because
+                 the radio is what the keyboard and the screen reader drive: a picker
+                 that swallows them into a single tab stop may be reachable by arrow
+                 keys, but it is not five choices any more, it is one control wearing
+                 five names. -->
+            <Border Padding="20,15">
+              <StackPanel Spacing="11">
+                <StackPanel Spacing="2">
+                  <TextBlock FontSize="13.5" FontWeight="550"
+                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Title]}" />
+                  <TextBlock FontSize="12" MaxWidth="470" HorizontalAlignment="Left" TextWrapping="Wrap"
+                             Foreground="{DynamicResource VdfMutedBrush}"
+                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Desc]}" />
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding ScanProfileOptions}"
+                              AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Setup.Strength.Profile.Title]}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Spacing="8" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ScanProfileOptionVM">
+                      <Border Classes="profilecard"
+                              Classes.active="{Binding IsActive}"
+                              PointerPressed="OnProfileCardPressed">
+                        <DockPanel LastChildFill="True">
+                          <TextBlock DockPanel.Dock="Right" Margin="12,3,0,0" FontSize="11"
+                                     VerticalAlignment="Top" HorizontalAlignment="Right"
+                                     Foreground="{DynamicResource VdfMutedBrush}"
+                                     Text="{Binding TimeHint}" />
+                          <StackPanel Spacing="3">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                              <!-- The mouse picks a profile anywhere on the card, so the radio
+                                   stays out of hit testing and the click reaches the card
+                                   below it. The keyboard and the screen reader go straight to
+                                   the radio, which runs the same command: without it, Space
+                                   checked a radio on screen while the scan kept the previous
+                                   profile. -->
+                              <RadioButton GroupName="ScanProfiles" IsHitTestVisible="False"
+                                           AutomationProperties.Name="{Binding Name}"
+                                           AutomationProperties.HelpText="{Binding Description}"
+                                           Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).SelectScanProfileCommand}"
+                                           CommandParameter="{Binding}"
+                                           IsChecked="{Binding IsActive, Mode=OneWay}" />
+                              <TextBlock FontSize="13.5" FontWeight="SemiBold" VerticalAlignment="Center"
+                                         Text="{Binding Name}" />
+                            </StackPanel>
+                            <TextBlock FontSize="12" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource VdfMutedBrush}"
+                                       Text="{Binding Description}" />
+                          </StackPanel>
+                        </DockPanel>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+            <Border Height="1" Background="{DynamicResource VdfCardLineBrush}" />
 
             <!-- mockup .slider-box -->
             <StackPanel Margin="20,18,20,10" Spacing="4">
