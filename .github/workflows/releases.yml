@@ -132,8 +132,38 @@ jobs:
           files: |
             GUI-*
           body: |
-            Note: These are daily builds. Attachments are automatically created and replaced on every new commit. Regardless of what the message above says. If you experience upgrade issues you may need to delete your 'ScannedFiles.db' file in VDF folder.
-            4.1 highlights: redesigned interface (guided Set up / Scan / Review flow, scan profiles, reworked results list and settings) on top of all 4.0.x features. Databases and settings carry over. Prefer the old interface? The final classic build stays available in the 4.0.x release.
+            Note: These are daily builds. Attachments are automatically created and replaced on every new commit. If you experience upgrade issues you may need to delete your 'ScannedFiles.db' file in the VDF folder.
+
+            ## 本版改动
+
+            在 4.1 的基础上做的界面改版。扫描逻辑与数据库格式都没有改，可以直接覆盖旧版本升级。
+
+            **界面**
+            - 按定稿设计稿重做整体布局：侧栏（扫描 / 查重结果 / 扫描目录 / 设置 / 忽略名单 / 日志）配单列页面
+            - 蓝色配色体系，深色模式同步跟进
+            - 侧栏拉通到底、页面在其后透出光晕；窗口不再自绘标题栏文字
+            - 选项行悬停高亮改为直角，悬停色统一；行高与留白重调
+
+            **弹窗**
+            - 去掉系统窗口框，阴影改为自绘
+            - 新增半透明遮罩，弹窗不再与背景糊在一起
+            - 支持拖动；圆角与描边统一
+            - 卡片缩放手柄沿圆角弧线判定，圆角外侧那几像素不再误触缩放
+
+            **控件与修复**
+            - 阈值滑块重写（修掉「拖不动」）；开关改为 42×24 胶囊
+            - 扫描结果为空时，现在会说明是哪个筛选条件把文件挡在了门外
+
+            **无障碍**
+            - 可访问名称、Tab 焦点顺序、快捷键编辑器吞 Tab 等问题清零
+
+            **外观与语言**
+            - 换用本版自己的图标与托盘图标
+            - 默认界面语言为简体中文
+
+            **发行**
+            - 本仓库只构建 Windows x64 包；CLI、网页版与 Docker 镜像已移除
+
             Last build based on ${{ steps.vars.outputs.sha_short }}
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
