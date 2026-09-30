@@ -29,9 +29,18 @@
        ring landed 28 to 30px outside the card and read as a second, translucent border
        around the dialog. Extending the client area over the frame is what kept it coming:
        it hid the frame, but the ring follows the window rather than the frame, and the
-       window is still a rectangle of its own. Whether the edges can still be dragged is
-       measured on the real windows below - a thick frame is one way to answer HTLEFT and
-       HTRIGHT along an edge and not the only one.
+       window is still a rectangle of its own.
+
+       Taking the frame off took the edges with it, and that is where they stayed until the
+       app took them back. With no thick frame the OS answers HTCLIENT the whole way round,
+       so a frameless window cannot be pulled at all: the pointer is over client area and
+       the client area is content. DialogDrag owns the edges now - a press within six pixels
+       of the card's border is taken on the way down, before the contents can swallow it,
+       and answered by setting Width and Height with the far edge pinned, corners included.
+       Not for every window, though: the five that set CanResize="False" keep their edges
+       as body, which is what they asked for. The grip is measured on the card and not on
+       the window, because the window's own edge is 28px of transparent margin the shadow
+       falls into - six pixels measured from there would sit in dead space.
        No frame line reaches the screen from this file either: the 1px line the dialogs
        used to show was its own BorderBrush (VdfDialogFrameBrush) on Border.dlgframe, and
        that is gone. Only MainWindow keeps the full caption. -->
@@ -49,8 +58,10 @@
          MainWindow - this selector matches it too, and the shell must not dim itself. -->
     <Setter Property="utils:DialogDim.AutoDim" Value="True" />
     <!-- A captionless window has nothing the OS will drag it by, so the body is the
-         handle. It hangs on the same Window rule as the dim, so all twelve get it and
-         none can be missed; DialogDrag skips MainWindow, which still has its caption. -->
+         handle; and a frameless one has nothing the OS will size it by either, so the
+         card's edge is the grip. Both hang on the same Window rule as the dim, so all
+         twelve get them and none can be missed; DialogDrag skips MainWindow, which still
+         has its own caption and its own frame. -->
     <Setter Property="utils:DialogDrag.Enabled" Value="True" />
   </Style>
 
