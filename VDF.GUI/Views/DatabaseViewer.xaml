@@ -19,8 +19,7 @@
     WindowStartupLocation="CenterOwner"
     Background="Transparent"
     TransparencyLevelHint="Transparent"
-    WindowDecorations="BorderOnly"
-    ExtendClientAreaToDecorationsHint="True"
+    WindowDecorations="None"
     mc:Ignorable="d">
 
   <Window.Styles>

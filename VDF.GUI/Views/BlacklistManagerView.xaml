@@ -1,8 +1,10 @@
-﻿<!-- No caption (WindowDecorations=BorderOnly) *and* the client area extended over the
-     frame: without the second half, Windows paints an ~8px band above the client area of a
-     resizable window in the system's own border colour - pure white on a light Windows, which
-     is the blank strip that showed above every one of these dialogs in the dark theme. The
-     extended part is ours to paint, so the band becomes the window's own surface. -->
+﻿<!-- No decoration at all, and no client area extended over one either. BorderOnly is
+     still a non-client frame, and Windows 11 draws that frame together with a drop shadow
+     of its own on the window rectangle, not on the card. The card is inset 28px so the
+     shadow it paints for itself has somewhere to land, so the system's ring landed 28 to
+     30px outside the card and read as a second, translucent border around the dialog.
+     Extending the client area over the frame hid the band above the client area but kept
+     the ring, because the ring follows the window and not the frame. -->
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
@@ -18,8 +20,7 @@
         WindowStartupLocation="CenterOwner"
         Background="Transparent"
         TransparencyLevelHint="Transparent"
-        WindowDecorations="BorderOnly"
-        ExtendClientAreaToDecorationsHint="True"
+        WindowDecorations="None"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[BlacklistManager.Title]}">
     <!-- 弹窗主体走 _Dialogs.xaml 的同一套配方（卡片 + dlgprimary/dlgghost + dlglist），
          窗口底色由全局 Window 规则给。 -->

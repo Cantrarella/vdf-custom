@@ -24,15 +24,16 @@ using VDF.GUI.Views;
 namespace VDF.GUI.HeadlessTests;
 
 /// <summary>
-/// The window-chrome guard for the dialogs: their surface, their shadow, and the frame
-/// Windows needs to resize them.
+/// The window-chrome guard for the dialogs: their surface, their shadow, and the absence of
+/// a window frame around either.
 ///
 /// The dialog look is a card floating over whatever is behind it, which takes three things
 /// that live in three different places (the window, the style layer, the theme dictionary)
 /// and that a screenshot can only confirm one dialog at a time: the window paints nothing
 /// and allows transparency so the shadow has somewhere to land, the card keeps its own
-/// opaque fill so the transparent window cannot show through it, and the frame keeps the
-/// non-client frame when - and only when - the dialog can be resized.
+/// opaque fill so the transparent window cannot show through it, and no window takes a
+/// system frame - a frame is drawn on the window rectangle, and the card sits 28px inside
+/// it, so the frame and its shadow showed as a ring around the dialog.
 /// </summary>
 public class DialogShellTests {
 
@@ -105,16 +106,20 @@ public class DialogShellTests {
 
 	[Theory]
 	[MemberData(nameof(AllDialogs))]
-	public Task A_resizable_dialog_keeps_the_frame_it_resizes_with(string name) => HeadlessUi.Run(() => {
+	public Task No_dialog_takes_a_window_frame(string name) => HeadlessUi.Run(() => {
 		var dialog = Open(name);
 		try {
-			// Measured on the live windows with WM_NCHITTEST: a BorderOnly dialog answers
-			// HTLEFT/HTRIGHT/HTTOP/HTBOTTOM/HTBOTTOMRIGHT along its edges, and the same
-			// dialog as None answers HTCLIENT at every one of those points - Windows gives
-			// resize borders to a thick frame, and nothing else. So None is only allowed
-			// where there was never anything to resize.
-			Assert.Equal(dialog.CanResize ? WindowDecorations.BorderOnly : WindowDecorations.None,
-				dialog.WindowDecorations);
+			// Measured on the live windows: with BorderOnly the window keeps a non-client
+			// frame, and its WM_NCHITTEST answers HTLEFT/HTRIGHT/HTTOP/HTBOTTOM along the
+			// edges. That frame is what Windows 11 draws a drop shadow on, and it is drawn
+			// on the window rectangle - the card is inset 28px for its own shadow, so the
+			// system's ring landed outside the card and read as a second border around the
+			// dialog. None is what removes it.
+			Assert.Equal(WindowDecorations.None, dialog.WindowDecorations);
+			// Extending the client area over a frame is the other half of the same problem.
+			// It hides the frame, not the ring: the ring follows the window.
+			Assert.False(dialog.ExtendClientAreaToDecorationsHint,
+				$"'{name}' still extends its client area, which is what keeps Windows painting a ring on the window rectangle");
 		}
 		finally {
 			dialog.Hide();

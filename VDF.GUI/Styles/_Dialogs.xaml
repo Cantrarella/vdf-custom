@@ -22,18 +22,19 @@
            a card-coloured surface a soft fill on the primary action reads as disabled,
            and the reference's primary is the loudest thing in the box.
 
-       None vs BorderOnly is decided per dialog, and the deciding question is whether the
-       dialog can resize at all. A window only gets resize borders from a thick frame:
-       measured with WM_NCHITTEST on the real windows, a BorderOnly window answers
-       HTLEFT/HTRIGHT/HTTOP/HTBOTTOM/HTBOTTOMRIGHT along its edges, while the same window
-       under None answers HTCLIENT everywhere - the ability to be resized simply is not
-       there any more. So the dialogs that CanResize (the ones that also extend the client
-       area over their frame) keep BorderOnly, and the fixed-size ones - About, the input
-       box, the message box, the expression builder, the quality order - take None, where
-       nothing is lost and no non-client frame is drawn at all.
-       Either way no frame line reaches the screen: the 1px line the dialogs used to show
-       was this file's own BorderBrush (VdfDialogFrameBrush) on Border.dlgframe, and that
-       is gone. Only MainWindow keeps the full caption. -->
+       All twelve are WindowDecorations="None", and none extends its client area over a
+       frame. BorderOnly is still a non-client frame, and Windows 11 draws that frame on
+       the window rectangle together with a drop shadow of its own - while the card is
+       inset 28px to give the shadow it paints itself somewhere to land, so the system's
+       ring landed 28 to 30px outside the card and read as a second, translucent border
+       around the dialog. Extending the client area over the frame is what kept it coming:
+       it hid the frame, but the ring follows the window rather than the frame, and the
+       window is still a rectangle of its own. Whether the edges can still be dragged is
+       measured on the real windows below - a thick frame is one way to answer HTLEFT and
+       HTRIGHT along an edge and not the only one.
+       No frame line reaches the screen from this file either: the 1px line the dialogs
+       used to show was its own BorderBrush (VdfDialogFrameBrush) on Border.dlgframe, and
+       that is gone. Only MainWindow keeps the full caption. -->
 
   <Style Selector="Window">
     <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
