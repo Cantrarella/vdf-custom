@@ -1,5 +1,12 @@
 name: Build releases
 
+# The publish step opens a release and replaces its assets on every push, so the
+# token has to be allowed to write one. The repository default is read-only, which
+# let every build finish and then fail at the last step with
+# "Resource not accessible by integration".
+permissions:
+  contents: write
+
 # Two kinds of release:
 #   - every push to master rebuilds the rolling 4.1.x release, its assets replaced in place;
 #   - pushing a tag like v4.1.1 publishes a release of that commit whose assets are never
