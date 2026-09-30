@@ -26,31 +26,7 @@ namespace VDF.GUI.HeadlessTests;
 /// <summary>The readability guard of <see cref="ContrastTests"/>, for every dialog and the comparer.</summary>
 public class DialogContrastTests {
 
-	static readonly Dictionary<string, Func<Window>> Dialogs = new() {
-		["MessageBox"] = () => new MessageBoxView("Delete 3 files?",
-			MessageBoxButtons.Yes | MessageBoxButtons.No | MessageBoxButtons.Cancel, "Confirm", MessageBoxButtons.No),
-		["InputBox"] = () => new InputBoxView("New name:", "clip.mp4", "file name"),
-		["About"] = () => new AboutWindow(),
-		["ChooseAlgorithm"] = () => new ChooseAlgoView(),
-		["BlacklistManager"] = () => new BlacklistManagerView(),
-		["CustomSelection"] = () => new CustomSelectionView(string.Empty),
-		["ExpressionBuilder"] = () => new ExpressionBuilder(),
-		["QualityOrder"] = () => new QualityOrderDialog(),
-		["RelocateFiles"] = () => new RelocateFilesDialog(),
-		["DatabaseEditor"] = () => new DatabaseViewer(),
-		["Comparer"] = () => {
-			var group = Guid.NewGuid();
-			// No thumbnail timestamps: loading yields nothing without ever starting FFmpeg.
-			var items = new[] { "beach_2019_final.mp4", "beach_2019_final (1).mp4" }
-				.Select(name => new LargeThumbnailDuplicateItem(new DuplicateItemVM(new DuplicateItem {
-					Path = $@"Z:\does\not\exist\{name}", GroupId = group, Similarity = 98.4f,
-					SizeLong = 700_000_000, FrameSize = "1280x720", Duration = TimeSpan.FromSeconds(754),
-				})))
-				.ToList();
-			return new ThumbnailComparer(items);
-		},
-		["MetadataCompare"] = () => MetadataCompareSample.Window(),
-	};
+	static Dictionary<string, Func<Window>> Dialogs => DialogCatalog.Dialogs;
 
 	public static TheoryData<string, string> DialogsAndThemes() {
 		var data = new TheoryData<string, string>();

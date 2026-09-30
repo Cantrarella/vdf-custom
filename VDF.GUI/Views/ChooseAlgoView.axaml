@@ -16,11 +16,15 @@
 		x:DataType="views:ChooseAlgoView"
 		MaxWidth="720"
 		WindowStartupLocation="CenterOwner"
+		Background="Transparent"
+		TransparencyLevelHint="Transparent"
 		WindowDecorations="BorderOnly"
 		ExtendClientAreaToDecorationsHint="True"
 		SizeToContent="WidthAndHeight"
 		Title="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.Title]}">
-	<Border Classes="dlgframe" Padding="20">
+	<Border Classes="dlgframe" Padding="20"
+		Margin="28"
+		Background="{DynamicResource VdfCardBrush}">
 	<Grid RowDefinitions="*,Auto" RowSpacing="12">
 		<TabControl SelectedIndex="{Binding StepIndex, Mode=TwoWay}">
 			<TabItem AutomationProperties.Name="{Binding Source={x:Static app:App.Lang}, Path=[ChooseAlgo.Step.DatabaseSize]}">

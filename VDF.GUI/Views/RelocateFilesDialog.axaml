@@ -21,11 +21,15 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     WindowStartupLocation="CenterOwner"
+    Background="Transparent"
+    TransparencyLevelHint="Transparent"
     WindowDecorations="BorderOnly"
     ExtendClientAreaToDecorationsHint="True"
     mc:Ignorable="d">
     <!-- 弹窗主体：统一 14px 外边距，底部一排按钮用 dlgprimary / dlgghost。 -->
-    <Border Classes="dlgframe">
+    <Border Classes="dlgframe"
+            Margin="28"
+            Background="{DynamicResource VdfCardBrush}">
     <Grid Margin="14" RowDefinitions="Auto,Auto,*,Auto">
         <!--  Mode selector  -->
         <StackPanel

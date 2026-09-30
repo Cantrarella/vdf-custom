@@ -29,6 +29,8 @@
     FontSize="14"
     Icon="/Assets/icon.ico"
     WindowStartupLocation="CenterScreen"
+    Background="Transparent"
+    TransparencyLevelHint="Transparent"
     WindowDecorations="BorderOnly"
     ExtendClientAreaToDecorationsHint="True"
     mc:Ignorable="d">
@@ -190,7 +192,9 @@
          twelve read alike. It used to be its own thing - 2px of the general hairline, square
          corners - which made this the one dialog with a heavier, harder frame. The class
          brings 1px, the dialogs' own deeper colour and the card's 20px corner with it. -->
-    <Border Classes="dlgframe">
+    <Border Classes="dlgframe"
+            Margin="28"
+            Background="{DynamicResource VdfCardBrush}">
         <Grid RowDefinitions="Auto,Auto,*,Auto">
             <controls:ExperimentalAcrylicBorder
                 x:Name="ExperimentalAcrylicBorderBackgroundWhite"

@@ -13,10 +13,14 @@
     CanResize="false"
     SizeToContent="Height"
     WindowStartupLocation="CenterOwner"
-    WindowDecorations="BorderOnly">
+    Background="Transparent"
+    TransparencyLevelHint="Transparent"
+    WindowDecorations="None">
     <!-- The dialog's card and its buttons come from Styles/_Dialogs.xaml, the same recipes
          the pages use; the window's own tint is set there too. -->
-    <Border Classes="dlgbody dlgframe">
+    <Border Classes="dlgbody dlgframe"
+            Margin="28"
+            Background="{DynamicResource VdfCardBrush}">
         <StackPanel Spacing="14">
             <TextBlock Classes="dlgtext" Text="{Binding Message}" TextWrapping="Wrap" />
             <StackPanel IsVisible="{Binding HasReadOnlyInfo}" Spacing="2">

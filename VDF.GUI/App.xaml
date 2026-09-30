@@ -228,6 +228,12 @@
                          depth. Two parts, because one alone reads as a blur. -->
                     <BoxShadows x:Key="VdfCardShadow">0 2 8 0 #0D0F2337, 0 14 32 -18 #2E0F2337</BoxShadows>
 
+                    <!-- A dialog is a window, not a card on a page, and it has page-light
+                         air around it: one wide, low falloff (the mockup's shadow-lg token).
+                         It only ever paints now that the dialog windows are transparent
+                         and pad their content 24px, so the spread has somewhere to go. -->
+                    <BoxShadows x:Key="VdfDialogShadow">0 10 44 -14 #4D103C64</BoxShadows>
+
                     <!-- Main text ink (doc 主文字). It was whatever the theme defaults to;
                          the Window style hangs it on every window, and TextBlock inherits. -->
                     <SolidColorBrush x:Key="VdfTextBrush" Color="#172033" />
@@ -414,6 +420,10 @@
                     <!-- Dark surfaces swallow a soft shadow, so the dark theme lifts the
                          card with more opacity and a longer falloff instead. -->
                     <BoxShadows x:Key="VdfCardShadow">0 2 8 0 #52000000, 0 18 40 -20 #8C000000</BoxShadows>
+                    <!-- Same lift as the light theme's dialog shadow, stronger and darker:
+                         against a dark page the only thing that reads as elevation is the
+                         falloff itself. -->
+                    <BoxShadows x:Key="VdfDialogShadow">0 12 48 -14 #BF000000</BoxShadows>
 
                     <SolidColorBrush x:Key="VdfTextBrush" Color="#E8F0F7" />
                     <SolidColorBrush x:Key="VdfShellBrush" Color="#141D27" />

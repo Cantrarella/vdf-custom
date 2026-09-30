@@ -11,9 +11,9 @@
        caption. That is two surfaces and a titlebar where the reference design has one
        surface and none, so the dialogs now take the shape the user pointed at:
 
-         * the caption is gone (WindowDecorations="BorderOnly" on every window, set in
-           XAML because MainWindow must keep its own extended caption), so the dialog
-           starts at its content instead of a strip carrying the app name;
+         * the caption is gone (no window keeps its system caption, set in XAML because
+           MainWindow must keep its own extended caption), so the dialog starts at its
+           content instead of a strip carrying the app name;
          * the window itself IS the card - its background is VdfCardBrush and the body
            carries nothing but padding, so there is no nested frame and no second
            colour behind it;
@@ -21,8 +21,18 @@
            a card-coloured surface a soft fill on the primary action reads as disabled,
            and the reference's primary is the loudest thing in the box.
 
-       BorderOnly rather than None on purpose: the dialogs still resize, and on Windows
-       the frame is what draws their shadow. Only MainWindow keeps the full caption. -->
+       None vs BorderOnly is decided per dialog, and the deciding question is whether the
+       dialog can resize at all. A window only gets resize borders from a thick frame:
+       measured with WM_NCHITTEST on the real windows, a BorderOnly window answers
+       HTLEFT/HTRIGHT/HTTOP/HTBOTTOM/HTBOTTOMRIGHT along its edges, while the same window
+       under None answers HTCLIENT everywhere - the ability to be resized simply is not
+       there any more. So the dialogs that CanResize (the ones that also extend the client
+       area over their frame) keep BorderOnly, and the fixed-size ones - About, the input
+       box, the message box, the expression builder, the quality order - take None, where
+       nothing is lost and no non-client frame is drawn at all.
+       Either way no frame line reaches the screen: the 1px line the dialogs used to show
+       was this file's own BorderBrush (VdfDialogFrameBrush) on Border.dlgframe, and that
+       is gone. Only MainWindow keeps the full caption. -->
 
   <Style Selector="Window">
     <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
@@ -71,11 +81,23 @@
        means one edge, not two. On Windows 11 the compositor rounds windows like these by
        itself (it keys off WS_THICKFRAME, or a 1px non-client frame), so the corners come
        back there at whatever radius the system picks. -->
+  <!-- The frame carries no outline of its own any more. It is not that outlines cannot
+       separate two surfaces - it is that a 1px line is not what makes something read as
+       floating, and while the line was there nobody noticed there was no shadow: it was
+       doing the separating all by itself, which is a job it does poorly. The dialog is a
+       rectangle on a rectangle either way; depth has to come from below the edge.
+       Which is why this class now needs air around it. A shadow drawn by the content
+       layer fell outside the client area, and the client area is where every pixel gets
+       clipped, so it never rendered: the dialogs now set the window transparent and pad
+       their content by 28px, giving the shadow somewhere real to land (see the
+       TransparencyLevelHint on the twelve dialog windows). 24 was the first try and it
+       was not enough - screenshots show the falloff still being cut off at the window
+       edge instead of fading out, which is a shadow that stops in mid-air. For the same reason the
+       shapes stay square: the shadow under the edge is what marks the corner now,
+       and a rounded edge over it would draw a second line around nothing. -->
   <Style Selector="Border.dlgframe">
-    <Setter Property="BorderBrush" Value="{DynamicResource VdfDialogFrameBrush}" />
-    <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="0" />
-    <Setter Property="BoxShadow" Value="{DynamicResource VdfCardShadow}" />
+    <Setter Property="BoxShadow" Value="{DynamicResource VdfDialogShadow}" />
   </Style>
 
   <Style Selector="TextBlock.dlgtitle">

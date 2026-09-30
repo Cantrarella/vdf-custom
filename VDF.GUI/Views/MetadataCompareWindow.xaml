@@ -16,6 +16,8 @@
         MinHeight="360"
         Icon="/Assets/icon.ico"
         WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
         WindowDecorations="BorderOnly"
         ExtendClientAreaToDecorationsHint="True"
         Title="{Binding Source={x:Static app:App.Lang}, Path=[MetadataCompare.Title]}">
@@ -46,7 +48,9 @@
     </Style>
   </Window.Styles>
 
-  <Border Classes="dlgframe">
+  <Border Classes="dlgframe"
+          Margin="28"
+          Background="{DynamicResource VdfCardBrush}">
   <DockPanel Margin="14">
     <!-- The caption is gone, so the window's own name is the body's heading. -->
     <TextBlock DockPanel.Dock="Top"

@@ -17,6 +17,8 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     WindowStartupLocation="CenterOwner"
+    Background="Transparent"
+    TransparencyLevelHint="Transparent"
     WindowDecorations="BorderOnly"
     ExtendClientAreaToDecorationsHint="True"
     mc:Ignorable="d">
@@ -107,7 +109,9 @@
     </Style>
   </Window.Styles>
 
-  <Border Classes="dlgframe" ClipToBounds="True">
+  <Border Classes="dlgframe" ClipToBounds="True"
+          Margin="28"
+          Background="{DynamicResource VdfCardBrush}">
   <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
 
     <!-- ======== Toolbar: type/error/flag filter chips · search · sort ======== -->

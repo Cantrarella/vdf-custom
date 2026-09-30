@@ -22,6 +22,8 @@
     Icon="/Assets/icon.ico"
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
+    Background="Transparent"
+    TransparencyLevelHint="Transparent"
     WindowDecorations="BorderOnly"
     ExtendClientAreaToDecorationsHint="True"
     mc:Ignorable="d">
@@ -72,7 +74,9 @@
         </Style>
     </Window.Styles>
 
-    <Border Classes="dlgframe">
+    <Border Classes="dlgframe"
+            Margin="28"
+            Background="{DynamicResource VdfCardBrush}">
     <Grid
         Margin="16"
         RowDefinitions="Auto,*,Auto"
