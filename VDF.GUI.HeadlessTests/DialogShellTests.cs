@@ -92,7 +92,10 @@ public class DialogShellTests {
 			// The fill moved off the window and onto the card when the window went
 			// transparent; without it the card is see-through over the desktop.
 			Assert.Equal(255, (frame.Background as ISolidColorBrush)?.Color.A ?? -1);
-			Assert.Equal(new CornerRadius(0), frame.CornerRadius);
+			// The mockup's --r-xl. It was 0 while the window still drew a rectangular
+			// non-client frame, because a round card inside a square frame is two edges;
+			// the window paints its own shadow now, so there is only the card's edge.
+			Assert.Equal(new CornerRadius(26), frame.CornerRadius);
 		}
 		finally {
 			dialog.Hide();
@@ -147,6 +150,41 @@ public class DialogShellTests {
 			HeadlessUi.Pump();
 		}
 	});
+
+	[Fact]
+	public Task The_shell_has_a_scrim_to_darken_while_a_dialog_is_open() => HeadlessUi.Run(() => {
+		// The dimming itself only runs where there is a real shell behind the dialog
+		// (see Utils/DialogDim), which a headless session does not have. What can be
+		// guarded here is the layer it paints: present in the shell, opaque enough to
+		// darken, and different per theme - dimming a dark page with the light theme's
+		// grey would barely register.
+		// The shell is shared by the whole session, so the theme it was found with has to
+		// go back: AppearanceTests asserts the theme it set afterwards.
+		var (shell, _) = HeadlessUi.Shell();
+		var was = shell.RequestedThemeVariant;
+		try {
+			shell.RequestedThemeVariant = ThemeVariant.Light;
+			HeadlessUi.Pump();
+			var light = ScrimIn(shell, "light");
+
+			shell.RequestedThemeVariant = ThemeVariant.Dark;
+			HeadlessUi.Pump();
+			Assert.NotEqual(light, ScrimIn(shell, "dark"));
+		}
+		finally {
+			shell.RequestedThemeVariant = was;
+			HeadlessUi.Pump();
+		}
+	});
+
+	static Color ScrimIn(Window shell, string theme) {
+		var scrim = shell.FindControl<Border>("DialogScrim");
+		Assert.True(scrim != null, "the shell lost the layer that dims it behind a dialog");
+		var brush = scrim!.Background as ISolidColorBrush;
+		Assert.True(brush != null, $"the {theme} scrim resolved to nothing, so it darkens nothing");
+		Assert.True(brush!.Color.A > 0, $"the {theme} scrim is fully transparent and dims nothing");
+		return brush.Color;
+	}
 
 	static void AssertShadowsDownward(BoxShadows shadows, string theme) {
 		Assert.True(shadows.Count == 1, $"the {theme} card wants exactly one shadow, the theme gave {shadows.Count}");

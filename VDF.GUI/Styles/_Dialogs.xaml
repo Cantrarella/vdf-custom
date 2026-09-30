@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui">
+        xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
+        xmlns:utils="clr-namespace:VDF.GUI.Utils;assembly=VDF.GUI">
 
   <!-- ===== The dialogs =====
        Every window that is not MainWindow: the message box, the input box, About, the
@@ -42,6 +43,10 @@
          not its Foreground, so it picks this up as well. -->
     <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     <Setter Property="FontSize" Value="13.5" />
+    <!-- Dim the shell behind every dialog. It hangs on the Window selector so none of
+         the twelve has to carry it and none can be missed, and DialogDim skips
+         MainWindow - this selector matches it too, and the shell must not dim itself. -->
+    <Setter Property="utils:DialogDim.AutoDim" Value="True" />
   </Style>
 
   <!-- The dialog body: padding only. It drew a card with a border and a shadow while the
@@ -72,31 +77,30 @@
        and the comparer, which had an outline of its own at 2px and square corners, now
        carrying this same class as the other eleven.
 
-       The frame is square, and that is the fix for the corners, not a retreat from them.
-       A dialog is a top-level window, so Windows gives it a rectangle: a rectangular 1px
-       non-client frame and a rectangular shadow. A rounded outline on the content layer
-       thus always drew a second, rounder edge inside the window's own square one, and the
-       four corner squares in between showed the window's background - card colour, so
-       quiet, but unmistakably a second outline around an outline. Square on both layers
-       means one edge, not two. On Windows 11 the compositor rounds windows like these by
-       itself (it keys off WS_THICKFRAME, or a 1px non-client frame), so the corners come
-       back there at whatever radius the system picks. -->
-  <!-- The frame carries no outline of its own any more. It is not that outlines cannot
-       separate two surfaces - it is that a 1px line is not what makes something read as
-       floating, and while the line was there nobody noticed there was no shadow: it was
-       doing the separating all by itself, which is a job it does poorly. The dialog is a
-       rectangle on a rectangle either way; depth has to come from below the edge.
-       Which is why this class now needs air around it. A shadow drawn by the content
-       layer fell outside the client area, and the client area is where every pixel gets
-       clipped, so it never rendered: the dialogs now set the window transparent and pad
-       their content by 28px, giving the shadow somewhere real to land (see the
-       TransparencyLevelHint on the twelve dialog windows). 24 was the first try and it
-       was not enough - screenshots show the falloff still being cut off at the window
-       edge instead of fading out, which is a shadow that stops in mid-air. For the same reason the
-       shapes stay square: the shadow under the edge is what marks the corner now,
-       and a rounded edge over it would draw a second line around nothing. -->
+       The corners are round again, and what they used to collide with is gone. The window
+       used to be given a rectangular 1px non-client frame and a rectangular shadow, so a
+       rounded outline on the content layer drew a second, rounder edge inside the window's
+       own square one and the four corner squares between them showed the window's
+       background. That is why the frame went square. The window is transparent now and
+       draws its own shadow, so there is no rectangle to disagree with: the corners are
+       the mockup's own radius (26, its largest corner token) and there is only one edge. -->
+  <!-- The frame carries no outline of its own. It is not that outlines cannot separate two
+       surfaces - it is that a 1px line is not what makes something read as floating, and
+       while the line was there nobody noticed there was no shadow: it was doing the
+       separating all by itself, which is a job it does poorly. What separates them now is
+       the backdrop - the shell behind an open dialog is dimmed (VdfScrimBrush, hung from
+       the Window rule above by DialogDim) - and the shadow underneath, which is what
+       actually lifts the edge.
+
+       Which is why this class needs air around it. A shadow drawn by the content layer fell
+       outside the client area, and the client area is where every pixel gets clipped, so it
+       never rendered: the dialogs set the window transparent and pad their content by 28px,
+       giving the shadow somewhere real to land (see the TransparencyLevelHint on the twelve
+       dialog windows). 24 was the first try and it was not enough - screenshots show the
+       falloff still being cut off at the window edge instead of fading out, which is a
+       shadow that stops in mid-air. -->
   <Style Selector="Border.dlgframe">
-    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="CornerRadius" Value="26" />
     <Setter Property="BoxShadow" Value="{DynamicResource VdfDialogShadow}" />
   </Style>
 

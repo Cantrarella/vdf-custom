@@ -109,9 +109,13 @@
     </Style>
   </Window.Styles>
 
-  <Border Classes="dlgframe" ClipToBounds="True"
-          Margin="28"
+  <!-- Two layers, because one cannot do both jobs: ClipToBounds clips the whole rendered
+       output of the border it sits on, its BoxShadow included, so a single clipped
+       dlgframe had no shadow at all. The outer one keeps the radius and the shadow; the
+       inner one only trims the full-bleed toolbar's square corners back to the radius. -->
+  <Border Classes="dlgframe" Margin="28"
           Background="{DynamicResource VdfCardBrush}">
+  <Border ClipToBounds="True" CornerRadius="26">
   <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
 
     <!-- ======== Toolbar: type/error/flag filter chips · search · sort ======== -->
@@ -493,5 +497,6 @@
       </DockPanel>
     </Border>
   </Grid>
+  </Border>
   </Border>
 </Window>
