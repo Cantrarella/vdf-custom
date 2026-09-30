@@ -191,20 +191,32 @@
                          is separated from the page by the elevation shadow, so this line has
                          only to close the shape. -->
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E2E8F0" />
-                    <!-- The rail's own surface (the mockup's rail token): white at 74% over the
-                         page bg — left translucent on purpose, which is where its depth comes
-                         from. The page carries two wide glows at its top corners (VdfGlow*Brush
-                         below); seen through 74% white they leave the rail a touch bluer near
-                         those corners than lower down. Flattened to opaque white it would sit
-                         next to a #F6F9FC page as a dead white block with nothing in it.
-                         The high-contrast themes keep it opaque — see their own entries. -->
-                    <SolidColorBrush x:Key="VdfRailBrush" Color="#BDFFFFFF" />
+                    <!-- The rail's own surface. Left translucent on purpose: the page carries
+                         two wide glows at its top corners (VdfGlow*Brush below) and a veil
+                         lets them through, which is where the rail's depth comes from. A flat
+                         fill sits next to the page as a dead block with nothing in it.
+                         The mockup's own token is white at 74%, which over the #F6F9FC page
+                         composes to #FDFDFE - 7/4/2 from the page, the same surface as
+                         everything beside it, with the 1px line doing all the separating.
+                         The first answer was #EDF3F9, 9/6/3, which still reads as flat. The
+                         panel is a further step down: 90% over a base of #DFE8F3, composing
+                         to #E1EAF4, 21/15/8 from the page. -->
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#E6DFE8F3" />
                     <!-- Inset tracks and wells on the rail (the mockup's surface-sunken). -->
                     <SolidColorBrush x:Key="VdfSunkenBrush" Color="#F1F5F9" />
                     <!-- The selected rail entry and the open settings child (the mockup's
                          accent-soft token). Keeping it on the palette stops these two from
                          borrowing the theme's own accent container, which is a step darker. -->
                     <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#EAF5FF" />
+                    <!-- The rail's own set of panel-to-entry steps. Sinking the rail a step
+                         below the page leaves accent-soft (#EAF5FF) only 9/11/11 away from the
+                         new panel, which is a selection nobody can see, so the rail's states
+                         are figured against the rail and not against the page. Active is a
+                         step bluer and a step darker; the theme track is a step darker still,
+                         so it reads as sunk into the panel rather than sitting on it. -->
+                    <SolidColorBrush x:Key="VdfRailActiveBrush" Color="#C9E0F9" />
+                    <SolidColorBrush x:Key="VdfRailTrackBrush" Color="#D5DEE9" />
+                    <SolidColorBrush x:Key="VdfRailChipBrush" Color="#FFFFFF" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
                          are 3.3 to 4.4:1, so the light theme dims less. -->
@@ -406,11 +418,23 @@
                     <SolidColorBrush x:Key="VdfPageBrush" Color="#111820" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#19232E" />
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#2A3745" />
-                    <!-- The mockup's rgba(19,30,42,.78) — same reason as light: the rail is a
-                         veil over the glows, not a slab. -->
-                    <SolidColorBrush x:Key="VdfRailBrush" Color="#C7131E2A" />
+                    <!-- Same reason as light: the rail is a veil over the glows, not a slab.
+                         The mockup's rgba(19,30,42,.78) composes to about #18222E against the
+                         #111820 page, which is a step up but not enough to read as a panel.
+                         Now 85%, base #202C3A, composing to #1E2A37: +13/18/23 over the page.
+                         In dark the layer in front is the lighter one, so the rail lifts
+                         rather than sinks, and its states go the other way from light. -->
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#D9202C3A" />
                     <SolidColorBrush x:Key="VdfSunkenBrush" Color="#151F29" />
                     <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#223748" />
+                    <!-- Active is lighter than the panel (the lighter layer is the nearer one
+                         here), and the theme track is darker than it, so it still reads as
+                         sunk. The chosen half of the track is the raised one: VdfCardBrush,
+                         #19232E, is darker than this new panel, which would have inverted
+                         selected and unselected. -->
+                    <SolidColorBrush x:Key="VdfRailActiveBrush" Color="#2C4459" />
+                    <SolidColorBrush x:Key="VdfRailTrackBrush" Color="#131C26" />
+                    <SolidColorBrush x:Key="VdfRailChipBrush" Color="#27354A" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>
                     <x:Double x:Key="VdfTextSoftOpacity">0.65</x:Double>

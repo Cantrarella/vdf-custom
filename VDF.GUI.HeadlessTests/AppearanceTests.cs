@@ -18,6 +18,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
@@ -111,6 +112,46 @@ public class AppearanceTests {
 			window.Close();
 		}
 	}));
+
+	// The rail is meant to read as a panel of its own, and which way the step goes depends on
+	// the theme: light sinks it under the page, dark lifts it above it. Both brushes are part
+	// transparent, so this compares the colours rather than what they compose to on screen.
+	[Fact]
+	public Task Theme_TheRail_SitsAStepAwayFromTheShellInBothDirections() => HeadlessUi.Run(() => {
+		var (window, _) = HeadlessUi.Shell();
+		var before = window.RequestedThemeVariant;
+		try {
+			var light = RailOverShell(window, ThemeVariant.Light);
+			var dark = RailOverShell(window, ThemeVariant.Dark);
+
+			Assert.NotEqual(light.rail, dark.rail);
+			Assert.True(Luma(light.rail) < Luma(light.shell),
+				"in the light theme the rail is the panel sunk below the page");
+			Assert.True(Luma(dark.rail) > Luma(dark.shell),
+				"in the dark theme the rail is the panel lifted above the page");
+		}
+		finally {
+			window.RequestedThemeVariant = before;
+			HeadlessUi.Pump();
+		}
+	});
+
+	static (Color rail, Color shell) RailOverShell(Window window, ThemeVariant variant) {
+		window.RequestedThemeVariant = variant;
+		HeadlessUi.Pump();
+		var rail = window.FindControl<Border>("RailPanel");
+		Assert.True(rail != null, "the shell lost the rail panel");
+		return (SolidOf(rail!.Background, "rail"), SolidOf(window.Background, "shell"));
+	}
+
+	static Color SolidOf(IBrush? brush, string what) {
+		var solid = brush as ISolidColorBrush;
+		Assert.True(solid != null, $"the {what} resolved to no colour in this theme");
+		Assert.True(solid!.Color.A > 0, $"the {what} is fully transparent, so it is no surface");
+		return solid.Color;
+	}
+
+	static double Luma(Color c) => 0.299 * c.R + 0.587 * c.G + 0.114 * c.B;
 
 	static void WithScale(Action body) {
 		int before = SettingsFile.Instance.UiScalePercent;

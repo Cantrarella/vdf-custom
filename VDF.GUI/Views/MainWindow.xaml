@@ -157,7 +157,9 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="11" />
-            <Setter Property="Padding" Value="12,9" />
+            <!-- 10 over a 20px icon is a 40px row. 9 was 36px, a size down from the
+                 reference sidebar's 40, and the entries read as cramped next to it. -->
+            <Setter Property="Padding" Value="12,10" />
             <Setter Property="FontSize" Value="13.5" />
             <Setter Property="FontWeight" Value="500" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -174,9 +176,12 @@
         <!-- The item of the view currently shown: the mockup's accent-soft fill, and the
              accent ink for the label. The mockup also draws an inset accent ring here; the
              user read that ring as a border around the selection and asked for it gone, so
-             the fill carries the state on its own. -->
+             the fill carries the state on its own.
+             It reads from the rail's own step now, not the page's accent-soft: once the rail
+             sits a step below the page, accent-soft is 3/2/6 away from it, which is no
+             selection at all. -->
         <Style Selector="Button.railitem.active /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRailActiveBrush}" />
         </Style>
         <Style Selector="Button.railitem.active">
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -194,7 +199,10 @@
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="LetterSpacing" Value="0.9" />
-            <Setter Property="Margin" Value="12,10,0,6" />
+            <!-- 16 above and 8 below, from 10 and 6: at the old values a group heading sat
+                 closer to the entries above it than to its own, and the two groups ran
+                 together into one list. -->
+            <Setter Property="Margin" Value="12,16,0,8" />
             <Setter Property="Opacity" Value="{DynamicResource VdfTextMutedOpacity}" />
         </Style>
         <!-- Brand block: the whole block is the collapse toggle (mockup .brand),
@@ -218,7 +226,9 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="9" />
-            <Setter Property="Padding" Value="22,7,10,7" />
+            <!-- Follows the parent row up by a size, so a child is not shorter than the
+                 entry it hangs under. -->
+            <Setter Property="Padding" Value="22,8,10,8" />
             <Setter Property="FontSize" Value="12.5" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -231,10 +241,10 @@
         <Style Selector="Button.railsub:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
-        <!-- The section that is showing (mockup .nav-sub-item.active): the same soft accent
-             the rail's own entries light up with, and the dot takes the accent colour. -->
+        <!-- The section that is showing (mockup .nav-sub-item.active): the same fill the
+             rail's own entries light up with, and the dot takes the accent colour. -->
         <Style Selector="Button.railsub.active /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRailActiveBrush}" />
         </Style>
         <Style Selector="Button.railsub.active">
             <Setter Property="Opacity" Value="1" />
@@ -280,8 +290,12 @@
         <Style Selector="Button.railseg Path">
             <Setter Property="Stroke" Value="{DynamicResource VdfAccentTextBrush}" />
         </Style>
+        <!-- The raised half. VdfCardBrush is the page's card, and against the rail's new
+             darker panel it is the darker of the two in the dark theme, which would show
+             the chosen half as the sunken one. The rail's own chip stays above the track
+             in both themes. -->
         <Style Selector="Button.railseg.on /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource VdfCardBrush}" />
+            <Setter Property="Background" Value="{DynamicResource VdfRailChipBrush}" />
         </Style>
         <Style Selector="Button.railseg.on">
             <Setter Property="Opacity" Value="1" />
@@ -307,7 +321,11 @@
              这些规则都挂在根节点 Border.railmin 下面，展开时一条都不生效。 -->
         <Style Selector="Border.railmin Button.railitem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="Padding" Value="0,10" />
+            <!-- There is no gap property between these: the nav stack is Spacing 0, so the
+                 icons are separated by nothing but each row's own vertical padding, and
+                 the clear space between two icons is two of them. 13 gives 26px, from 20.
+                 Four icons at 20 + 13*2 = 46px fit the rail with room to spare. -->
+            <Setter Property="Padding" Value="0,13" />
         </Style>
         <!-- 两个用 DockPanel 的条目（查重结果/设置）自己写死了 HorizontalContentAlignment=Stretch，
              样式压不过本地值，所以改成把内容块本身居中。 -->
@@ -407,6 +425,7 @@
                 <!-- ============ 侧边栏 (mockup .rail) ============ -->
                 <!-- Sidebar rail: 248px wide (74px collapsed), padding 18px 12px 14px. -->
                 <Border
+                    x:Name="RailPanel"
                     Grid.Column="0"
                     Classes.railmin="{Binding IsRailCollapsed}"
                     Width="{Binding RailColumnWidth}"
@@ -476,7 +495,7 @@
                             <Border
                                 Margin="4,10,4,4"
                                 Padding="3"
-                                Background="{DynamicResource VdfSunkenBrush}"
+                                Background="{DynamicResource VdfRailTrackBrush}"
                                 CornerRadius="11">
                                 <UniformGrid
                                     x:Name="RailThemeSeg">
@@ -549,11 +568,11 @@
                                     AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.ScanSettings]}"
                                     Command="{Binding ShowRailScanSetupCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.ScanSettings]}">
-                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="12">
                                         <Path
                                         Stretch="Uniform"
-                                            Width="18"
-                                            Height="18"
+                                            Width="20"
+                                            Height="20"
                                             VerticalAlignment="Center"
                                             Data="M4 11a7 7 0 1 0 14 0a7 7 0 1 0-14 0M16 16L20 20"
                                             Fill="Transparent"
@@ -578,8 +597,8 @@
                                         <Path
                                         Stretch="Uniform"
                                             DockPanel.Dock="Left"
-                                            Width="18"
-                                            Height="18"
+                                            Width="20"
+                                            Height="20"
                                             VerticalAlignment="Center"
                                             Data="M5 4h14a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM5 14h14a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z"
                                             Fill="Transparent"
@@ -602,7 +621,7 @@
                                                 Text="{Binding Duplicates.Count}" />
                                         </Border>
                                         <TextBlock
-                                            Margin="10,0,6,0"
+                                            Margin="12,0,6,0"
                                             VerticalAlignment="Center"
                                             IsVisible="{Binding ShowRailLabels}"
                                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Results]}" />
@@ -624,11 +643,11 @@
                                     AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Blacklist]}"
                                     Command="{Binding OpenBlacklistManagerCommand}"
                                     ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Blacklist]}">
-                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="12">
                                         <Path
                                         Stretch="Uniform"
-                                            Width="18"
-                                            Height="18"
+                                            Width="20"
+                                            Height="20"
                                             VerticalAlignment="Center"
                                             Data="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M6 6l12 12"
                                             Fill="Transparent"
@@ -655,8 +674,8 @@
                                         <Path
                                         Stretch="Uniform"
                                             DockPanel.Dock="Left"
-                                            Width="18"
-                                            Height="18"
+                                            Width="20"
+                                            Height="20"
                                             VerticalAlignment="Center"
                                             Data="M12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7M18.4 18.4l-1.7-1.7M7.3 7.3L5.6 5.6"
                                             Fill="Transparent"
@@ -676,7 +695,7 @@
                                             StrokeJoin="Round"
                                             StrokeThickness="2.4" />
                                         <TextBlock
-                                            Margin="10,0,0,0"
+                                            Margin="12,0,0,0"
                                             VerticalAlignment="Center"
                                             IsVisible="{Binding ShowRailLabels}"
                                             Text="{Binding Source={x:Static local:App.Lang}, Path=[Rail.Settings]}" />
