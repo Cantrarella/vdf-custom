@@ -62,9 +62,9 @@ VDF 还可以用神经网络图像嵌入来额外比对视频 —— 通过 [ONN
 
 # 下载
 
-[每日构建](https://github.com/0x90d/videoduplicatefinder/releases/tag/4.1.x) —— 每次提交后附件都会自动重建并替换。
+[每日构建](https://github.com/Cantrarella/vdf-custom/releases/tag/4.1.x) —— 每次提交后附件都会自动重建并替换。
 
-[版本化发布](https://github.com/0x90d/videoduplicatefinder/releases)（形如 `v4.1.1` 的标签）不定期发布，发布后文件不再变动，适合包管理器和需要固定下载源的人。
+[版本化发布](https://github.com/Cantrarella/vdf-custom/releases)（形如 `v4.1.1` 的标签）不定期发布，发布后文件不再变动，适合包管理器和需要固定下载源的人。
 
 > **想用经典界面？** 4.1 换了新界面。最后的经典界面版本仍保留在 [4.0.x 发布页](https://github.com/0x90d/videoduplicatefinder/releases/tag/4.0.x)，数据库和设置双向兼容。
 

@@ -4,6 +4,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <!-- The name Windows shows for the app itself: the taskbar button, Alt+Tab, and
+         the file-properties sheet all read these, not the window title (which is
+         deliberately empty). Left unset they default to the assembly name, so the
+         app used to introduce itself as "VDF.GUI". -->
+    <AssemblyTitle>Video Duplicate Finder</AssemblyTitle>
+    <Product>Video Duplicate Finder</Product>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- Opt out of the CET-compatible apphost. On this machine (Windows 10 21H1,
          build 19043) the apphost built with /CETCOMPAT fails fast at startup with
