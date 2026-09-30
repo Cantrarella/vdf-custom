@@ -209,30 +209,53 @@
   <Style Selector="Slider.mock">
     <Setter Property="Height" Value="20" />
     <Setter Property="Template">
-      <ControlTemplate>
+      <!-- A control template has to keep the control's part contract, or the parts
+           silently stop being parts: with no TargetType this was a template in name
+           only, and the two track buttons were anonymous, so Slider.OnApplyTemplate
+           never found them (it looks up PART_DecreaseButton / PART_IncreaseButton by
+           name). Result: the knob never moved when the value did (it had nowhere to
+           be - Track had no value coming in, so it centred its thumb), clicking the
+           track did nothing, and the fill stayed empty. Everything a user touches
+           about this slider lived in those three lines. -->
+      <ControlTemplate TargetType="Slider">
         <Panel VerticalAlignment="Center">
           <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
                   Background="{DynamicResource VdfSliderTrackBrush}" />
           <Track x:Name="PART_Track"
+                 Orientation="{TemplateBinding Orientation}"
                  Minimum="{TemplateBinding Minimum}"
                  Maximum="{TemplateBinding Maximum}"
-                 Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                 Value="{TemplateBinding Value}">
             <Track.DecreaseButton>
-              <RepeatButton Focusable="False" IsTabStop="False">
+              <!-- Named PART_DecreaseButton on purpose, not for tidiness: this is the
+                   part name the slider looks up to turn a click on the track into a
+                   new value. Without the name the button still paints the fill, so
+                   nothing looks broken - only clicking is dead. -->
+              <RepeatButton x:Name="PART_DecreaseButton" Focusable="False" IsTabStop="False">
                 <RepeatButton.Template>
                   <ControlTemplate>
-                    <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
-                            Background="{DynamicResource VdfSliderFillBrush}" />
+                    <!-- The click target is the whole 20px lane, the paint is the 6px bar
+                         inside it. Hit-testing only reaches what has a brush, so a 6px tall
+                         border made a 6px tall slider: every click a few pixels off the
+                         centre line went past the buttons and did nothing at all. The
+                         transparent panel is what the slider's own pressed handler needs
+                         to see. -->
+                    <Panel Background="Transparent">
+                      <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
+                              Background="{DynamicResource VdfSliderFillBrush}" />
+                    </Panel>
                   </ControlTemplate>
                 </RepeatButton.Template>
               </RepeatButton>
             </Track.DecreaseButton>
             <Track.IncreaseButton>
-              <RepeatButton Focusable="False" IsTabStop="False">
+              <RepeatButton x:Name="PART_IncreaseButton" Focusable="False" IsTabStop="False">
                 <RepeatButton.Template>
                   <ControlTemplate>
-                    <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
-                            Background="Transparent" />
+                    <Panel Background="Transparent">
+                      <Border Height="6" CornerRadius="3" VerticalAlignment="Center"
+                              Background="Transparent" />
+                    </Panel>
                   </ControlTemplate>
                 </RepeatButton.Template>
               </RepeatButton>
