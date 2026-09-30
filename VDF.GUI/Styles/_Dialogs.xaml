@@ -48,6 +48,10 @@
          the twelve has to carry it and none can be missed, and DialogDim skips
          MainWindow - this selector matches it too, and the shell must not dim itself. -->
     <Setter Property="utils:DialogDim.AutoDim" Value="True" />
+    <!-- A captionless window has nothing the OS will drag it by, so the body is the
+         handle. It hangs on the same Window rule as the dim, so all twelve get it and
+         none can be missed; DialogDrag skips MainWindow, which still has its caption. -->
+    <Setter Property="utils:DialogDrag.Enabled" Value="True" />
   </Style>
 
   <!-- The dialog body: padding only. It drew a card with a border and a shadow while the
