@@ -29,9 +29,9 @@ namespace VDF.Core.AI {
 	/// <summary>
 	/// Locates and downloads the two native components AI matching needs: the ONNX Runtime
 	/// library (per-RID archive from the official microsoft/onnxruntime GitHub release,
-	/// pinned version) and the DINOv2-small embedding model (SHA256-pinned). Nothing is
-	/// bundled with VDF releases — the FFmpeg pattern: opt-in download on first use into
-	/// <c>{StateFolder}/ai</c>. Under Native AOT the OnnxRuntime *Managed* wrapper is pure
+	/// pinned version) and the DINOv2-small embedding model (SHA256-pinned). Windows
+	/// releases include a complete ai/ bundle; incomplete installations can still download
+	/// into <c>{StateFolder}/ai</c>. Under Native AOT the OnnxRuntime *Managed* wrapper is pure
 	/// P/Invoke; a DllImport resolver points its "onnxruntime" import at the downloaded
 	/// library, so no native lib has to sit next to the executable.
 	/// </summary>
@@ -51,7 +51,32 @@ namespace VDF.Core.AI {
 		const string ModelFallbackUrl = "https://huggingface.co/Xenova/dinov2-small/resolve/main/onnx/model_quantized.onnx";
 		const string VersionMarkerFileName = "runtime.version";
 
-		public static string AiFolder => Path.Combine(CoreUtils.StateFolder, "ai");
+		// Complete portable bundles are read in place, including read-only installations.
+		// Incomplete bundles retain the existing writable download/recovery location.
+		public static string AiFolder => ResolveAiFolder(CoreUtils.StateFolder, AppContext.BaseDirectory);
+
+		internal static string ResolveAiFolder(string stateFolder, string applicationFolder) {
+			string bundled = Path.Combine(applicationFolder, "ai");
+			try {
+				string marker = Path.Combine(bundled, VersionMarkerFileName);
+				if (File.Exists(Path.Combine(bundled, ModelFileName)) &&
+					File.Exists(marker) && File.ReadAllText(marker).Trim() == RuntimeVersion &&
+					Directory.EnumerateFiles(bundled).Any(IsRuntimeLibrary))
+					return bundled;
+			}
+			catch (IOException) { }
+			catch (UnauthorizedAccessException) { }
+			return Path.Combine(stateFolder, "ai");
+		}
+
+		static bool IsRuntimeLibrary(string file) {
+			string name = Path.GetFileName(file);
+			return name.Contains("onnxruntime", StringComparison.OrdinalIgnoreCase) &&
+				!name.Contains("providers", StringComparison.OrdinalIgnoreCase) &&
+				(name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) ||
+				name.Contains(".so", StringComparison.OrdinalIgnoreCase) ||
+				name.EndsWith(".dylib", StringComparison.OrdinalIgnoreCase));
+		}
 		public static string ModelPath => TestOverrideModelPath ?? Path.Combine(AiFolder, ModelFileName);
 
 		/// <summary>

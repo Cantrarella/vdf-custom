@@ -113,11 +113,10 @@ public class AppearanceTests {
 		}
 	}));
 
-	// The rail is meant to read as a panel of its own, and which way the step goes depends on
-	// the theme: light sinks it under the page, dark lifts it above it. Both brushes are part
-	// transparent, so this compares the colours rather than what they compose to on screen.
+	// The accepted reference blends the sidebar into the shell's existing wash. Test the
+	// composed surface instead of raw RGB: opaque slabs must not return in either theme.
 	[Fact]
-	public Task Theme_TheRail_SitsAStepAwayFromTheShellInBothDirections() => HeadlessUi.Run(() => {
+	public Task Theme_TheRail_BlendsIntoTheShellInBothThemes() => HeadlessUi.Run(() => {
 		var (window, _) = HeadlessUi.Shell();
 		var before = window.RequestedThemeVariant;
 		try {
@@ -125,10 +124,14 @@ public class AppearanceTests {
 			var dark = RailOverShell(window, ThemeVariant.Dark);
 
 			Assert.NotEqual(light.rail, dark.rail);
-			Assert.True(Luma(light.rail) < Luma(light.shell),
-				"in the light theme the rail is the panel sunk below the page");
-			Assert.True(Luma(dark.rail) > Luma(dark.shell),
-				"in the dark theme the rail is the panel lifted above the page");
+			foreach (var (rail, shell) in new[] { light, dark }) {
+				Assert.InRange(rail.A, (byte)1, (byte)32);
+				double opacity = rail.A / 255d;
+				Assert.InRange(Math.Abs((Luma(rail) - Luma(shell)) * opacity), 0, 2);
+			}
+			var panel = window.FindControl<Border>("RailPanel")!;
+			Assert.Equal(new Thickness(0, 0, 1, 0), panel.BorderThickness);
+			Assert.NotNull(panel.BorderBrush);
 		}
 		finally {
 			window.RequestedThemeVariant = before;

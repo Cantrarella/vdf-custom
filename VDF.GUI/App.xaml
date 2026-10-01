@@ -16,6 +16,10 @@
                      the VdfAccent ramp below. Border brushes carry the mockup's 45% alpha so
                      badges/chips survive selected-row backgrounds (locked decision 12). -->
                 <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="VdfRailHoverBrush" Color="#E1E5E9" />
+                    <SolidColorBrush x:Key="VdfRailBrandBrush" Color="#BFDCE6F1" />
+                    <SolidColorBrush x:Key="VdfRailLineBrush" Color="#CFD9E4" />
+                    <SolidColorBrush x:Key="VdfRailTextBrush" Color="#475569" />
                     <!-- Text tones are darker than the mockup's (#1C8A52 / #A06A10 / #BB4237):
                          those reached only 3.4 to 4.4:1 on white, on their own soft chips and
                          on the checked-row tint. WCAG AA wants 4.5:1. Borders keep the
@@ -191,17 +195,8 @@
                          is separated from the page by the elevation shadow, so this line has
                          only to close the shape. -->
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#E2E8F0" />
-                    <!-- The rail's own surface. Left translucent on purpose: the page carries
-                         two wide glows at its top corners (VdfGlow*Brush below) and a veil
-                         lets them through, which is where the rail's depth comes from. A flat
-                         fill sits next to the page as a dead block with nothing in it.
-                         The mockup's own token is white at 74%, which over the #F6F9FC page
-                         composes to #FDFDFE - 7/4/2 from the page, the same surface as
-                         everything beside it, with the 1px line doing all the separating.
-                         The first answer was #EDF3F9, 9/6/3, which still reads as flat. The
-                         panel is a further step down: 90% over a base of #DFE8F3, composing
-                         to #E1EAF4, 21/15/8 from the page. -->
-                    <SolidColorBrush x:Key="VdfRailBrush" Color="#E6DFE8F3" />
+                    <!-- A very light veil lets the existing shell wash continue through the sidebar. -->
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#18FFFFFF" />
                     <!-- Inset tracks and wells on the rail (the mockup's surface-sunken). -->
                     <SolidColorBrush x:Key="VdfSunkenBrush" Color="#F1F5F9" />
                     <!-- The selected rail entry and the open settings child (the mockup's
@@ -214,8 +209,8 @@
                          are figured against the rail and not against the page. Active is a
                          step bluer and a step darker; the theme track is a step darker still,
                          so it reads as sunk into the panel rather than sitting on it. -->
-                    <SolidColorBrush x:Key="VdfRailActiveBrush" Color="#C9E0F9" />
-                    <SolidColorBrush x:Key="VdfRailTrackBrush" Color="#D5DEE9" />
+                    <SolidColorBrush x:Key="VdfRailActiveBrush" Color="#E0EDF8" />
+                    <SolidColorBrush x:Key="VdfRailTrackBrush" Color="#65DCE5EF" />
                     <SolidColorBrush x:Key="VdfRailChipBrush" Color="#FFFFFF" />
                     <!-- Dimmed secondary text. Dark keeps the mockup's 0.55 / 0.6 / 0.65, which
                          read 5:1 and better as light-on-dark. The same values as dark-on-white
@@ -304,6 +299,10 @@
                     <SolidColorBrush x:Key="VdfGlowTopRightBrush" Color="#E6F1FA" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="VdfRailHoverBrush" Color="#2C3743" />
+                    <SolidColorBrush x:Key="VdfRailBrandBrush" Color="#A62A3746" />
+                    <SolidColorBrush x:Key="VdfRailLineBrush" Color="#354454" />
+                    <SolidColorBrush x:Key="VdfRailTextBrush" Color="#B8C5D4" />
                     <SolidColorBrush x:Key="VdfGoodBrush" Color="#45B878" />
                     <SolidColorBrush x:Key="VdfGoodSoftBrush" Color="#17301F" />
                     <SolidColorBrush x:Key="VdfGoodBorderBrush" Color="#7345B878" />
@@ -429,13 +428,8 @@
                     <SolidColorBrush x:Key="VdfPageBrush" Color="#111820" />
                     <SolidColorBrush x:Key="VdfCardBrush" Color="#19232E" />
                     <SolidColorBrush x:Key="VdfCardLineBrush" Color="#2A3745" />
-                    <!-- Same reason as light: the rail is a veil over the glows, not a slab.
-                         The mockup's rgba(19,30,42,.78) composes to about #18222E against the
-                         #111820 page, which is a step up but not enough to read as a panel.
-                         Now 85%, base #202C3A, composing to #1E2A37: +13/18/23 over the page.
-                         In dark the layer in front is the lighter one, so the rail lifts
-                         rather than sinks, and its states go the other way from light. -->
-                    <SolidColorBrush x:Key="VdfRailBrush" Color="#D9202C3A" />
+                    <!-- A very light veil lets the existing shell wash continue through the sidebar. -->
+                    <SolidColorBrush x:Key="VdfRailBrush" Color="#18141D27" />
                     <SolidColorBrush x:Key="VdfSunkenBrush" Color="#151F29" />
                     <SolidColorBrush x:Key="VdfAccentSoftBrush" Color="#223748" />
                     <!-- Active is lighter than the panel (the lighter layer is the nearer one
@@ -444,7 +438,7 @@
                          #19232E, is darker than this new panel, which would have inverted
                          selected and unselected. -->
                     <SolidColorBrush x:Key="VdfRailActiveBrush" Color="#2C4459" />
-                    <SolidColorBrush x:Key="VdfRailTrackBrush" Color="#131C26" />
+                    <SolidColorBrush x:Key="VdfRailTrackBrush" Color="#66212D3A" />
                     <SolidColorBrush x:Key="VdfRailChipBrush" Color="#27354A" />
                     <x:Double x:Key="VdfTextFaintOpacity">0.55</x:Double>
                     <x:Double x:Key="VdfTextMutedOpacity">0.6</x:Double>

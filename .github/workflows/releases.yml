@@ -116,6 +116,12 @@ jobs:
           # Build GUI (Native AOT — verified AOT-safe for 4.0: compiled bindings,
           # source-generated JSON, statically-registered MemoryPack formatters)
           dotnet publish ./VDF.GUI/VDF.GUI.csproj -c Release -v q -p:PublishAot=true -p:VersionPrefix="$VERSION" -r "${{ matrix.target }}" -o "outputGUI"
+    - name: Bundle AI runtime and model
+      shell: pwsh
+      run: ./scripts/bundle-ai.ps1 -OutputDirectory outputGUI
+    - name: Package
+      shell: bash
+      run: |
           # Pack files — Windows only (this release no longer builds macOS or Linux).
           7z a -tzip "GUI-${{ matrix.target }}.zip" "./outputGUI/*"
           # Clean up
