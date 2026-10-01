@@ -125,6 +125,17 @@ namespace VDF.GUI.Views {
 
 		ListBox ResultsListControl => this.FindControl<ListBox>("ResultsList")!;
 
+		void OnGroupHeaderTapped(object? sender, TappedEventArgs e) {
+			if (e.Handled || sender is not Border { DataContext: ResultsGroupHeader header } host)
+				return;
+			// Header actions and the arrow already have their own commands. Only the
+			// surrounding title, summary and empty surface should toggle the group.
+			for (var source = e.Source as Visual; source != null && source != host; source = source.GetVisualParent())
+				if (source is Button) return;
+			ViewModel?.ToggleGroupCollapsedCommand.Execute(header).Subscribe();
+			e.Handled = true;
+		}
+
 		/// <summary>The control keyboard shortcuts are attached to (see ApplyKeyboardShortcuts).</summary>
 		internal ListBox ShortcutTarget => ResultsListControl;
 
