@@ -24,7 +24,7 @@
                     Width="60"
                     Height="60"
                     VerticalAlignment="Center"
-                    Source="/Assets/Linux/icon.png" />
+                    Source="/Assets/icon.png" />
                 <StackPanel VerticalAlignment="Center" Spacing="3">
                     <TextBlock
                         FontSize="20"
