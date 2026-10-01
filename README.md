@@ -53,7 +53,7 @@ VDF 还可以用神经网络图像嵌入来额外比对视频 —— 通过 [ONN
 
 ### 组件、隐私与开销
 
-- 首次使用时 VDF 会下载两个组件（**一次性约 100 MB**）：来自[微软官方发布](https://github.com/microsoft/onnxruntime/releases)的 ONNX Runtime 库，以及嵌入模型（按固定 SHA256 校验完整性）。它们存放在扫描数据库旁边。图形界面会在下载前询问。
+- 本仓库的 Windows x64 发布包已内置 **ONNX Runtime 1.23.2 与 DINOv2 嵌入模型**，完整解压后无需在首次使用 AI 匹配时另行下载。组件位于程序目录的 `ai` 文件夹，模型按固定 SHA256 校验完整性；请保留该文件夹。组件缺失或不完整时，软件仍提供下载入口。
 - **全部计算都在你本机的 CPU 上完成。** 没有云服务、不需要账号、不上传任何东西 —— 模型就在你自己的机器上分析画面，仅此而已。
 - 开销：哈希阶段大约每文件 50 毫秒；嵌入会缓存进扫描数据库（每文件约 2 KB），所以重新扫描依然很快。视觉部分检测把关键帧缓存单独存在 `DenseEmbeddings.db` 旁挂文件里（每个视频约 25 KB），会自行清理。
 - 仅支持 Windows (x64)。
@@ -89,15 +89,31 @@ VDF 还可以用神经网络图像嵌入来额外比对视频 —— 通过 [ONN
 
 ---
 
-# 截图（已过时）
+# 当前界面
 
-<img src="https://user-images.githubusercontent.com/46010672/129763067-8855a538-4a4f-4831-ac42-938eae9343bd.png" width="510">
+以下图片由当前版本的实际界面渲染，使用示例文件和示意缩略图展示。
+
+### 查重结果 · 浅色模式
+
+![浅色查重结果页](docs/screenshots/results-light.png)
+
+点击分组标题、统计文字或空白区域即可展开／折叠；“比较”和“保留最佳”按钮独立操作。
+
+### 查重结果 · 深色模式
+
+![深色查重结果页](docs/screenshots/results-dark.png)
+
+### 设置 · 匹配
+
+![匹配设置页](docs/screenshots/settings-light.png)
+
+设置分区位于侧栏，提示框采用与主题搭配的配色，并与选项卡片边缘保留间距。
 
 # 许可证
 
 Video Duplicate Finder 采用 AGPLv3 授权。
 
-可选的 AI 组件在首次使用时单独下载，各自遵循自己的许可证：ONNX Runtime（MIT）与 DINOv2-small 嵌入模型（Apache-2.0）。两者都没有打包进、也没有链接进发布版的二进制文件。
+AI 组件随 Windows x64 发布包提供，各自遵循自己的许可证：ONNX Runtime（MIT）与 DINOv2-small 嵌入模型（Apache-2.0）。第三方许可证文件随 `ai` 文件夹一同分发。
 
 # 致谢 / 第三方
 
