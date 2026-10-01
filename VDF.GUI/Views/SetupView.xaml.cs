@@ -16,7 +16,6 @@
 
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using VDF.GUI.Data;
@@ -45,11 +44,6 @@ namespace VDF.GUI.Views {
 				if (!target.Contains(path))
 					target.Add(path);
 			}
-		}
-
-		void OnAdvancedSettingsClick(object? sender, RoutedEventArgs e) {
-			if (ViewModel != null)
-				ViewModel.ActiveShellView = Data.ShellView.Settings;
 		}
 
 		// The radio inside a profile card is out of hit testing, so every click anywhere

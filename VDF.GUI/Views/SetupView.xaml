@@ -184,12 +184,6 @@
             Orientation="Horizontal"
             Spacing="12"
             VerticalAlignment="Center">
-          <Button
-              Classes="hyperlink"
-              FontSize="12.5"
-              VerticalAlignment="Center"
-              Click="OnAdvancedSettingsClick"
-              Content="{Binding Source={x:Static local:App.Lang}, Path=[Setup.AdvancedSettings]}" />
           <!-- The scan call to action (mockup .btn-primary): a SOLID primary fill with the
                mockup's own dark ink on it, and its own lift shadow. It used to be the soft
                accent surface with the accent ink, which read as another secondary button in
