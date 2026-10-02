@@ -38,7 +38,7 @@ public class DialogContrastTests {
 
 	[Theory]
 	[MemberData(nameof(DialogsAndThemes))]
-	public Task Text_IsReadable(string dialogName, string theme) => HeadlessUi.Run(() => {
+	public Task Text_IsReadable(string dialogName, string theme) => HeadlessUi.Run(async () => {
 		HeadlessUi.Shell(); // dialogs take their owner and icon from the main window
 		var variant = theme == "Dark" ? ThemeVariant.Dark : ThemeVariant.Light;
 		var dialog = Dialogs[dialogName]();
@@ -46,6 +46,10 @@ public class DialogContrastTests {
 		dialog.Show();
 		HeadlessUi.Pump();
 		try {
+			// Readability is measured after the dialog's short entry fade has settled.
+			await Task.Delay(180);
+			Avalonia.Headless.AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+			HeadlessUi.Pump();
 			// At rest, then with every control under the pointer, then pressed.
 			foreach (string state in new[] { "at rest", ":pointerover", ":pressed" }) {
 				if (state != "at rest") ContrastTests.PutInState(dialog, state);

@@ -156,6 +156,13 @@
     <Style Selector="ListBox.results ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
     </Style>
+    <Style Selector="Path.groupcaret">
+      <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+      <Setter Property="RenderTransform" Value="rotate(90deg)" />
+    </Style>
+    <Style Selector="Path.groupcaret.collapsed">
+      <Setter Property="RenderTransform" Value="rotate(0deg)" />
+    </Style>
     <Style Selector="ListBox.results ListBoxItem:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="BorderBrush" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
@@ -991,11 +998,11 @@
                       Width="24"
                       Padding="0"
                       Margin="0,0,6,0"
-                      Command="{Binding $parent[UserControl].((vm:MainWindowVM)DataContext).ToggleGroupCollapsedCommand}"
-                      CommandParameter="{Binding}">
+                      Click="OnGroupArrowClick">
                     <Panel>
-                      <Path Classes="chevglyph" Data="{StaticResource ChevronDownGeometry}" IsVisible="{Binding !IsCollapsed}" />
-                      <Path Classes="chevglyph" Data="{StaticResource ChevronRightGeometry}" IsVisible="{Binding IsCollapsed}" />
+                        <Path Classes="chevglyph groupcaret" Classes.collapsed="{Binding IsCollapsed}"
+                              AttachedToVisualTree="OnGroupArrowAttached" DataContextChanged="OnGroupArrowDataContextChanged"
+                            Data="{StaticResource ChevronRightGeometry}" />
                     </Panel>
                   </Button>
                   <!-- mockup .group-idx -->

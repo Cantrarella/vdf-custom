@@ -12,7 +12,7 @@ namespace VDF.GUI.Utils {
 	/// its own top-level window, so there is no layer under it to darken - but the main
 	/// window behind it can be, and that is what the eye reads as depth. Every window
 	/// that carries this property dims the shell while it is open and restores it when
-	/// it closes; the counter keeps a dialog that opens another dialog from clearing the
+	/// it closes or hides; tracking visible dialogs keeps nested dialogs from clearing the
 	/// dim too early.
 	/// </summary>
 	public static class DialogDim {
@@ -22,12 +22,12 @@ namespace VDF.GUI.Utils {
 		public static bool GetAutoDim(Window w) => w.GetValue(AutoDimProperty);
 		public static void SetAutoDim(Window w, bool value) => w.SetValue(AutoDimProperty, value);
 
-		static int _depth;
+		static readonly HashSet<Window> OpenDialogs = new();
 
 		// Closing a window detaches its styles, and detaching this one drives AutoDim back
 		// to false. So the Changed handler must never unsubscribe: the obvious shape of
 		// this code (subscribe when true, unsubscribe when false) drops Closed an instant
-		// before it is raised, the depth never comes back down, and the shell stays dimmed
+		// before it is raised, the dialog is never removed, and the shell stays dimmed
 		// for the rest of the session. The table keeps the subscribe from happening twice.
 		static readonly ConditionalWeakTable<Window, object> Hooked = new();
 
@@ -39,18 +39,23 @@ namespace VDF.GUI.Utils {
 				Hooked.Add(w, new object());
 				w.Opened += OnOpened;
 				w.Closed += OnClosed;
+				w.PropertyChanged += (_, args) => {
+					if (args.Property == Visual.IsVisibleProperty && !w.IsVisible) {
+						w.Classes.Set("dialog-open", false);
+						if (OpenDialogs.Remove(w)) Apply(OpenDialogs.Count > 0);
+					}
+				};
 			});
 		}
 
 		static void OnOpened(object? sender, EventArgs e) {
-			if (++_depth == 1) Apply(true);
+			if (sender is not Window window) return;
+			window.Classes.Set("dialog-open", true);
+			if (OpenDialogs.Add(window)) Apply(true);
 		}
 
 		static void OnClosed(object? sender, EventArgs e) {
-			if (--_depth <= 0) {
-				_depth = 0;
-				Apply(false);
-			}
+			if (sender is Window window && OpenDialogs.Remove(window)) Apply(OpenDialogs.Count > 0);
 		}
 
 		// Walked by hand rather than through ApplicationHelpers.MainWindowDataContext:

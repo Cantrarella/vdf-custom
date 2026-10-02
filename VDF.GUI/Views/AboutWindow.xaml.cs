@@ -28,6 +28,7 @@ namespace VDF.GUI.Views {
 	public class AboutWindow : Window {
 		const string ProjectUrl = "https://github.com/0x90d/videoduplicatefinder";
 		const string ReleasesUrl = ProjectUrl + "/releases";
+		internal Action<string> UrlOpener { get; set; } = OpenUrl;
 
 		// Designer needs a parameterless ctor.
 		public AboutWindow() {
@@ -61,9 +62,9 @@ namespace VDF.GUI.Views {
 				btn.Content = value;
 		}
 
-		void OnProjectPage(object? sender, RoutedEventArgs e) => OpenUrl(ProjectUrl);
+		void OnProjectPage(object? sender, RoutedEventArgs e) => UrlOpener(ProjectUrl);
 
-		void OnLatestRelease(object? sender, RoutedEventArgs e) => OpenUrl(ReleasesUrl);
+		void OnLatestRelease(object? sender, RoutedEventArgs e) => UrlOpener(ReleasesUrl);
 
 		static void OpenUrl(string url) {
 			try {
@@ -72,12 +73,13 @@ namespace VDF.GUI.Views {
 			catch { /* opening a browser is best-effort */ }
 		}
 
-		void OnCopy(object? sender, RoutedEventArgs e) {
+		async void OnCopy(object? sender, RoutedEventArgs e) {
 			string report =
 				$"Video Duplicate Finder {VersionInfo.LongDisplay}\n" +
 				$"{RuntimeInformation.FrameworkDescription}\n" +
 				$"{RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})";
-			Clipboard?.SetTextAsync(report);
+			if (Clipboard is { } clipboard)
+				await clipboard.SetTextAsync(report);
 		}
 
 		void OnOk(object? sender, RoutedEventArgs e) => Close();

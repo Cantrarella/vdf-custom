@@ -38,6 +38,38 @@ namespace VDF.GUI.Views {
 			AddHandler(ContextRequestedEvent, OnRowContextRequestedByKeyboard);
 		}
 
+		// Rebuilding the virtualized list replaces its paths. Carry only the clicked
+		// header's previous state to its replacement, rather than animating every row.
+		(Guid Id, bool WasCollapsed)? pendingGroupMotion;
+		void OnGroupArrowClick(object? sender, RoutedEventArgs e) {
+			if (sender is not Button { DataContext: ResultsGroupHeader header }) return;
+			pendingGroupMotion = (header.GroupId, header.IsCollapsed);
+			ViewModel?.ToggleGroupCollapsedCommand.Execute(header).Subscribe();
+			e.Handled = true;
+		}
+
+		void OnGroupArrowAttached(object? sender, VisualTreeAttachmentEventArgs e) => PrepareGroupArrowMotion(sender);
+		void OnGroupArrowDataContextChanged(object? sender, EventArgs e) => PrepareGroupArrowMotion(sender);
+		void PrepareGroupArrowMotion(object? sender) {
+			if (sender is not Avalonia.Controls.Shapes.Path arrow) return;
+			if (arrow.DataContext is not ResultsGroupHeader header || TopLevel.GetTopLevel(arrow) == null ||
+				ReferenceEquals(arrow.Tag, header)) return;
+			arrow.Tag = header;
+			bool animate = pendingGroupMotion is { } pending && pending.Id == header.GroupId &&
+				pending.WasCollapsed != header.IsCollapsed && !Utils.Appearance.ReduceMotionNow;
+			if (pendingGroupMotion?.Id == header.GroupId) pendingGroupMotion = null;
+			var end = Avalonia.Media.Transformation.TransformOperations.Parse(header.IsCollapsed ? "rotate(0deg)" : "rotate(90deg)");
+			// Initialize the replacement without transitioning from a recycled row's angle.
+			arrow.Transitions = null;
+			arrow.RenderTransform = animate
+				? Avalonia.Media.Transformation.TransformOperations.Parse(header.IsCollapsed ? "rotate(90deg)" : "rotate(0deg)")
+				: end;
+			arrow.ClearValue(TransitionsProperty);
+			if (animate) Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+				if (ReferenceEquals(arrow.Tag, header)) arrow.RenderTransform = end;
+			}, Avalonia.Threading.DispatcherPriority.Background);
+		}
+
 		// A list item is announced by ONE name; by default that is its content's ToString(),
 		// here the view model's type name. Set in code, not by a binding in a style: the three
 		// row types share no base, and the checked state changes while the row is on screen.
@@ -132,6 +164,7 @@ namespace VDF.GUI.Views {
 			// surrounding title, summary and empty surface should toggle the group.
 			for (var source = e.Source as Visual; source != null && source != host; source = source.GetVisualParent())
 				if (source is Button) return;
+			pendingGroupMotion = (header.GroupId, header.IsCollapsed);
 			ViewModel?.ToggleGroupCollapsedCommand.Execute(header).Subscribe();
 			e.Handled = true;
 		}

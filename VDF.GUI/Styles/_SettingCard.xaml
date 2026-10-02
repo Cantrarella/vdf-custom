@@ -151,11 +151,6 @@
     <Setter Property="OnContent" Value="" />
     <Setter Property="OffContent" Value="" />
     <Setter Property="MinWidth" Value="0" />
-    <Setter Property="KnobTransitions">
-      <Transitions>
-        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.2" Easing="CubicEaseOut" />
-      </Transitions>
-    </Setter>
     <Setter Property="Template">
       <ControlTemplate>
         <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
@@ -176,6 +171,16 @@
         </Grid>
       </ControlTemplate>
     </Setter>
+  </Style>
+  <Style Selector="Window:not(.reduce-motion) ToggleSwitch.plain">
+    <Setter Property="KnobTransitions">
+      <Transitions>
+        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.2" Easing="CubicEaseOut" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Window.reduce-motion ToggleSwitch.plain">
+    <Setter Property="KnobTransitions" Value="{x:Null}" />
   </Style>
   <Style Selector="ToggleSwitch.plain:checked /template/ Border#VdfSwitchTrack">
     <Setter Property="Background" Value="{DynamicResource VdfSwitchTrackOnBrush}" />

@@ -382,6 +382,12 @@
             </Setter>
             <Setter Property="Padding" Value="10,10" />
         </Style>
+        <Style Selector="Border.dialogscrim">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="Border.dialogscrim.dimmed">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
         <Style Selector="Button#RailBrandCapsule:not(.vdf-never) /template/ ContentPresenter, Button#RailBrandCapsule:pointerover /template/ ContentPresenter, Button#RailBrandCapsule:pressed /template/ ContentPresenter, Button#RailBrandCapsule:focus /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -1083,7 +1089,7 @@
              two. IsHitTestVisible is off so a modeless dialog (the blacklist, the
              database viewer) still leaves the shell usable. -->
         <Border x:Name="DialogScrim"
-                IsVisible="{Binding IsDialogDimmed}"
+                Classes="dialogscrim" Classes.dimmed="{Binding IsDialogDimmed}"
                 IsHitTestVisible="False"
                 Background="{DynamicResource VdfScrimBrush}" />
         </Grid>

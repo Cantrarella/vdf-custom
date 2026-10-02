@@ -52,9 +52,9 @@
                 TextWrapping="Wrap" />
 
             <WrapPanel HorizontalAlignment="Center">
-                <Button x:Name="ProjectPageButton" Classes="dlgghost" Margin="4" />
-                <Button x:Name="LatestReleaseButton" Classes="dlgghost" Margin="4" />
-                <Button x:Name="CopyButton" Classes="dlgghost" Margin="4" />
+                <Button x:Name="ProjectPageButton" Classes="dlgghost" Margin="4" Click="OnProjectPage" />
+                <Button x:Name="LatestReleaseButton" Classes="dlgghost" Margin="4" Click="OnLatestRelease" />
+                <Button x:Name="CopyButton" Classes="dlgghost" Margin="4" Click="OnCopy" />
                 <Button
                     x:Name="OkButton"
                     Classes="dlgprimary"
