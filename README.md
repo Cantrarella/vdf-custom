@@ -1,5 +1,7 @@
 # Video Duplicate Finder
 
+本项目基于 [0x90d/videoduplicatefinder](https://github.com/0x90d/videoduplicatefinder) 修改。
+
 Video Duplicate Finder（下称 VDF）是一款跑在 Windows 上的视频与图片查重工具，按画面内容的相似度比对，而不是文件名或文件大小。与其他同类工具不同的是，它还能找出分辨率不同、帧率不同、甚至加了水印的重复文件。
 
 # 功能特性
