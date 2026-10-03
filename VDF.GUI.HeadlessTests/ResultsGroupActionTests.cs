@@ -136,6 +136,7 @@ public sealed class ResultsGroupActionTests : IDisposable {
 	[Fact]
 	public Task AiMatchChip_OnlyExistsWhenThereIsSomethingToFilter() => HeadlessUi.Run(() => {
 		var vm = new MainWindowVM();
+		vm.ResultsAdvancedFiltersOpen = true;
 		Guid group = Guid.NewGuid();
 		Add(vm, group, "a.mp4");
 		var b = Add(vm, group, "b.mp4");

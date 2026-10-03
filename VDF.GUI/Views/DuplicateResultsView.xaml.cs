@@ -31,6 +31,11 @@ namespace VDF.GUI.Views {
 	public partial class DuplicateResultsView : UserControl {
 		public DuplicateResultsView() {
 			AvaloniaXamlLoader.Load(this);
+			// Expanded options must not consume the result viewport on short windows.
+			SizeChanged += (_, _) => {
+				if (this.FindControl<ScrollViewer>("AdvancedFiltersScroller") is { } filters)
+					filters.MaxHeight = Math.Clamp(Bounds.Height - 440, 100, 480);
+			};
 			DataContextChanged += (_, _) => WireViewModel();
 			WireViewModel();
 			if (this.FindControl<Button>("AutoSelectButton")?.Flyout is MenuFlyout autoSelectFlyout)

@@ -408,6 +408,34 @@
     <Style Selector="Button.ghostsm:pointerover">
       <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
     </Style>
+    <Style Selector="TextBlock.filterheading">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.chip">
+      <Setter Property="Background" Value="{DynamicResource VdfSunkenBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfMutedBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Padding" Value="11,6" />
+      <Setter Property="FontSize" Value="12.5" />
+    </Style>
+    <Style Selector="ToggleButton.chip:checked">
+      <Setter Property="Background" Value="{DynamicResource VdfAccentSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource VdfAccentTextBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource VdfAccentTextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.chip /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="{Binding $parent[ToggleButton].Background}" />
+      <Setter Property="BorderBrush" Value="{Binding $parent[ToggleButton].BorderBrush}" />
+      <Setter Property="Foreground" Value="{Binding $parent[ToggleButton].Foreground}" />
+    </Style>
+    <Style Selector="ToggleButton.chip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VdfRowHoverBrush}" />
+    </Style>
     <!-- mockup .group-idx: the group number, sitting where the old chevron was -->
     <Style Selector="Border.idxbadge">
       <Setter Property="Width" Value="26" />
@@ -617,12 +645,13 @@
     <!-- ======== Toolbar (mockup .toolbar): one search field, the four facet counts, and
          sort on the right. VDF grew a dozen extra filters over the years; they moved to
          the advanced strip below instead of crowding this row. ======== -->
-    <Border Grid.Row="2" Margin="0,10,0,4">
-      <DockPanel LastChildFill="False">
+    <Border Grid.Row="2" Margin="0,2,0,4">
+      <StackPanel Spacing="6">
+      <WrapPanel>
 
         <!-- mockup .search: file name or path. Same reference implementations: the old
              TextBox bound FilterByPath, this one just looks like the prototype. -->
-        <Border DockPanel.Dock="Left" Classes="searchbox" MinWidth="230">
+        <Border Classes="searchbox" Width="230" MinHeight="36" Margin="0,8,8,0">
           <DockPanel LastChildFill="True">
             <PathIcon
                 DockPanel.Dock="Left"
@@ -648,8 +677,8 @@
              are only meaningful when exactly one of them is on. The prototype's
              "ignored" bucket opens the blacklist manager: VDF removes those groups
              from the results entirely, so there is nothing here for it to filter. -->
-        <Border DockPanel.Dock="Left" Classes="filtertrack" Margin="9,0,0,0">
-          <StackPanel Orientation="Horizontal" Spacing="5">
+        <Border Classes="filtertrack" Margin="0,8,8,0">
+          <WrapPanel>
             <Button Classes="filteritem" Classes.on="{Binding IsFacetAll}"
                     AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Facet.All]}"
                     Command="{Binding SetResultsFacetCommand}" CommandParameter="All"
@@ -686,23 +715,21 @@
                 <TextBlock Classes="facetn" Text="{Binding BlacklistedGroupCount, Mode=OneWay}" />
               </StackPanel>
             </Button>
-          </StackPanel>
+          </WrapPanel>
         </Border>
 
         <!-- Everything the toolbar gave up. The chip keeps its own state; nothing here
              changes what is filtered until it is opened. -->
         <ToggleButton
-            DockPanel.Dock="Right"
-            Classes="chip"
+            Classes="chip" Margin="0,8,8,0" MinHeight="36"
             IsChecked="{Binding ResultsAdvancedFiltersOpen}"
             Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.Advanced]}" />
 
         <!-- mockup sort button: the sort in force is its label, and pressing the mode
              that is already active flips the direction instead of doing nothing. -->
         <Button
-            DockPanel.Dock="Right"
             Classes="ghostsm"
-            Margin="0,0,9,0"
+            Margin="0,8,8,0" MinHeight="36"
             AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.Sort]}">
           <Button.Content>
             <StackPanel Orientation="Horizontal" Spacing="6">
@@ -738,20 +765,26 @@
             </MenuFlyout>
           </Button.Flyout>
         </Button>
-      </DockPanel>
+      </WrapPanel>
+      <TextBlock FontSize="12" Foreground="{DynamicResource VdfMutedBrush}" TextWrapping="Wrap"
+                 Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.SelectionHint]}" />
+      </StackPanel>
     </Border>
 
     <!-- ======== Advanced filters. The card layout has no column heads to hang this on,
          so the old right-click column menu, the sort detail controls and the bulk selection
          menu live here, visible only when asked for. ======== -->
     <Border Grid.Row="3" Classes="advstrip" IsVisible="{Binding ResultsAdvancedFiltersOpen}">
-      <StackPanel Spacing="10">
+      <ScrollViewer x:Name="AdvancedFiltersScroller" MaxHeight="280" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="10" Margin="0,0,6,0">
 
-        <WrapPanel>
-          <TextBlock x:Name="SortLabel" Margin="0,0,4,0" VerticalAlignment="Center" FontSize="12"
-                     Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.Sort]}" />
+        <StackPanel Spacing="8">
+          <TextBlock x:Name="SortLabel" Classes="filterheading" Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Filters.Sorting]}" />
+          <WrapPanel>
+            <StackPanel Spacing="6" Margin="0,0,16,8">
+              <StackPanel Orientation="Horizontal" Spacing="6">
           <ComboBox
-              MinWidth="170"
+              Width="200"
               FontSize="12"
               AutomationProperties.LabeledBy="{Binding #SortLabel}"
               ItemsSource="{Binding ResultsSortOptions}"
@@ -764,23 +797,33 @@
           </ComboBox>
           <ToggleButton
               Classes="chip"
-              Margin="4,0,0,0"
+              Margin="0"
               IsChecked="{Binding ResultsSortDescending}"
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.SortDescending]}"
               Content="{Binding ResultsSortDescending, Converter={StaticResource SortDirectionGlyphConverter}}"
               ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.DescendingTip]}" />
+              </StackPanel>
+            </StackPanel>
+            <StackPanel Spacing="6" Margin="0,0,0,8">
           <ToggleButton
               Classes="chip"
-              Margin="4,0,0,0"
+              Margin="0"
               FontSize="12"
               IsChecked="{Binding ResultsBestFirst}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.BestFirst]}"
               ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.BestFirstTip]}" />
-          <Border Width="1" Height="20" Margin="10,0" Background="{DynamicResource VdfCardLineBrush}" />
-          <TextBlock x:Name="TypeLabel" Margin="0,0,4,0" VerticalAlignment="Center" FontSize="12"
+            </StackPanel>
+          </WrapPanel>
+        </StackPanel>
+        <Border Height="1" Background="{DynamicResource VdfCardLineBrush}" />
+        <StackPanel Spacing="8">
+          <TextBlock Classes="filterheading" Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Filters.Matching]}" />
+          <WrapPanel>
+            <StackPanel Spacing="6" Margin="0,0,16,8">
+          <TextBlock x:Name="TypeLabel" Margin="0" VerticalAlignment="Center" FontSize="12"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.Type]}" />
           <ComboBox
-              MinWidth="100"
+              Width="200"
               FontSize="12"
               AutomationProperties.LabeledBy="{Binding #TypeLabel}"
               ItemsSource="{Binding TypeFilters}"
@@ -791,8 +834,11 @@
               </DataTemplate>
             </ComboBox.ItemTemplate>
           </ComboBox>
-          <TextBlock Margin="10,0,4,0" VerticalAlignment="Center" FontSize="12"
+            </StackPanel>
+            <StackPanel Margin="0,0,0,8">
+          <TextBlock Margin="0,0,0,6" VerticalAlignment="Center" FontSize="12"
                      Text="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.Similarity]}" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
           <NumericUpDown
               Width="110" FontSize="12"
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.SimilarityFrom]}"
@@ -805,33 +851,37 @@
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[A11y.Results.SimilarityTo]}"
               FormatString="\{0\}%" Maximum="100" Minimum="0"
               Value="{Binding FilterSimilarityTo}" />
-        </WrapPanel>
+              </StackPanel>
+            </StackPanel>
+          </WrapPanel>
+        </StackPanel>
 
+        <Border Height="1" Background="{DynamicResource VdfCardLineBrush}" />
+        <TextBlock Classes="filterheading" Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Filters.Selection]}" />
         <WrapPanel>
           <ToggleButton
-              Classes="chip"
+              Classes="chip" Margin="0,0,8,8"
               IsChecked="{Binding FilterGroupsWithCheckedItems}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.GroupsWithCheckedItems]}" />
           <ToggleButton
               Classes="chip"
-              Margin="6,0,0,0"
+              Margin="0,0,8,8"
               IsChecked="{Binding FilterHideGroupsWithOneFileLeft}"
               ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.HideGroupsWithOneFileLeftTooltip]}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.HideGroupsWithOneFileLeft]}" />
           <ToggleButton
               Classes="chip"
-              Margin="6,0,0,0"
+              Margin="0,0,8,8"
               IsVisible="{Binding ResultsShowAiMatchFilter}"
               IsChecked="{Binding FilterOnlyGroupsWithAiMatches}"
               ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.OnlyGroupsWithAiMatchesTooltip]}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.Filter.OnlyGroupsWithAiMatches]}" />
           <ToggleButton
               Classes="chip"
-              Margin="6,0,0,0"
+              Margin="0,0,8,8"
               IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsCompactRows}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.CompactRows]}" />
-          <Border Width="1" Height="20" Margin="10,0" Background="{DynamicResource VdfCardLineBrush}" />
-          <Button x:Name="AutoSelectButton" FontSize="12" Padding="10,3" CornerRadius="12"
+          <Button x:Name="AutoSelectButton" Margin="0,0,8,8" FontSize="12" Padding="10,3" CornerRadius="12"
                   AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.AutoSelect]}">
             <Button.Content>
               <StackPanel Orientation="Horizontal" Spacing="5">
@@ -887,40 +937,43 @@
           </Button>
         </WrapPanel>
 
+        <Border Height="1" Background="{DynamicResource VdfCardLineBrush}" />
+        <TextBlock Classes="filterheading" Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Filters.Columns]}" />
         <!-- What is shown per row: the same switches the old column-header menu held.
              Preview width used to be dragged on the header row; the grip has no column
              head to sit on anymore, so it became a slider. -->
         <WrapPanel>
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowThumbnailColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Preview]}" />
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowSimilarityColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Match]}" />
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowDurationColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.DurationRes]}" />
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowSizeDateColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.SizeDate]}" />
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowBitrateColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Bitrate]}" />
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowFormatColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.FormatAudio]}" />
-          <CheckBox Margin="0,0,12,0" FontSize="12"
+          <CheckBox Margin="0,0,16,8" FontSize="12"
                     IsChecked="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowLanguagesColumn}"
                     Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Header.Languages]}" />
-          <StackPanel Orientation="Horizontal" Spacing="8" Margin="4,0,0,0">
+        </WrapPanel>
+          <StackPanel Orientation="Horizontal" Spacing="12">
             <TextBlock VerticalAlignment="Center" FontSize="12"
                        Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Toolbar.PreviewWidth]}" />
             <Slider Width="120" Minimum="40" Maximum="320"
                     VerticalAlignment="Center"
                     Value="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ResultsPreviewWidth}" />
           </StackPanel>
-        </WrapPanel>
       </StackPanel>
+      </ScrollViewer>
     </Border>
 
     <!-- ======== Flattened results list. The floating action dock (below) shares this
@@ -1266,31 +1319,26 @@
                               Data="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
                   </Button>
                 </StackPanel>
-                <!-- The similarity chip is a value, not an action: it stays put whether or
-                     not the pointer is on the row, so the numbers never jump. -->
-                <!-- mockup .keep-tag / .keep-reason: why this one would be kept, and
-                     every other state a member can be in. They belong on the same line as
-                     the similarity value: docked to the name line above they sat on a
-                     different baseline from the chip, which left the pair visibly
-                     staggered. -->
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6"
-                            Margin="6,0,0,0" VerticalAlignment="Center">
-                  <Border Classes="keeptag" IsVisible="{Binding IsBest}"
+                <!-- Status and similarity share a wrapping row above the filename.
+                     Giving them their own line preserves comparison and path width. -->
+                <StackPanel Margin="0" VerticalAlignment="Center" Spacing="4">
+                <WrapPanel Classes="rowbadges" Orientation="Horizontal">
+                  <Border Classes="keeptag" Margin="0,0,6,3" IsVisible="{Binding IsBest}"
                           ToolTip.Tip="{Binding BestTooltip}">
                     <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Row.Best]}" />
                   </Border>
-                  <Border Classes="keeptag" IsVisible="{Binding Item.ItemInfo.IsAiMatched}"
+                  <Border Classes="keeptag" Margin="0,0,6,3" IsVisible="{Binding Item.ItemInfo.IsAiMatched}"
                           ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[Results.AiMatchedTooltip]}">
                     <TextBlock Text="AI" />
                   </Border>
-                  <Border IsVisible="{Binding Item.IsTombstone}"
+                  <Border Margin="0,0,6,3" IsVisible="{Binding Item.IsTombstone}"
                           Background="{DynamicResource VdfTombBrush}"
                           CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
                           ToolTip.Tip="{Binding Source={x:Static local:App.Lang}, Path=[DupList.AlreadyDeletedTooltip]}">
                     <TextBlock Text="{Binding Source={x:Static local:App.Lang}, Path=[DupList.AlreadyDeleted]}"
                                FontSize="10" FontWeight="Bold" Foreground="White" />
                   </Border>
-                  <Border IsVisible="{Binding Item.IsOffline}"
+                  <Border Margin="0,0,6,3" IsVisible="{Binding Item.IsOffline}"
                           Background="{DynamicResource VdfMutedSoftBrush}"
                           BorderBrush="{DynamicResource VdfMutedBorderBrush}" BorderThickness="1"
                           CornerRadius="3" Padding="5,0" VerticalAlignment="Center"
@@ -1301,6 +1349,7 @@
                   </Border>
                   <Border
                       Classes="simchip"
+                      Margin="0,0,6,3"
                       Classes.mid="{Binding Item.ItemInfo.Similarity, Converter={StaticResource SimilarityTierConverter}, ConverterParameter=mid}"
                       Classes.low="{Binding Item.ItemInfo.Similarity, Converter={StaticResource SimilarityTierConverter}, ConverterParameter=low}"
                       Padding="7,2"
@@ -1312,9 +1361,8 @@
                         FontWeight="Bold"
                         Text="{Binding Item.ItemInfo.Similarity, Converter={StaticResource SimilarityToFormattedConverter}}" />
                   </Border>
-                </StackPanel>
+                </WrapPanel>
                 <!-- mockup .file-info: name and badges on top, the facts underneath -->
-                <StackPanel Margin="0" VerticalAlignment="Center" Spacing="3">
                   <!-- The name may wrap to a second line in comfortable mode before it
                        trims: with a wide preview or a narrow window a single line cut
                        long names down to a few characters (#854). Capped at two lines
@@ -1334,7 +1382,7 @@
                        held, read left to right in one line; each block owns its leading
                        separator so switching a column off takes its dot with it. Hovering
                        a value still swaps it against the group's best one. -->
-                  <WrapPanel Orientation="Horizontal">
+                  <WrapPanel Classes="rowmetadata" Orientation="Horizontal">
                     <StackPanel Orientation="Horizontal" Spacing="7"
                                 IsVisible="{Binding Source={x:Static Settings:SettingsFile.Instance}, Path=ShowDurationColumn}">
                       <TextBlock Classes="specsep" />
@@ -1586,6 +1634,7 @@
          radius (26px), and its padding 13px 16px 13px 22px — the wider inset on the left
          is what keeps the sentence off the curve. It was 28px/16px at radius 16. -->
     <Border
+        Name="ResultsActionDock"
         Grid.Row="4"
         IsVisible="{Binding !!DuplicatesCheckedCounter}"
         VerticalAlignment="Bottom"
@@ -1598,9 +1647,9 @@
         BorderBrush="{DynamicResource VdfMutedBorderBrush}"
         BorderThickness="1"
         BoxShadow="0 8 22 0 #26003050">
-      <!-- Two rows instead of one: the hint used to share the row and lost. -->
-      <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="7">
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Center" FontSize="12.5"
+      <!-- Give summary and hint full width; actions wrap independently. -->
+      <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="7">
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12.5"
                    Opacity="{DynamicResource VdfTextDim85Opacity}">
           <Run Text="{Binding Source={x:Static local:App.Lang}, Path=[Results.Dock.Selected]}" />
           <Run Text=" " />
@@ -1614,7 +1663,7 @@
                Foreground="{DynamicResource VdfAccentTextBrush}"
                Text="{Binding DuplicatesCheckedSize, Mode=OneWay}" />
         </TextBlock>
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <WrapPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
           <Button
               Classes="solid"
               Background="{DynamicResource VdfDangerSolidBrush}"
@@ -1622,6 +1671,7 @@
               FontSize="12.5"
               FontWeight="SemiBold"
               Padding="14,5"
+              Margin="0,0,8,4"
               AutomationProperties.Name="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.Delete]}">
             <Button.Content>
               <StackPanel Orientation="Horizontal" Spacing="6">
@@ -1637,7 +1687,13 @@
                 <MenuItem
                     Command="{Binding DeleteCheckedItemsPermanentlyCommand}"
                     Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.DeletePermanently]}" />
-                <Separator />
+              </MenuFlyout>
+            </Button.Flyout>
+          </Button>
+          <Button FontSize="12.5" Padding="14,5" Margin="0,0,8,4"
+                  Content="{Binding Source={x:Static local:App.Lang}, Path=[Shell.MoreMenu]}">
+            <Button.Flyout>
+              <MenuFlyout>
                 <MenuItem
                     Command="{Binding CopyCheckedItemsCommand}"
                     Header="{Binding Source={x:Static local:App.Lang}, Path=[MainWindow.ContextMenu.CopyToFolderEllipsis]}" />
@@ -1661,15 +1717,15 @@
           <Button
               FontSize="12.5"
               Padding="14,5"
+              Margin="0,0,0,4"
               Command="{Binding ClearCheckedItemsCommand}"
               Content="{Binding Source={x:Static local:App.Lang}, Path=[Results.Action.ClearSelection]}" />
-        </StackPanel>
+        </WrapPanel>
         <!-- The hint has a line of its own now. Sharing the row made it the first thing to
              give way at the window's narrow end, where a shortened sentence reads as a bug;
              full width it always says what it means. -->
         <TextBlock
-            Grid.Row="1"
-            Grid.ColumnSpan="2"
+            Grid.Row="2"
             FontSize="12"
             TextWrapping="Wrap"
             Opacity="{DynamicResource VdfTextFaintOpacity}"

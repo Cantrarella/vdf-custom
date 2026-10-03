@@ -98,6 +98,9 @@ public static class HeadlessUi {
 			if (placeholder) File.Delete(database);
 
 			App.Lang.LoadLanguage("en"); // the window's constructor applies the settings' language
+			// The constructor also loads persisted settings. Geometry fixtures start at
+			// 100%, regardless of a previous test run's saved appearance settings.
+			SettingsFile.Instance.UiScalePercent = 100;
 			shell.Show();
 			Pump();
 		}
