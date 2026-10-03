@@ -127,6 +127,12 @@ jobs:
           # Clean up
           rm -rf "outputGUI"
           
+    - name: Prepare rolling release notes
+      if: github.ref_type == 'branch'
+      shell: bash
+      run: |
+          cp docs/release-notes.md release-notes-generated.md
+          printf '\nLast build based on %s\n' "${{ steps.vars.outputs.sha_short }}" >> release-notes-generated.md
     - name: Publish
       if: github.ref_type == 'branch'
       uses: softprops/action-gh-release@v3
@@ -137,56 +143,7 @@ jobs:
           make_latest: false
           files: |
             GUI-*
-          body: |
-            Note: These are daily builds. Attachments are automatically created and replaced on every new commit. If you experience upgrade issues you may need to delete your 'ScannedFiles.db' file in the VDF folder.
-
-            ## 本版改动
-
-            在 4.1 的基础上做的个人界面定制版。此次界面调整不改变扫描、查重和文件处理逻辑。
-
-            **近期更新（2026-10-01）**
-            - 2026-10-02：补齐移至回收站、永久删除、仅从列表移除及加入忽略名单的中文确认提示。
-            - 2026-10-02：结果分组标题、统计文字及空白区域均可点击展开/折叠；比较和保留最佳按钮独立操作。
-            - 2026-10-02：删除后恢复列表焦点时，使用贴合卡片的主题细边框，消除整行黑色矩形框。
-            - 设置页：提示框增加左右及顶部留白，避免紧贴选项卡片边缘；匹配和部分片段页面同步修复。
-            - 提示配色：浅色使用淡蓝背景和蓝灰边框，深色使用深蓝灰背景；重点文字使用主题强调色。
-            - 扫描设置页：移除“开始扫描”旁边的“高级设置”入口，设置仍可从侧栏打开。
-            - 侧栏：展开时当前页面仅以蓝色文字和图标标识；折叠时保留淡蓝小方块，鼠标悬停使用柔和灰色背景。
-            - 侧栏图标：统一为 18px、1.5px 线宽；扫描使用简洁放大镜，结果使用双框图标。
-            - 品牌区域：点击图标或文字即可折叠/展开；移除单独的折叠箭头、图标蓝色底板以及文字区域多余的状态背景。
-            - 查重结果：优化列表布局和筛选区域，移除分组折叠操作产生的多余蓝色背景。
-            - 应用图标：桌面、任务栏和托盘使用透明背景的白色双框；侧栏保留原图标造型。
-            - AI 组件：Windows x64 发布包内置 ONNX Runtime 1.23.2 和 DINOv2 模型，完整解压后无需首次使用时另行下载。
-            - 验证：完成本地构建，以及匹配/部分片段页面的浅色、深色实际渲染检查。
-
-            **界面**
-            - 按定稿设计稿重做整体布局：侧栏扫描设置、查重结果、忽略名单及设置分区，配单列页面
-            - 蓝色配色体系，深色模式同步跟进
-            - 侧栏拉通到底、页面在其后透出光晕；窗口不再自绘标题栏文字
-            - 选项行悬停高亮改为直角，悬停色统一；行高与留白重调
-
-            **弹窗**
-            - 去掉系统窗口框，阴影改为自绘
-            - 新增半透明遮罩，弹窗不再与背景糊在一起
-            - 支持拖动；圆角与描边统一
-            - 卡片缩放手柄沿圆角弧线判定，圆角外侧那几像素不再误触缩放
-
-            **控件与修复**
-            - 阈值滑块重写（修掉「拖不动」）；开关改为 42×24 胶囊
-            - 扫描结果为空时，现在会说明是哪个筛选条件把文件挡在了门外
-
-            **无障碍**
-            - 可访问名称、Tab 焦点顺序、快捷键编辑器吞 Tab 等问题清零
-
-            **外观与语言**
-            - 换用本版自己的图标与托盘图标
-            - 默认界面语言为简体中文
-            - 应用名显示为 Video Duplicate Finder，任务栏与文件属性里不再是 VDF.GUI
-
-            **发行**
-            - 本仓库只构建 Windows x64 包；CLI、网页版与 Docker 镜像已移除
-
-            Last build based on ${{ steps.vars.outputs.sha_short }}
+          body_path: release-notes-generated.md
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
